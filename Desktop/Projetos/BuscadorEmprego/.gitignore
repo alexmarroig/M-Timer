@@ -1,0 +1,20 @@
+# secrets & personal data
+.env
+profile.json
+
+# runtime artifacts
+jobs.db
+.browser_context/
+screenshots/
+
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
