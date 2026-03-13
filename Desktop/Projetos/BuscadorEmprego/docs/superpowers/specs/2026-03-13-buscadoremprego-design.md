@@ -45,11 +45,12 @@ BuscadorEmprego/
 ├── config.py                  # reads .env (credentials, paths)
 ├── requirements.txt
 ├── .env.example
+├── .gitignore                 # must include: .env, profile.json, jobs.db, .browser_context/
 │
 ├── models/
 │   ├── job.py                 # SQLAlchemy ORM model + Pydantic schema
 │   ├── profile.py             # CandidateProfile dataclass (loaded from JSON)
-│   └── application_log.py    # audit record per submitted application
+│   └── application_log.py    # audit record per submitted application (schema-first; written in Phase 2)
 │
 ├── db/
 │   └── database.py            # SQLite engine, Session factory, create_all
@@ -59,12 +60,12 @@ BuscadorEmprego/
 │   └── indeed.py              # Indeed implementation
 │
 ├── services/
-│   ├── job_service.py         # DB operations: upsert, query, status update
-│   └── apply_service.py       # orchestrates apply flow (future phase, stub now)
+│   ├── job_service.py         # fetch_and_persist(), query(), update_status()
+│   └── apply_service.py       # stub: all methods raise NotImplementedError (Phase 2)
 │
 ├── api/
 │   ├── routes_jobs.py         # GET /jobs, POST /indeed/fetch_jobs, PATCH /jobs/{id}/status
-│   └── routes_apply.py        # POST /apply/{job_id} (stub — 501 now)
+│   └── routes_apply.py        # POST /apply/{job_id}, GET /applications (stub — 501 now)
 │
 └── profile.json               # candidate data (gitignored)
 ```
@@ -73,8 +74,13 @@ BuscadorEmprego/
 
 - `connectors/` knows only Playwright and returns DTOs.
 - `services/` knows only models and DB — no HTTP, no Playwright.
-- `api/` knows only HTTP — delegates everything to services.
+- `api/` knows only HTTP — delegates everything to services. **`api/` never imports from `connectors/` directly.**
+- The bridge: `job_service.fetch_and_persist(search_url, max_results)` calls the connector internally, then persists results and returns them. The route calls this service method.
 - No layer imports from a layer above it.
+
+### Note on `application_log`
+
+`ApplicationLog` is defined schema-first in MVP: the ORM model and table are created via `create_all`, but nothing writes to it until Phase 2. This is intentional — it avoids a schema migration later.
 
 ---
 
@@ -93,9 +99,9 @@ BuscadorEmprego/
 | `summary` | str \| None | short snippet from listing |
 | `is_easy_apply` | bool | detected from "Easily apply" badge |
 | `collected_at` | datetime | UTC, auto-set |
-| `status` | str | `"new"` \| `"applied"` \| `"skipped"` |
+| `status` | Enum | `"new"` \| `"applied"` \| `"skipped"` — enforced as `SQLAlchemy Enum` in ORM and `Literal["new", "applied", "skipped"]` in Pydantic schema |
 
-### `ApplicationLog` (audit trail for auto mode)
+### `ApplicationLog` (audit trail — schema-first, populated in Phase 2)
 
 | Field | Type | Notes |
 |---|---|---|
@@ -105,7 +111,7 @@ BuscadorEmprego/
 | `mode` | str | `"auto"` \| `"copilot"` |
 | `success` | bool | |
 | `error_msg` | str \| None | |
-| `screenshot` | str \| None | path to PNG saved locally |
+| `screenshot` | str \| None | absolute path to PNG; base dir from `SCREENSHOT_DIR` config; use `pathlib.Path` — never string concatenation |
 
 ### `CandidateProfile` (dataclass, never persisted)
 
@@ -119,8 +125,10 @@ class CandidateProfile:
     roles: list[str]
     skills: list[str]
     cv_path: str
-    answers: dict[str, str]   # custom Indeed questions
+    answers: dict[str, str]
 ```
+
+**`answers` key convention:** keys are the exact label text shown on the Indeed form (e.g., `"How many years of Python experience do you have?"`). The connector will match keys against form field labels at runtime.
 
 Loaded from `profile.json` at startup. File is `.gitignore`d (personal data).
 
@@ -129,33 +137,47 @@ Loaded from `profile.json` at startup. File is `.gitignore`d (personal data).
 ## 4. API Endpoints
 
 ### `POST /indeed/fetch_jobs`
+
 ```
 Body:   { "search_url": str, "max_results": int = 20 }
-Action: open Indeed, scrape listing, upsert jobs in SQLite
+Action: calls job_service.fetch_and_persist() → connector → DB upsert
 Return: { "found": int, "new": int, "jobs": list[Job] }
+
+Errors:
+  HTTP 422  — search_url does not contain "indeed.com"
+  HTTP 502  — Playwright failure (network error, CAPTCHA, timeout)
+             body: { "detail": "<reason>" }
 ```
 
 ### `GET /jobs`
+
 ```
-Query: ?status=new&source=indeed&limit=50
-Return: paginated list of Job
+Query:  ?status=new&source=indeed&limit=50
+Return: list[Job] (no pagination in MVP — limit is a hard cap, no offset param)
+Default limit: 50. Max limit: 200.
 ```
 
 ### `PATCH /jobs/{id}/status`
+
 ```
 Body:   { "status": "skipped" | "new" | "applied" }
-Action: update Job.status manually
+Return: updated Job
+Errors:
+  HTTP 404  — job with given id does not exist
+  HTTP 422  — invalid status value
 ```
 
 ### `POST /apply/{job_id}` *(stub — 501 Not Implemented)*
+
 ```
 Body:   { "mode": "auto" | "copilot" }
-Return: ApplicationLog (future)
+Return: { "detail": "Not implemented — Phase 2" }
 ```
 
 ### `GET /applications` *(stub — 501 Not Implemented)*
+
 ```
-Return: list of ApplicationLog (audit history)
+Return: { "detail": "Not implemented — Phase 2" }
 ```
 
 **Upsert semantics:** `fetch_jobs` uses `Job.url` as the unique key. Re-running the same search never duplicates jobs and preserves existing `status` values.
@@ -166,12 +188,20 @@ Return: list of ApplicationLog (audit history)
 
 ### `fetch_jobs_indeed(search_url, max_results)` flow
 
-1. Launch Chromium headless via Playwright with a persistent `BrowserContext` (cookies saved to `~/.buscador_context/`).
+1. Launch Chromium headless via Playwright with a persistent `BrowserContext` (path from `BROWSER_CONTEXT_PATH` config, resolved to absolute using `pathlib.Path`).
 2. Navigate to `search_url`.
 3. For each job card on the page, extract: title, company, location, job URL, summary snippet, `is_easy_apply`.
-4. If `len(jobs) < max_results` and a "Next page" button exists → paginate (max 3 pages).
+4. Stop when `len(jobs) >= max_results` OR there is no "Next page" button OR `MAX_PAGES` constant (default: `3`) is reached — whichever comes first. `MAX_PAGES` is a module-level constant, not hardcoded inline.
 5. Apply `await page.wait_for_timeout(1500)` between pages.
 6. Return `list[JobDTO]`.
+
+### CAPTCHA Handling
+
+If Playwright detects a CAPTCHA page (heuristic: page title contains "Just a moment" or "Verify you are human", or expected job card selectors are absent after 5s):
+
+- Raise `CaptchaError(url)` — a custom exception defined in `connectors/indeed.py`.
+- `job_service.fetch_and_persist()` catches it and re-raises as `HTTP 502` with `detail="CAPTCHA encountered — run the browser in headed mode to solve manually"`.
+- No silent empty returns; failures are always surfaced.
 
 ### Expected Selectors *(must be validated against live DOM)*
 
@@ -187,11 +217,11 @@ Next page:      [data-testid="pagination-page-next"]
 
 > These selectors are best-effort guesses. Indeed frequently updates its DOM. Inspect the real page and adjust before running.
 
-### Login Flow (for future apply phase)
+### Login Flow (for Phase 2 — apply)
 
 1. Navigate to `indeed.com/account/login`.
-2. Fill email and password from `.env`.
-3. Save `BrowserContext` to disk — reuse on next run.
+2. Fill email and password from config (`.env`).
+3. Save `BrowserContext` to `BROWSER_CONTEXT_PATH` (absolute path) — reuse on next run.
 
 ### Rate Limiting
 
@@ -218,9 +248,9 @@ Flow:
 2. Click "Apply now" / "Indeed Apply".
 3. Fill form fields from `CandidateProfile`.
 4. Upload PDF via `page.set_input_files()`.
-5. Answer custom questions using `profile.answers`.
+5. Match `profile.answers` keys against form field labels; fill matched fields.
 6. If `mode="copilot"` → pause before Submit, wait for human.
-7. If `mode="auto"` → submit, take screenshot, write `ApplicationLog`.
+7. If `mode="auto"` → submit, take screenshot to `SCREENSHOT_DIR`, write `ApplicationLog`.
 
 ### Phase 3 — Match & Score
 
@@ -234,23 +264,29 @@ Flow:
 
 ```env
 INDEED_EMAIL=you@example.com
-INDEED_PASSWORD=yourpassword
-BROWSER_CONTEXT_PATH=./.browser_context
-PROFILE_PATH=./profile.json
-DATABASE_URL=sqlite:///./jobs.db
+INDEED_PASSWORD=yourpassword        # NEVER commit .env — it is gitignored
+BROWSER_CONTEXT_PATH=.browser_context  # resolved to absolute path at startup via pathlib.Path
+SCREENSHOT_DIR=./screenshots           # resolved to absolute path at startup via pathlib.Path
+PROFILE_PATH=./profile.json            # resolved to absolute path at startup
+DATABASE_URL=sqlite:///./jobs.db       # SQLite path is resolved to absolute at startup
 ```
+
+**Important:** All relative paths in config are resolved to absolute at startup time using `pathlib.Path(__file__).parent / relative_path`. This prevents path drift when uvicorn is started from a different working directory on Windows.
+
+**Gitignored files:** `.env`, `profile.json`, `jobs.db`, `.browser_context/`, `screenshots/`
 
 ---
 
 ## 8. Dependencies (`requirements.txt`)
 
 ```
-fastapi
-uvicorn[standard]
-playwright
-sqlalchemy
-pydantic
-python-dotenv
+fastapi>=0.110,<1
+uvicorn[standard]>=0.29,<1
+playwright>=1.43,<2
+sqlalchemy>=2.0,<3
+pydantic>=2.0,<3
+pydantic-settings>=2.0,<3     # required for BaseSettings with Pydantic v2
+python-dotenv>=1.0,<2
 ```
 
 Post-install: `playwright install chromium`
