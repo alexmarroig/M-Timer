@@ -56,7 +56,7 @@ BuscadorEmprego/
 │   └── database.py            # SQLite engine, Session factory, create_all
 │
 ├── connectors/
-│   ├── base.py                # Protocol defining fetch_jobs() and apply_job()
+│   ├── base.py                # Protocol + JobDTO Pydantic model (no SQLAlchemy)
 │   └── indeed.py              # Indeed implementation
 │
 ├── services/
@@ -72,11 +72,38 @@ BuscadorEmprego/
 
 ### Layer Rules
 
-- `connectors/` knows only Playwright and returns DTOs.
-- `services/` knows only models and DB — no HTTP, no Playwright.
+- `connectors/` knows only Playwright. Returns `list[JobDTO]` — **never ORM models**. No SQLAlchemy imports inside `connectors/`.
+- `services/` knows only models and DB — no HTTP, no Playwright. Converts `JobDTO → Job ORM` internally.
 - `api/` knows only HTTP — delegates everything to services. **`api/` never imports from `connectors/` directly.**
-- The bridge: `job_service.fetch_and_persist(search_url, max_results)` calls the connector internally, then persists results and returns them. The route calls this service method.
+- The bridge: `job_service.fetch_and_persist(search_url, max_results)` calls the connector internally, maps DTOs to ORM models, upserts, and returns results. The route calls this service method.
 - No layer imports from a layer above it.
+
+### `JobDTO` — Connector Output Type
+
+`JobDTO` is a plain Pydantic `BaseModel` defined in `connectors/base.py`. It is the **only** type connectors return. It has no SQLAlchemy dependency.
+
+```python
+class JobDTO(BaseModel):
+    source: str
+    title: str
+    company: str
+    location: str
+    url: str
+    summary: str | None
+    is_easy_apply: bool
+```
+
+`job_service.fetch_and_persist()` maps each `JobDTO` → `Job` ORM model. This mapping is the sole responsibility of the service layer — connectors never touch the ORM.
+
+### Connector Protocol
+
+```python
+class JobConnector(Protocol):
+    async def fetch_jobs(self, search_url: str, max_results: int) -> list[JobDTO]: ...
+    async def apply_job(self, job_url: str, profile: CandidateProfile, mode: str) -> ApplicationLog: ...
+```
+
+`indeed.py` implements this protocol. Future connectors (Glassdoor, Gupy) implement the same protocol — `job_service` works with any of them without changes.
 
 ### Note on `application_log`
 
@@ -206,16 +233,21 @@ If Playwright detects a CAPTCHA page (heuristic: page title contains "Just a mom
 ### Expected Selectors *(must be validated against live DOM)*
 
 ```
-Job cards:      [data-testid="slider_container"]  or  .job_seen_beacon
+Job cards:      #mosaic-provider-jobcards [data-testid="slider_item"]
+                fallback: .job_seen_beacon
 Title:          h2.jobTitle a
 Company:        [data-testid="company-name"]
 Location:       [data-testid="text-location"]
 Summary:        .job-snippet
-Easy Apply:     .iaLabel  or  span containing "Easily apply"
+Easy Apply:     [data-testid="indeedApply"]
+                fallback: .jobMetaDataGroup [class*="indeedApply"]
+                fallback: span/badge containing text "Easily apply"
 Next page:      [data-testid="pagination-page-next"]
 ```
 
-> These selectors are best-effort guesses. Indeed frequently updates its DOM. Inspect the real page and adjust before running.
+The connector must try selectors in the order listed, using the first that resolves. Fallback logic lives in a private helper `_find_first(page, *selectors)` — not duplicated at each call site.
+
+> These selectors reflect the current DOM as of early 2026. Indeed updates its markup frequently. Before running, open the search page in a headed browser and verify with DevTools.
 
 ### Login Flow (for Phase 2 — apply)
 
