@@ -98,3 +98,28 @@ def test_application_log_table_exists_in_metadata():
     from models.application_log import ApplicationLog
     from models.job import Base
     assert "application_logs" in Base.metadata.tables
+
+
+def test_init_db_creates_tables(monkeypatch, tmp_path):
+    db_path = tmp_path / "test.db"
+    monkeypatch.setenv("INDEED_EMAIL", "t@t.com")
+    monkeypatch.setenv("INDEED_PASSWORD", "x")
+    monkeypatch.setenv("DATABASE_URL", f"sqlite:///{db_path}")
+    monkeypatch.setenv("BROWSER_CONTEXT_PATH", str(tmp_path))
+    monkeypatch.setenv("SCREENSHOT_DIR", str(tmp_path))
+    monkeypatch.setenv("PROFILE_PATH", str(tmp_path / "profile.json"))
+
+    import importlib
+    import config
+    import db.database
+    importlib.reload(config)
+    importlib.reload(db.database)
+
+    from db.database import engine, init_db
+    init_db()
+
+    from sqlalchemy import inspect as sa_inspect
+    inspector = sa_inspect(engine)
+    tables = inspector.get_table_names()
+    assert "jobs" in tables
+    assert "application_logs" in tables
