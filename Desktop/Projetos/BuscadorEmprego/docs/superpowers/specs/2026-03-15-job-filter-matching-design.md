@@ -242,7 +242,7 @@ def apply_filters(dtos: list[JobDTO], prefs: JobPreferences) -> FilterResult: ..
 | Filter | Logic |
 |--------|-------|
 | `check_source` | `dto.source in prefs.sources_allowed` |
-| `check_modality` | `"remote"` or `"remoto"` appears in `dto.location.lower()` **OR** `dto.title.lower()` |
+| `check_modality` | At least one value from `prefs.modality` (e.g. `"remote"`) or its Portuguese equivalent (`"remoto"`) appears in `dto.location.lower()` **OR** `dto.title.lower()`. The current profile requires `modality: ["remote"]`; the rule must iterate `prefs.modality` rather than hardcode the string. |
 | `check_blocked_keywords` | none of `keywords_blocked` appear in title+summary+location (case-insensitive) |
 | `check_required_keywords` | at least one of `keywords_required` is a substring of title or summary (case-insensitive) |
 | `check_location` | `check_modality` already passed (remote jobs are location-agnostic), **OR** any of `locations_allowed` is a substring of `dto.location.lower()` |
@@ -290,6 +290,29 @@ New columns:
 - `skill_match_pct: Integer nullable` — 0–100, computed by SkillMatcher
 - `filter_reason: String(255) nullable` — rejection reason for skipped jobs
 
+### 5.6 Updated `JobSchema` (Pydantic response model)
+
+`JobSchema` in `models/job.py` is updated to expose all new fields in API responses:
+
+```python
+class JobSchema(BaseModel):
+    model_config = {"from_attributes": True}
+    id: int
+    source: str
+    title: str
+    company: str
+    location: str
+    url: str
+    summary: str | None
+    is_easy_apply: bool
+    collected_at: datetime
+    status: Literal["new", "applied", "skipped"]
+    salary_raw: str | None        # new
+    salary_flagged: bool          # new
+    skill_match_pct: int | None   # new
+    filter_reason: str | None     # new
+```
+
 ---
 
 ## 6. Database Migration Strategy
@@ -322,9 +345,22 @@ class Settings(BaseSettings):
     serp_api_key: str = ""
 ```
 
-New entry in `requirements.txt`:
+New entries in `requirements.txt`:
 ```
 langdetect>=1.0.9
+httpx>=0.27.0
+```
+
+`httpx.AsyncClient` is used by `SerpAPIConnector` for async HTTP calls to the SerpAPI REST endpoint. `requests` is not used because `fetch_jobs` is `async`.
+
+**`indeed_email` and `indeed_password`** in `config.py` are changed from required to optional (default `""`), since Indeed is no longer used for discovery. They remain in `.env.example` as comments for the Phase 2 apply step:
+
+```python
+class Settings(BaseSettings):
+    indeed_email: str = ""
+    indeed_password: str = ""
+    serp_api_key: str = ""
+    ...
 ```
 
 ---
@@ -349,7 +385,11 @@ def _upsert_job(
 
 - Looks up existing `Job` by `url`; creates if not found
 - Updates `salary_raw`, `salary_flagged`, `skill_match_pct`, `filter_reason` on every call (idempotent)
-- Only updates `status` if the current status is `"new"` (prevents overwriting `"applied"`)
+- **Status transition rules:**
+  - If the row does not exist → set to the given `status`
+  - If existing status is `"applied"` → never overwrite (preserve applied history)
+  - If existing status is `"skipped"` and the incoming `status` is `"new"` → **update to `"new"`** (job re-passed the filter; allow retry)
+  - Otherwise → update to the given `status`
 
 ### 8.2 `fetch_and_persist` (updated signature)
 
@@ -357,9 +397,19 @@ The existing `fetch_and_persist(search_url: str, max_results: int)` signature is
 
 ```python
 async def fetch_and_persist(profile: CandidateProfile) -> dict:
+    """Returns {"total_found": int, "approved": int, "skipped": int}"""
 ```
 
-The `api/` layer (to be built in a subsequent task) will load the profile from `settings.profile_path` and pass it here. Any existing test that calls the old signature must be updated.
+**Return value change:** old keys (`found`, `new`, `jobs`) are replaced with `total_found`, `approved`, `skipped`. The `jobs` list is no longer returned (callers should query the DB).
+
+**Test migration:** existing `test_job_service.py` tests that call `fetch_and_persist` must be updated to:
+1. Pass a `CandidateProfile` (use the `sample_profile` fixture)
+2. Assert on `result["total_found"]`, `result["approved"]`, `result["skipped"]`
+3. Patch `SerpAPIConnector.fetch_jobs` (not `IndeedConnector`)
+
+The `api/` layer (to be built in a subsequent task) will load the profile from `settings.profile_path` and pass it here.
+
+**Session handling:** the sync `Session` factory from `db.database` is retained unchanged. `SerpAPIConnector` is async (uses `httpx.AsyncClient`) but `_upsert_job` is synchronous — both can coexist in an `async def` function by awaiting the connector and calling the session synchronously.
 
 ```python
 async def fetch_and_persist(profile: CandidateProfile) -> dict:
