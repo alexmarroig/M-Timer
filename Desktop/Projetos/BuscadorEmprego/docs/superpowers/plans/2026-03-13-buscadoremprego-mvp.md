@@ -1156,9 +1156,9 @@ from models.job import Base
 @pytest.fixture(scope="function")
 def test_engine():
     engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
-    Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(engine)
     yield engine
-    Base.metadata.drop_all(bind=engine)
+    Base.metadata.drop_all(engine)
     engine.dispose()
 
 
