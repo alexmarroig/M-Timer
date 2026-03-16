@@ -39,3 +39,23 @@ def test_database_url_uses_absolute_path(monkeypatch):
     assert url.startswith("sqlite:///")
     db_path = Path(url[len("sqlite:///"):])
     assert db_path.is_absolute(), f"Expected absolute path in URL, got: {url}"
+
+
+def test_serp_api_key_has_default(monkeypatch):
+    """serp_api_key must default to empty string (not required)."""
+    monkeypatch.delenv("SERP_API_KEY", raising=False)
+    monkeypatch.delenv("INDEED_EMAIL", raising=False)
+    monkeypatch.delenv("INDEED_PASSWORD", raising=False)
+    import importlib, config
+    importlib.reload(config)
+    assert config.settings.serp_api_key == ""
+
+
+def test_indeed_credentials_optional(monkeypatch):
+    """indeed_email and indeed_password must not raise when absent."""
+    monkeypatch.delenv("INDEED_EMAIL", raising=False)
+    monkeypatch.delenv("INDEED_PASSWORD", raising=False)
+    import importlib, config
+    importlib.reload(config)
+    assert config.settings.indeed_email == ""
+    assert config.settings.indeed_password == ""

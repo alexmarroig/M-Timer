@@ -13,8 +13,10 @@ def _abs(p: str) -> Path:
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
-    indeed_email: str
-    indeed_password: str
+    # Credentials — optional so tests and CI work without .env
+    indeed_email: str = ""
+    indeed_password: str = ""
+    serp_api_key: str = ""
 
     database_url: str = "sqlite:///jobs.db"
     browser_context_path: Path = Path(".browser_context")
@@ -22,14 +24,10 @@ class Settings(BaseSettings):
     profile_path: Path = Path("profile.json")
 
     def model_post_init(self, __context) -> None:
-        # Resolve all paths to absolute so cwd never matters
         object.__setattr__(self, "browser_context_path", _abs(str(self.browser_context_path)))
         object.__setattr__(self, "screenshot_dir", _abs(str(self.screenshot_dir)))
         object.__setattr__(self, "profile_path", _abs(str(self.profile_path)))
 
-        # Fix SQLite URL to use an absolute path.
-        # sqlite:///relative.db -> sqlite:///C:\abs\path\relative.db (Windows)
-        #                       -> sqlite:////abs/path/relative.db (POSIX)
         url = self.database_url
         if url.startswith("sqlite:///"):
             db_file = url[len("sqlite:///"):]
