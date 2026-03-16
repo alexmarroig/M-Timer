@@ -36,9 +36,13 @@ class Job(Base):
         default="new",
         nullable=False,
     )
+    # Filter & match metadata
+    salary_raw: Mapped[str | None] = mapped_column(Text, nullable=True)
+    salary_flagged: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
+    skill_match_pct: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    filter_reason: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
 
-# Pydantic response schema — decoupled from ORM
 class JobSchema(BaseModel):
     model_config = {"from_attributes": True}
 
@@ -52,3 +56,7 @@ class JobSchema(BaseModel):
     is_easy_apply: bool
     collected_at: datetime
     status: Literal["new", "applied", "skipped"]
+    salary_raw: str | None = None
+    salary_flagged: bool = False
+    skill_match_pct: int | None = None
+    filter_reason: str | None = None

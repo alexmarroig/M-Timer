@@ -56,6 +56,10 @@ def test_job_schema_roundtrip_from_orm():
     job.is_easy_apply = True
     job.collected_at = datetime(2026, 1, 1, tzinfo=timezone.utc)
     job.status = "new"
+    job.salary_raw = None
+    job.salary_flagged = False
+    job.skill_match_pct = None
+    job.filter_reason = None
 
     schema = JobSchema.model_validate(job)
     assert schema.id == 42
@@ -146,3 +150,47 @@ def test_init_db_creates_tables(monkeypatch, tmp_path):
     tables = inspector.get_table_names()
     assert "jobs" in tables
     assert "application_logs" in tables
+
+
+def test_job_has_salary_columns(test_engine):
+    from sqlalchemy import inspect as sa_inspect
+    from models.job import Job
+    inspector = sa_inspect(test_engine)
+    cols = {c["name"] for c in inspector.get_columns("jobs")}
+    assert "salary_raw" in cols
+    assert "salary_flagged" in cols
+    assert "skill_match_pct" in cols
+    assert "filter_reason" in cols
+
+
+def test_job_schema_includes_new_fields():
+    from models.job import JobSchema
+    schema = JobSchema(
+        id=1, source="indeed", title="Dev", company="Co",
+        location="Remote", url="https://x.com", summary=None,
+        is_easy_apply=False, collected_at="2026-01-01T00:00:00Z",
+        status="new",
+        salary_raw="$5k/month",
+        salary_flagged=True,
+        skill_match_pct=75,
+        filter_reason=None,
+    )
+    assert schema.salary_raw == "$5k/month"
+    assert schema.salary_flagged is True
+    assert schema.skill_match_pct == 75
+    assert schema.filter_reason is None
+
+
+def test_job_schema_new_fields_default_to_none_false():
+    """Existing JobSchema creation without new fields should still work."""
+    from models.job import JobSchema
+    schema = JobSchema(
+        id=1, source="indeed", title="Dev", company="Co",
+        location="Remote", url="https://x.com", summary=None,
+        is_easy_apply=False, collected_at="2026-01-01T00:00:00Z",
+        status="new",
+    )
+    assert schema.salary_raw is None
+    assert schema.salary_flagged is False
+    assert schema.skill_match_pct is None
+    assert schema.filter_reason is None

@@ -17,6 +17,8 @@ class JobDTO(BaseModel):
     url: str
     summary: str | None
     is_easy_apply: bool
+    salary_raw: str | None = None       # raw salary string from source
+    salary_flagged: bool = False         # True when salary absent or unparseable
 
 
 @runtime_checkable

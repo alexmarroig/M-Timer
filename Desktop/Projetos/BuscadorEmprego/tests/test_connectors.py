@@ -129,3 +129,27 @@ async def test_captcha_error_raised_on_bad_page(tmp_path):
             await connector._check_captcha(page, "https://www.indeed.com/jobs?q=test")
 
         await browser.close()
+
+
+def test_job_dto_salary_raw_defaults_none():
+    from connectors.base import JobDTO
+    dto = JobDTO(
+        source="indeed", title="Dev", company="Co",
+        location="Remote", url="https://indeed.com/job/1",
+        summary=None, is_easy_apply=False,
+    )
+    assert dto.salary_raw is None
+    assert dto.salary_flagged is False
+
+
+def test_job_dto_salary_fields_accepted():
+    from connectors.base import JobDTO
+    dto = JobDTO(
+        source="indeed", title="Dev", company="Co",
+        location="Remote", url="https://indeed.com/job/1",
+        summary="Good role", is_easy_apply=True,
+        salary_raw="$5,000 a month",
+        salary_flagged=False,
+    )
+    assert dto.salary_raw == "$5,000 a month"
+    assert dto.salary_flagged is False
