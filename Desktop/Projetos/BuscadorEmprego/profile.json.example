@@ -1,0 +1,93 @@
+{
+  "name": "Alex Da Cunha",
+  "email": "alex@example.com",
+  "phone": "+55 11 99999-9999",
+  "location": "Brazil (Remote)",
+  "linkedin_url": "https://www.linkedin.com/in/alexmarroig",
+  "portfolio_url": "https://alex-portfolio-seven-psi.vercel.app/",
+  "github_url": "https://github.com/alexmarroig",
+  "current_role": "Product Manager",
+  "current_company": "",
+  "years_experience": 5,
+  "cv_path": "cv.pdf",
+  "desired_salary_brl": 20000,
+  "skills": [
+    "project management",
+    "product management",
+    "AI",
+    "no-code",
+    "agile",
+    "scrum",
+    "roadmap",
+    "stakeholder management",
+    "data analysis",
+    "python"
+  ],
+  "answers": {},
+  "preferences": {
+    "modality": ["remote"],
+    "min_salary_brl": 20000,
+    "usd_to_brl_rate": 5.8,
+    "eur_to_brl_rate": 6.3,
+    "salary_missing": "include_flagged",
+    "sources_allowed": [
+      "indeed",
+      "glassdoor",
+      "remote_ok",
+      "we_work_remotely",
+      "wellfound"
+    ],
+    "locations_allowed": [
+      "remote",
+      "united states",
+      "us",
+      "canada",
+      "europe",
+      "china",
+      "japan"
+    ],
+    "languages_allowed": ["english", "portuguese"],
+    "keywords_required": [
+      "project manager",
+      "product manager",
+      "ai project manager",
+      "delivery manager",
+      "ai product manager",
+      "no code developer",
+      "ai developer",
+      "no-code",
+      "product owner"
+    ],
+    "keywords_blocked": [
+      "presencial",
+      "in site",
+      "h\u00edbrido",
+      "hibrido",
+      "est\u00e1gio",
+      "estagio",
+      "junior",
+      "intern",
+      "internship"
+    ],
+    "seniority_allowed": [
+      "mid",
+      "senior",
+      "lead",
+      "principal",
+      "staff",
+      "director",
+      "vp",
+      "head"
+    ],
+    "apply_mode": "review",
+    "max_applications_per_day": 10,
+    "max_results_per_run": 50,
+    "search_queries": [
+      "AI product manager remote",
+      "AI project manager remote",
+      "no-code developer remote",
+      "delivery manager remote",
+      "product owner AI remote"
+    ]
+  }
+}
