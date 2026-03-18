@@ -1,59 +1,143 @@
+"""
+Tests for services/job_service.py.
+SerpAPIConnector.fetch_jobs is patched — no real HTTP calls made.
+"""
 import pytest
+from datetime import datetime, timezone
 from unittest.mock import AsyncMock, patch
+
 from connectors.base import JobDTO
+from models.job import Job
+
+
+# ---- fetch_and_persist -------------------------------------------------- #
+
+@pytest.mark.asyncio
+async def test_fetch_and_persist_saves_approved_jobs(test_session_factory, sample_dtos, sample_profile):
+    """Approved jobs are saved to DB with status='new'."""
+    with patch("services.job_service.Session", test_session_factory), \
+         patch("services.job_service.SerpAPIConnector") as MockConn:
+        MockConn.return_value.fetch_jobs = AsyncMock(return_value=sample_dtos)
+
+        from services import job_service
+        result = await job_service.fetch_and_persist(sample_profile)
+
+    assert result["total_found"] == 2
+    assert result["approved"] == 2
+    assert result["skipped"] == 0
 
 
 @pytest.mark.asyncio
-async def test_fetch_and_persist_saves_new_jobs(test_session_factory, sample_dtos):
+async def test_fetch_and_persist_skips_filtered_jobs(test_session_factory, sample_profile):
+    """Jobs that fail filters are saved with status='skipped' and a reason."""
+    bad_dto = JobDTO(
+        source="linkedin",
+        title="Product Manager",
+        company="Corp",
+        location="Remote",
+        url="https://linkedin.com/job/99",
+        summary="Great role.",
+        is_easy_apply=False,
+    )
     with patch("services.job_service.Session", test_session_factory), \
-         patch("services.job_service.IndeedConnector") as MockConnector:
-        mock_instance = MockConnector.return_value
-        mock_instance.fetch_jobs = AsyncMock(return_value=sample_dtos)
+         patch("services.job_service.SerpAPIConnector") as MockConn:
+        MockConn.return_value.fetch_jobs = AsyncMock(return_value=[bad_dto])
 
         from services import job_service
-        result = await job_service.fetch_and_persist("https://www.indeed.com/jobs?q=dev", 20)
+        result = await job_service.fetch_and_persist(sample_profile)
 
-    assert result["found"] == 2
-    assert result["new"] == 2
-    assert len(result["jobs"]) == 2
+    assert result["total_found"] == 1
+    assert result["approved"] == 0
+    assert result["skipped"] == 1
+
+    with test_session_factory() as session:
+        job = session.query(Job).filter_by(url=bad_dto.url).first()
+        assert job is not None
+        assert job.status == "skipped"
+        assert job.filter_reason is not None
+        assert job.filter_reason != ""
 
 
 @pytest.mark.asyncio
-async def test_fetch_and_persist_upsert_preserves_status(test_session_factory, sample_dtos):
-    """Running the same URL twice should not duplicate and must preserve existing status."""
+async def test_fetch_and_persist_upsert_no_duplicate(test_session_factory, sample_dtos, sample_profile):
+    """Running twice with same DTOs does not create duplicate rows."""
     with patch("services.job_service.Session", test_session_factory), \
-         patch("services.job_service.IndeedConnector") as MockConnector:
-        mock_instance = MockConnector.return_value
-        mock_instance.fetch_jobs = AsyncMock(return_value=sample_dtos)
+         patch("services.job_service.SerpAPIConnector") as MockConn:
+        MockConn.return_value.fetch_jobs = AsyncMock(return_value=sample_dtos)
 
         from services import job_service
+        await job_service.fetch_and_persist(sample_profile)
+        await job_service.fetch_and_persist(sample_profile)
 
-        # First run
-        await job_service.fetch_and_persist("https://www.indeed.com/jobs?q=dev", 20)
+    with test_session_factory() as session:
+        count = session.query(Job).count()
+    assert count == 2
 
-        # Manually mark the first job as "skipped"
+
+@pytest.mark.asyncio
+async def test_fetch_and_persist_applied_status_preserved(test_session_factory, sample_dtos, sample_profile):
+    """Jobs with status='applied' are never overwritten."""
+    with patch("services.job_service.Session", test_session_factory), \
+         patch("services.job_service.SerpAPIConnector") as MockConn:
+        MockConn.return_value.fetch_jobs = AsyncMock(return_value=sample_dtos)
+
+        from services import job_service
+        await job_service.fetch_and_persist(sample_profile)
+
         with test_session_factory() as session:
-            from models.job import Job
+            job = session.query(Job).filter_by(url=sample_dtos[0].url).first()
+            job.status = "applied"
+            session.commit()
+
+        await job_service.fetch_and_persist(sample_profile)
+
+    with test_session_factory() as session:
+        job = session.query(Job).filter_by(url=sample_dtos[0].url).first()
+        assert job.status == "applied"
+
+
+@pytest.mark.asyncio
+async def test_fetch_and_persist_skipped_becomes_new_if_re_approved(test_session_factory, sample_dtos, sample_profile):
+    """A previously-skipped job that re-passes filters is updated back to 'new'."""
+    with patch("services.job_service.Session", test_session_factory), \
+         patch("services.job_service.SerpAPIConnector") as MockConn:
+        MockConn.return_value.fetch_jobs = AsyncMock(return_value=sample_dtos)
+
+        from services import job_service
+        await job_service.fetch_and_persist(sample_profile)
+
+        with test_session_factory() as session:
             job = session.query(Job).filter_by(url=sample_dtos[0].url).first()
             job.status = "skipped"
             session.commit()
 
-        # Second run with same DTOs
-        result2 = await job_service.fetch_and_persist("https://www.indeed.com/jobs?q=dev", 20)
+        await job_service.fetch_and_persist(sample_profile)
 
-    assert result2["new"] == 0  # no new jobs
-    assert result2["found"] == 2
-
-    # Status preserved
     with test_session_factory() as session:
-        from models.job import Job
         job = session.query(Job).filter_by(url=sample_dtos[0].url).first()
-        assert job.status == "skipped"
+        assert job.status == "new"
 
+
+@pytest.mark.asyncio
+async def test_fetch_and_persist_sets_skill_match_pct(test_session_factory, sample_dtos, sample_profile):
+    """Approved jobs get skill_match_pct populated."""
+    with patch("services.job_service.Session", test_session_factory), \
+         patch("services.job_service.SerpAPIConnector") as MockConn:
+        MockConn.return_value.fetch_jobs = AsyncMock(return_value=sample_dtos)
+
+        from services import job_service
+        await job_service.fetch_and_persist(sample_profile)
+
+    with test_session_factory() as session:
+        job = session.query(Job).filter_by(url=sample_dtos[0].url).first()
+        assert job.skill_match_pct is not None
+        assert 0 <= job.skill_match_pct <= 100
+
+
+# ---- query_jobs --------------------------------------------------------- #
 
 def test_query_jobs_returns_all_by_default(test_session_factory, sample_dtos):
     from models.job import Job
-    from datetime import datetime, timezone
 
     with test_session_factory() as session:
         for dto in sample_dtos:
@@ -74,7 +158,6 @@ def test_query_jobs_returns_all_by_default(test_session_factory, sample_dtos):
 
 def test_query_jobs_filters_by_status(test_session_factory, sample_dtos):
     from models.job import Job
-    from datetime import datetime, timezone
 
     with test_session_factory() as session:
         for i, dto in enumerate(sample_dtos):
@@ -97,7 +180,6 @@ def test_query_jobs_filters_by_status(test_session_factory, sample_dtos):
 
 def test_update_status_changes_job(test_session_factory, sample_dtos):
     from models.job import Job
-    from datetime import datetime, timezone
 
     with test_session_factory() as session:
         job = Job(
@@ -127,9 +209,7 @@ def test_update_status_returns_none_for_missing_id(test_session_factory):
 
 
 def test_apply_service_raises_not_implemented():
-    import pytest
     from services.apply_service import apply_job
-
+    import asyncio
     with pytest.raises(NotImplementedError, match="Phase 2"):
-        import asyncio
         asyncio.run(apply_job(job_id=1, mode="auto"))
