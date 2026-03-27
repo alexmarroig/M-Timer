@@ -5,6 +5,7 @@ const {
   toDateKey,
   calculateStreak,
   areConsecutiveDateKeys,
+} = require('../.tmp-test/core/utils/date.js');
 } = require('../.tmp-test/date.js');
 
 test('toDateKey uses local calendar date for late night negative offset sessions', () => {

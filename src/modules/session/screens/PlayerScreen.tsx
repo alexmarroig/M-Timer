@@ -1,4 +1,5 @@
 import React, { useEffect, useCallback, useRef } from 'react';
+import { View, StyleSheet, StatusBar } from 'react-native';
 import { View, StyleSheet, StatusBar, Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTimerEngine } from '../hooks/useTimerEngine';
@@ -11,6 +12,8 @@ import { formatTime, totalPhaseDuration } from '../../../core/utils/time';
 import { PHASE_LABELS } from '../../../types/session';
 import { useHistoryStore } from '../../../store/historyStore';
 import { useUserStore } from '../../../store/userStore';
+import { useCompanionStore } from '../../../store/companionStore';
+import { CompanionPet } from '../components/CompanionPet';
 import type { SessionStackParamList } from '../../../core/navigation/types';
 import { performanceService } from '../../../services/performance/performanceService';
 import { useFpsProbe } from '../hooks/useFpsProbe';
@@ -22,6 +25,15 @@ export function PlayerScreen({ route, navigation }: Props) {
   const { template } = route.params;
   const showTimer = useUserStore((s) => s.showTimer);
   const addSession = useHistoryStore((s) => s.addSession);
+  const getStats = useHistoryStore((s) => s.getStats);
+  const grantSessionReward = useCompanionStore((s) => s.grantSessionReward);
+  const mood = useCompanionStore((s) => s.mood);
+  const level = useCompanionStore((s) => s.level);
+  const coins = useCompanionStore((s) => s.coins);
+  const xp = useCompanionStore((s) => s.xp);
+  const lastRewardXp = useCompanionStore((s) => s.lastRewardXp);
+  const lastRewardCoins = useCompanionStore((s) => s.lastRewardCoins);
+  const rewardSentRef = useRef(false);
 
   const {
     state,
@@ -53,7 +65,8 @@ export function PlayerScreen({ route, navigation }: Props) {
 
   // Save session when finished
   useEffect(() => {
-    if (isFinished && sessionStartTimestamp > 0) {
+    if (isFinished && sessionStartTimestamp > 0 && !rewardSentRef.current) {
+      rewardSentRef.current = true;
       addSession({
         templateId: template.id,
         templateName: template.name,
@@ -61,8 +74,11 @@ export function PlayerScreen({ route, navigation }: Props) {
         startedAt: sessionStartTimestamp,
         completed: true,
       });
+
+      const streak = getStats().currentStreak;
+      grantSessionReward(totalPhaseDuration(template.phases), streak);
     }
-  }, [isFinished]);
+  }, [isFinished, sessionStartTimestamp, addSession, template, getStats, grantSessionReward]);
 
   const handleClose = useCallback(() => {
     const isSessionInProgress = !isFinished && (isActive || isPaused || state !== 'idle');
@@ -171,6 +187,16 @@ export function PlayerScreen({ route, navigation }: Props) {
             >
               {formatTime(totalDuration)} de prática
             </MinimalText>
+            <View style={styles.finishedPet}>
+              <CompanionPet
+                mood={mood}
+                level={level}
+                coins={coins}
+                xp={xp}
+                lastRewardXp={lastRewardXp}
+                lastRewardCoins={lastRewardCoins}
+              />
+            </View>
             <ButtonPrimary
               title="Concluir"
               onPress={handleClose}
@@ -257,6 +283,10 @@ const styles = StyleSheet.create({
   },
   finishedContainer: {
     alignItems: 'center',
+  },
+  finishedPet: {
+    marginTop: spacing.lg,
+    width: '100%',
   },
   timelineContainer: {
     paddingHorizontal: spacing.xl,
