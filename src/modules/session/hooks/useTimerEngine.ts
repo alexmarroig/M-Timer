@@ -15,6 +15,7 @@ import {
 } from '../../../services/timerEngine/timerMachine';
 import { storageService } from '../../../services/storage/storageService';
 import { STORAGE_KEYS } from '../../../services/storage/keys';
+import { consumeRestoredTimerState } from '../../../services/timerEngine/timerBootstrap';
 
 const TICK_INTERVAL = 100; // ms - only for UI refresh, not for time calculation
 
@@ -135,7 +136,9 @@ export function useTimerEngine() {
   // Restore state on mount
   useEffect(() => {
     (async () => {
-      const saved = await storageService.get<TimerContext>(STORAGE_KEYS.TIMER_STATE);
+      const fromBootstrap = consumeRestoredTimerState();
+      const saved = fromBootstrap ?? await storageService.get<TimerContext>(STORAGE_KEYS.TIMER_STATE);
+
       if (saved && saved.state !== 'idle' && saved.state !== 'finished') {
         ctxRef.current = saved;
         setCtx(saved);
