@@ -1,0 +1,70 @@
+import React, { useState } from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { OnboardingPage } from '../components/OnboardingPage';
+import { MinimalText } from '../../../components/ui/MinimalText';
+import { colors, spacing, borderRadius } from '../../../core/theme';
+import type { OnboardingStackParamList } from '../../../core/navigation/types';
+
+type Props = NativeStackScreenProps<OnboardingStackParamList, 'Experience'>;
+
+const OPTIONS = [
+  { id: 'beginner', label: 'Iniciante', desc: 'Aprendi recentemente' },
+  { id: 'regular', label: 'Regular', desc: 'Pratico há alguns meses' },
+  { id: 'experienced', label: 'Experiente', desc: 'Pratico há mais de 1 ano' },
+];
+
+export function ExperienceScreen({ navigation }: Props) {
+  const [selected, setSelected] = useState<string | null>(null);
+
+  return (
+    <OnboardingPage
+      title="Sua experiência"
+      description="Há quanto tempo você pratica Meditação Transcendental?"
+      buttonTitle="Continuar"
+      onNext={() => navigation.navigate('Schedule', { experience: selected || 'regular' })}
+    >
+      <View style={styles.options}>
+        {OPTIONS.map((opt) => (
+          <TouchableOpacity
+            key={opt.id}
+            style={[styles.option, selected === opt.id && styles.optionSelected]}
+            onPress={() => setSelected(opt.id)}
+            activeOpacity={0.7}
+          >
+            <MinimalText
+              variant="body"
+              color={selected === opt.id ? colors.textInverse : colors.textPrimary}
+              style={{ fontWeight: '600' }}
+            >
+              {opt.label}
+            </MinimalText>
+            <MinimalText
+              variant="caption"
+              color={selected === opt.id ? colors.accentLight : colors.textSecondary}
+            >
+              {opt.desc}
+            </MinimalText>
+          </TouchableOpacity>
+        ))}
+      </View>
+    </OnboardingPage>
+  );
+}
+
+const styles = StyleSheet.create({
+  options: {
+    gap: spacing.sm,
+  },
+  option: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.md,
+    padding: spacing.md,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+  },
+  optionSelected: {
+    backgroundColor: colors.primary,
+    borderColor: colors.primary,
+  },
+});
