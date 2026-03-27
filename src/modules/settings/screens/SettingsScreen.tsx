@@ -1,11 +1,12 @@
 import React, { useCallback } from 'react';
-import { ScrollView, View, StyleSheet, Alert, Linking } from 'react-native';
+import { ScrollView, View, StyleSheet, Linking } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ScreenContainer } from '../../../components/layout/ScreenContainer';
 import { MinimalText } from '../../../components/ui/MinimalText';
 import { SettingRow } from '../components/SettingRow';
 import { useUserStore } from '../../../store/userStore';
 import { colors, spacing } from '../../../core/theme';
+import { EXPERIENCE_LABELS, ExperienceLevel } from '../../../types/user';
 import { notificationService } from '../../../services/notifications/notificationService';
 import type { SettingsStackParamList } from '../../../core/navigation/types';
 
@@ -17,6 +18,7 @@ const SOUND_LABELS: TransitionSoundLabel = {
 };
 
 const SOUND_OPTIONS = ['bell', 'vibration', 'none'] as const;
+const EXPERIENCE_OPTIONS: ExperienceLevel[] = ['beginner', 'regular', 'experienced'];
 const MORNING_REMINDER_ID = 'reminder-morning';
 const AFTERNOON_REMINDER_ID = 'reminder-afternoon';
 
@@ -26,10 +28,12 @@ export function SettingsScreen({ navigation }: Props) {
   const {
     transitionSound,
     showTimer,
+    experienceLevel,
     morningReminder,
     afternoonReminder,
     setTransitionSound,
     setShowTimer,
+    setExperienceLevel,
     setMorningReminder,
     setAfternoonReminder,
   } = useUserStore();
@@ -39,6 +43,12 @@ export function SettingsScreen({ navigation }: Props) {
     const nextIndex = (currentIndex + 1) % SOUND_OPTIONS.length;
     setTransitionSound(SOUND_OPTIONS[nextIndex]);
   }, [transitionSound, setTransitionSound]);
+
+  const cycleExperience = useCallback(() => {
+    const currentIndex = EXPERIENCE_OPTIONS.indexOf(experienceLevel);
+    const nextIndex = (currentIndex + 1) % EXPERIENCE_OPTIONS.length;
+    setExperienceLevel(EXPERIENCE_OPTIONS[nextIndex]);
+  }, [experienceLevel, setExperienceLevel]);
 
   const toggleMorningReminder = useCallback(
     (enabled: boolean) => {
@@ -110,6 +120,14 @@ export function SettingsScreen({ navigation }: Props) {
           description="Som entre fases da sessão"
           value={SOUND_LABELS[transitionSound]}
           onPress={cycleSound}
+        />
+
+        <SettingRow
+          type="select"
+          label="Nível de experiência"
+          description="Personaliza recomendações e contexto da Home"
+          value={EXPERIENCE_LABELS[experienceLevel]}
+          onPress={cycleExperience}
         />
 
         {/* Reminders */}

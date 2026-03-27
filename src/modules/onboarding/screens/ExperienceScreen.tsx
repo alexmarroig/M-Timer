@@ -5,17 +5,18 @@ import { OnboardingPage } from '../components/OnboardingPage';
 import { MinimalText } from '../../../components/ui/MinimalText';
 import { colors, spacing, borderRadius } from '../../../core/theme';
 import type { OnboardingStackParamList } from '../../../core/navigation/types';
+import type { ExperienceLevel } from '../../../types/user';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'Experience'>;
 
-const OPTIONS = [
+const OPTIONS: Array<{ id: ExperienceLevel; label: string; desc: string }> = [
   { id: 'beginner', label: 'Iniciante', desc: 'Aprendi recentemente' },
   { id: 'regular', label: 'Regular', desc: 'Pratico há alguns meses' },
   { id: 'experienced', label: 'Experiente', desc: 'Pratico há mais de 1 ano' },
 ];
 
 export function ExperienceScreen({ navigation }: Props) {
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<ExperienceLevel | null>(null);
 
   return (
     <OnboardingPage

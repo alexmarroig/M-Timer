@@ -8,6 +8,7 @@ import { useSessionStore } from '../../../store/sessionStore';
 import { colors, spacing, borderRadius } from '../../../core/theme';
 import { notificationService } from '../../../services/notifications/notificationService';
 import type { OnboardingStackParamList } from '../../../core/navigation/types';
+import type { ExperienceLevel } from '../../../types/user';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'Schedule'>;
 
@@ -16,6 +17,19 @@ const SCHEDULE_OPTIONS = [
   { id: 'afternoon_only', label: 'Só à tarde', morning: false, afternoon: true },
   { id: 'both', label: 'Manhã e tarde', morning: true, afternoon: true },
   { id: 'flexible', label: 'Horário flexível', morning: false, afternoon: false },
+] as const;
+
+const EXPERIENCE_PRESET_PHASES: Record<ExperienceLevel, { rampUp: number; core: number; cooldown: number }> = {
+  beginner: { rampUp: 180, core: 900, cooldown: 180 },
+  regular: { rampUp: 120, core: 1200, cooldown: 180 },
+  experienced: { rampUp: 60, core: 1500, cooldown: 120 },
+};
+
+const REMINDER_SUGGESTIONS: Record<ExperienceLevel, { morningHour: number; afternoonHour: number }> = {
+  beginner: { morningHour: 8, afternoonHour: 18 },
+  regular: { morningHour: 7, afternoonHour: 17 },
+  experienced: { morningHour: 6, afternoonHour: 16 },
+};
 ];
 const MORNING_REMINDER_ID = 'reminder-morning';
 const AFTERNOON_REMINDER_ID = 'reminder-afternoon';
@@ -25,12 +39,28 @@ export function ScheduleScreen({ route }: Props) {
   const completeOnboarding = useUserStore((s) => s.completeOnboarding);
   const setMorningReminder = useUserStore((s) => s.setMorningReminder);
   const setAfternoonReminder = useUserStore((s) => s.setAfternoonReminder);
+  const setExperienceLevel = useUserStore((s) => s.setExperienceLevel);
+  const setDefaultTemplateId = useUserStore((s) => s.setDefaultTemplateId);
 
-  const experience = route.params?.experience || 'regular';
+  const updateTemplate = useSessionStore((s) => s.updateTemplate);
+  const setDefault = useSessionStore((s) => s.setDefault);
+
+  const experience: ExperienceLevel = route.params?.experience || 'regular';
 
   const handleFinish = () => {
-    // Set reminders based on schedule choice
+    setExperienceLevel(experience);
+
+    const preset = EXPERIENCE_PRESET_PHASES[experience];
+    updateTemplate('preset-morning', { phases: preset });
+    setDefault('preset-morning');
+    setDefaultTemplateId('preset-morning');
+
+    // Set reminders based on schedule choice and suggested experience times
     const option = SCHEDULE_OPTIONS.find((o) => o.id === selected);
+    const suggestions = REMINDER_SUGGESTIONS[experience];
+
+    if (option?.morning) {
+      setMorningReminder({ enabled: true, hour: suggestions.morningHour, minute: 0 });
     if (option) {
       const morningConfig = { enabled: option.morning, hour: 7, minute: 0 };
       const afternoonConfig = { enabled: option.afternoon, hour: 17, minute: 0 };
@@ -61,6 +91,15 @@ export function ScheduleScreen({ route }: Props) {
       }
     }
 
+    if (option?.afternoon) {
+      setAfternoonReminder({ enabled: true, hour: suggestions.afternoonHour, minute: 0 });
+    }
+
+    completeOnboarding();
+  };
+
+  const handleSkip = () => {
+    setExperienceLevel(experience);
     completeOnboarding();
   };
 
@@ -71,7 +110,7 @@ export function ScheduleScreen({ route }: Props) {
       buttonTitle="Começar a meditar"
       onNext={handleFinish}
       secondaryButtonTitle="Pular"
-      onSecondary={completeOnboarding}
+      onSecondary={handleSkip}
     >
       <View style={styles.options}>
         {SCHEDULE_OPTIONS.map((opt) => (
