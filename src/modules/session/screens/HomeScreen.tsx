@@ -6,6 +6,7 @@ import { ButtonPrimary } from '../../../components/ui/ButtonPrimary';
 import { MinimalText } from '../../../components/ui/MinimalText';
 import { PresetCard } from '../components/PresetCard';
 import { StreakBadge } from '../components/StreakBadge';
+import { CompanionCharacter } from '../../companion/CompanionCharacter';
 import { useSessionStore } from '../../../store/sessionStore';
 import { useHistoryStore } from '../../../store/historyStore';
 import { colors, spacing } from '../../../core/theme';
@@ -48,6 +49,11 @@ export function HomeScreen({ navigation }: Props) {
           <MinimalText variant="body" color={colors.textSecondary}>
             Sua prática diária de meditação
           </MinimalText>
+        </View>
+
+        {/* Companion */}
+        <View style={styles.companionSection}>
+          <CompanionCharacter size={110} showLevel />
         </View>
 
         {/* Main CTA */}
@@ -110,7 +116,12 @@ const styles = StyleSheet.create({
   },
   greetingSection: {
     marginTop: spacing.lg,
-    marginBottom: spacing.xl,
+    marginBottom: spacing.md,
+  },
+  companionSection: {
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+    paddingVertical: spacing.md,
   },
   mainButton: {
     marginBottom: spacing.lg,
