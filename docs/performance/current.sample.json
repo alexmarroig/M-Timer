@@ -1,0 +1,19 @@
+{
+  "version": "1.0.1",
+  "platforms": {
+    "android": {
+      "cold_start_ms": 1980,
+      "time_to_first_interaction_ms": 2700,
+      "memory_used_mb": 144,
+      "timer_fps_avg": 58,
+      "timer_fps_min": 47
+    },
+    "ios": {
+      "cold_start_ms": 1700,
+      "time_to_first_interaction_ms": 2360,
+      "memory_used_mb": 126,
+      "timer_fps_avg": 59,
+      "timer_fps_min": 50
+    }
+  }
+}
