@@ -5,6 +5,7 @@ import { ScreenContainer } from '../../../components/layout/ScreenContainer';
 import { MinimalText } from '../../../components/ui/MinimalText';
 import { SettingRow } from '../components/SettingRow';
 import { useUserStore } from '../../../store/userStore';
+import { useAuthStore } from '../../../store/authStore';
 import { colors, spacing } from '../../../core/theme';
 import type { SettingsStackParamList } from '../../../core/navigation/types';
 
@@ -20,6 +21,8 @@ const SOUND_OPTIONS = ['bell', 'vibration', 'none'] as const;
 type Props = NativeStackScreenProps<SettingsStackParamList, 'SettingsMain'>;
 
 export function SettingsScreen({ navigation }: Props) {
+  const logout = useAuthStore((s) => s.logout);
+
   const {
     transitionSound,
     showTimer,
@@ -117,6 +120,22 @@ export function SettingsScreen({ navigation }: Props) {
           type="navigate"
           label="Encontrar um centro TM"
           onPress={() => Linking.openURL('https://www.tm.org')}
+        />
+
+        <MinimalText variant="subheading" style={styles.sectionTitle}>
+          Conta
+        </MinimalText>
+
+        <SettingRow
+          type="navigate"
+          label="Sair"
+          description="Encerra a sessão neste dispositivo"
+          onPress={() =>
+            Alert.alert('Sair da conta', 'Deseja realmente sair?', [
+              { text: 'Cancelar', style: 'cancel' },
+              { text: 'Sair', style: 'destructive', onPress: logout },
+            ])
+          }
         />
 
         <View style={styles.footer}>
