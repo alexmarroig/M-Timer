@@ -1,5 +1,6 @@
 import { useRef, useCallback, useEffect, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
+import { PHASE_ORDER } from '../../../types/session';
 import { PhaseDuration } from '../../../types/session';
 import {
   TimerContext,
@@ -7,7 +8,6 @@ import {
 } from '../../../services/timerEngine/timerTypes';
 import {
   timerTransition,
-  isPhaseComplete,
   getPhaseRemaining,
   getTotalElapsed,
   getTotalDuration,
@@ -17,6 +17,55 @@ import { storageService } from '../../../services/storage/storageService';
 import { STORAGE_KEYS } from '../../../services/storage/keys';
 
 const TICK_INTERVAL = 100; // ms - only for UI refresh, not for time calculation
+
+function reconcileElapsedAcrossPhases(context: TimerContext, now: number): TimerContext {
+  if (
+    context.state === 'idle' ||
+    context.state === 'finished' ||
+    context.state === 'paused' ||
+    context.phaseStartTimestamp <= 0
+  ) {
+    return context;
+  }
+
+  const activeElapsed = Math.max(0, now - context.phaseStartTimestamp);
+  let elapsedToConsume = context.phaseElapsedBeforePause + activeElapsed;
+  let completedPhasesElapsed = context.completedPhasesElapsed;
+  let currentPhase = context.currentPhase;
+  let phaseIndex = PHASE_ORDER.indexOf(currentPhase);
+
+  while (phaseIndex >= 0 && phaseIndex < PHASE_ORDER.length) {
+    const phase = PHASE_ORDER[phaseIndex];
+    const phaseDurationMs = context.phases[phase] * 1000;
+
+    if (elapsedToConsume < phaseDurationMs) {
+      currentPhase = phase;
+      return {
+        ...context,
+        state: phase as TimerContext['state'],
+        currentPhase,
+        completedPhasesElapsed,
+        phaseStartTimestamp: now - elapsedToConsume,
+        phaseElapsedBeforePause: 0,
+        stateBeforePause: null,
+      };
+    }
+
+    elapsedToConsume -= phaseDurationMs;
+    completedPhasesElapsed += phaseDurationMs;
+    phaseIndex += 1;
+  }
+
+  return {
+    ...context,
+    state: 'finished',
+    currentPhase: PHASE_ORDER[PHASE_ORDER.length - 1],
+    completedPhasesElapsed,
+    phaseStartTimestamp: 0,
+    phaseElapsedBeforePause: 0,
+    stateBeforePause: null,
+  };
+}
 
 export function useTimerEngine() {
   const [ctx, setCtx] = useState<TimerContext>({ ...INITIAL_CONTEXT });
@@ -52,14 +101,17 @@ export function useTimerEngine() {
         return;
       }
 
-      // Check if current phase completed
-      if (isPhaseComplete(current)) {
-        const nextCtx = timerTransition(current, { type: 'NEXT_PHASE' });
-        ctxRef.current = nextCtx;
-        setCtx(nextCtx);
-        persistState(nextCtx);
+      const reconciled = reconcileElapsedAcrossPhases(current, Date.now());
+      const hasStateChange =
+        reconciled.state !== current.state ||
+        reconciled.currentPhase !== current.currentPhase ||
+        reconciled.completedPhasesElapsed !== current.completedPhasesElapsed;
 
-        if (nextCtx.state === 'finished') {
+      if (hasStateChange) {
+        ctxRef.current = reconciled;
+        setCtx(reconciled);
+        persistState(reconciled);
+        if (reconciled.state === 'finished') {
           stopTicking();
         }
         return;
@@ -106,19 +158,11 @@ export function useTimerEngine() {
       if (nextState === 'active') {
         // Coming back to foreground - timer uses timestamps so no drift
         if (current.state !== 'idle' && current.state !== 'finished' && current.state !== 'paused') {
-          // Check if phase(s) completed while in background
-          if (isPhaseComplete(current)) {
-            let updated = current;
-            while (isPhaseComplete(updated) && updated.state !== 'finished') {
-              updated = timerTransition(updated, { type: 'NEXT_PHASE' });
-            }
-            ctxRef.current = updated;
-            setCtx(updated);
-            persistState(updated);
-            if (updated.state !== 'finished') {
-              startTicking();
-            }
-          } else {
+          const updated = reconcileElapsedAcrossPhases(current, Date.now());
+          ctxRef.current = updated;
+          setCtx(updated);
+          persistState(updated);
+          if (updated.state !== 'finished') {
             startTicking();
           }
         }
@@ -137,19 +181,18 @@ export function useTimerEngine() {
     (async () => {
       const saved = await storageService.get<TimerContext>(STORAGE_KEYS.TIMER_STATE);
       if (saved && saved.state !== 'idle' && saved.state !== 'finished') {
-        ctxRef.current = saved;
-        setCtx(saved);
         if (saved.state !== 'paused') {
-          // Recalculate - phases may have completed while app was closed
-          let updated = saved;
-          while (isPhaseComplete(updated) && updated.state !== 'finished') {
-            updated = timerTransition(updated, { type: 'NEXT_PHASE' });
-          }
+          // Reconcile elapsed real time since persisted phaseStartTimestamp
+          const updated = reconcileElapsedAcrossPhases(saved, Date.now());
           ctxRef.current = updated;
           setCtx(updated);
+          persistState(updated);
           if (updated.state !== 'finished') {
             startTicking();
           }
+        } else {
+          ctxRef.current = saved;
+          setCtx(saved);
         }
       }
     })();
