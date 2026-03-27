@@ -6,6 +6,7 @@ import { MinimalText } from '../../../components/ui/MinimalText';
 import { SettingRow } from '../components/SettingRow';
 import { useUserStore } from '../../../store/userStore';
 import { colors, spacing } from '../../../core/theme';
+import { notificationService } from '../../../services/notifications/notificationService';
 import type { SettingsStackParamList } from '../../../core/navigation/types';
 
 type TransitionSoundLabel = Record<string, string>;
@@ -16,6 +17,8 @@ const SOUND_LABELS: TransitionSoundLabel = {
 };
 
 const SOUND_OPTIONS = ['bell', 'vibration', 'none'] as const;
+const MORNING_REMINDER_ID = 'reminder-morning';
+const AFTERNOON_REMINDER_ID = 'reminder-afternoon';
 
 type Props = NativeStackScreenProps<SettingsStackParamList, 'SettingsMain'>;
 
@@ -39,14 +42,40 @@ export function SettingsScreen({ navigation }: Props) {
 
   const toggleMorningReminder = useCallback(
     (enabled: boolean) => {
-      setMorningReminder({ ...morningReminder, enabled });
+      const nextConfig = { ...morningReminder, enabled };
+      setMorningReminder(nextConfig);
+
+      if (nextConfig.enabled) {
+        void notificationService.scheduleReminder(
+          MORNING_REMINDER_ID,
+          nextConfig,
+          'Hora da meditação da manhã',
+          'Reserve alguns minutos para sua prática.'
+        );
+        return;
+      }
+
+      void notificationService.cancelReminder(MORNING_REMINDER_ID);
     },
     [morningReminder, setMorningReminder]
   );
 
   const toggleAfternoonReminder = useCallback(
     (enabled: boolean) => {
-      setAfternoonReminder({ ...afternoonReminder, enabled });
+      const nextConfig = { ...afternoonReminder, enabled };
+      setAfternoonReminder(nextConfig);
+
+      if (nextConfig.enabled) {
+        void notificationService.scheduleReminder(
+          AFTERNOON_REMINDER_ID,
+          nextConfig,
+          'Hora da meditação da tarde',
+          'Que tal uma pausa para meditar agora?'
+        );
+        return;
+      }
+
+      void notificationService.cancelReminder(AFTERNOON_REMINDER_ID);
     },
     [afternoonReminder, setAfternoonReminder]
   );
