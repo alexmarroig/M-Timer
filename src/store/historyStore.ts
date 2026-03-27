@@ -4,7 +4,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { v4 as uuid } from 'uuid';
 import { SessionInstance, PhaseDuration } from '../types/session';
 import { Stats, EMPTY_STATS } from '../types/stats';
-import { toDateKey, startOfWeek, calculateStreak } from '../core/utils/date';
+import {
+  toDateKey,
+  startOfWeek,
+  calculateStreak,
+  areConsecutiveDateKeys,
+} from '../core/utils/date';
 import { STORAGE_KEYS } from '../services/storage/keys';
 
 interface HistoryStore {
@@ -73,10 +78,7 @@ export const useHistoryStore = create<HistoryStore>()(
         for (let i = 0; i < uniqueDates.length; i++) {
           let streak = 1;
           for (let j = i + 1; j < uniqueDates.length; j++) {
-            const prev = new Date(uniqueDates[j - 1]);
-            const curr = new Date(uniqueDates[j]);
-            const diff = Math.round((prev.getTime() - curr.getTime()) / 86400000);
-            if (diff === 1) streak++;
+            if (areConsecutiveDateKeys(uniqueDates[j - 1], uniqueDates[j])) streak++;
             else break;
           }
           longestStreak = Math.max(longestStreak, streak);
