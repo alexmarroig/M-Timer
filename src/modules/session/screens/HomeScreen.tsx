@@ -6,21 +6,43 @@ import { ButtonPrimary } from '../../../components/ui/ButtonPrimary';
 import { MinimalText } from '../../../components/ui/MinimalText';
 import { PresetCard } from '../components/PresetCard';
 import { StreakBadge } from '../components/StreakBadge';
+import { GamificationPanel } from '../components/GamificationPanel';
 import { useSessionStore } from '../../../store/sessionStore';
 import { useHistoryStore } from '../../../store/historyStore';
+import { useUserStore } from '../../../store/userStore';
 import { colors, spacing } from '../../../core/theme';
 import { SessionTemplate } from '../../../types/session';
 import type { SessionStackParamList } from '../../../core/navigation/types';
+import type { ExperienceLevel } from '../../../types/user';
 
 type Props = NativeStackScreenProps<SessionStackParamList, 'Home'>;
+
+const HOME_COPY: Record<ExperienceLevel, { subtitle: string; presetTitle: string }> = {
+  beginner: {
+    subtitle: 'Vamos consolidar sua base com sessões mais leves e consistentes.',
+    presetTitle: 'Presets recomendados para começar',
+  },
+  regular: {
+    subtitle: 'Sua prática diária de meditação',
+    presetTitle: 'Presets',
+  },
+  experienced: {
+    subtitle: 'Fluxo avançado para manter profundidade e constância na prática.',
+    presetTitle: 'Presets para aprofundar',
+  },
+};
 
 export function HomeScreen({ navigation }: Props) {
   const templates = useSessionStore((s) => s.templates);
   const getDefault = useSessionStore((s) => s.getDefault);
   const getStats = useHistoryStore((s) => s.getStats);
+  const experienceLevel = useUserStore((s) => s.experienceLevel);
+  const getGamification = useHistoryStore((s) => s.getGamification);
 
   const stats = getStats();
+  const gamification = getGamification();
   const defaultTemplate = getDefault();
+  const homeCopy = HOME_COPY[experienceLevel];
 
   const handleStartDefault = useCallback(() => {
     if (defaultTemplate) {
@@ -46,7 +68,7 @@ export function HomeScreen({ navigation }: Props) {
         <View style={styles.greetingSection}>
           <MinimalText variant="heading">M-Timer</MinimalText>
           <MinimalText variant="body" color={colors.textSecondary}>
-            Sua prática diária de meditação
+            {homeCopy.subtitle}
           </MinimalText>
         </View>
 
@@ -66,10 +88,15 @@ export function HomeScreen({ navigation }: Props) {
           />
         </View>
 
+        {/* Weekly goals + achievements */}
+        <View style={styles.section}>
+          <GamificationPanel data={gamification} />
+        </View>
+
         {/* Presets */}
         <View style={styles.section}>
           <MinimalText variant="subheading" style={styles.sectionTitle}>
-            Presets
+            {homeCopy.presetTitle}
           </MinimalText>
           <ScrollView
             horizontal
@@ -91,7 +118,7 @@ export function HomeScreen({ navigation }: Props) {
         {stats.totalSessions > 0 && (
           <View style={styles.section}>
             <MinimalText variant="caption" color={colors.textSecondary}>
-              {stats.totalMinutes} min no total · {stats.weeklyMinutes} min esta semana
+              {stats.totalMinutes} min válidos · {stats.weeklyMinutes} min esta semana · {stats.qualifiedSessions} sessões válidas
             </MinimalText>
           </View>
         )}

@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { MinimalText } from '../../../components/ui/MinimalText';
 import { colors, spacing, borderRadius } from '../../../core/theme';
+import { toDateKey } from '../../../core/utils/date';
 
 interface Props {
   sessionDates: string[]; // YYYY-MM-DD
@@ -12,6 +13,7 @@ const DAYS = ['S', 'T', 'Q', 'Q', 'S', 'S', 'D'];
 export function CalendarView({ sessionDates }: Props) {
   const { weeks, monthLabel } = useMemo(() => {
     const today = new Date();
+    const todayKey = toDateKey(today);
     const year = today.getFullYear();
     const month = today.getMonth();
 
@@ -29,11 +31,11 @@ export function CalendarView({ sessionDates }: Props) {
     for (let i = 0; i < startDow; i++) week.push(null);
 
     for (let d = 1; d <= daysInMonth; d++) {
-      const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+      const dateKey = toDateKey(new Date(year, month, d));
       week.push({
         day: d,
         hasSession: dateSet.has(dateKey),
-        isToday: d === today.getDate(),
+        isToday: dateKey === todayKey,
       });
       if (week.length === 7) {
         weeks.push(week);
