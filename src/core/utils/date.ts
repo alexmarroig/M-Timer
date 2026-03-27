@@ -18,6 +18,11 @@ export function startOfWeek(date: Date = new Date()): Date {
   return d;
 }
 
+/** Get stable week key based on Monday start date in YYYY-MM-DD */
+export function toWeekKey(date: Date = new Date()): string {
+  return toDateKey(startOfWeek(date));
+}
+
 /** Calculate streak from a sorted array of date keys (desc) */
 export function calculateStreak(dateKeys: string[]): number {
   if (dateKeys.length === 0) return 0;

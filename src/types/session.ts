@@ -25,6 +25,8 @@ export interface SessionInstance {
   completedAt: string; // ISO
   totalDuration: number; // seconds
   completed: boolean;
+  countsForProgress: boolean;
+  progressBlockedReason?: 'incomplete' | 'tooShort' | 'rapidRepeat' | 'dailyLimit';
 }
 
 export const PHASE_LABELS: Record<SessionPhase, string> = {
