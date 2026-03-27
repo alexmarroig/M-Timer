@@ -7,6 +7,7 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
+    "validate:icons": "node scripts/validate-icons.js"
     "test": "npm run test:unit",
     "test:unit": "rm -rf .tmp-test && tsc --outDir .tmp-test --module commonjs --target es2020 src/core/utils/date.ts && node --test tests/date.test.cjs && rm -rf .tmp-test"
     "perf:report": "node scripts/perf-report.js"
