@@ -45,7 +45,7 @@ function SessionStackScreen() {
       <SessionStack.Screen
         name="Player"
         component={PlayerScreen}
-        options={{ presentation: 'fullScreenModal', gestureEnabled: false }}
+        options={{ presentation: 'fullScreenModal', gestureEnabled: true }}
       />
     </SessionStack.Navigator>
   );
@@ -72,10 +72,29 @@ function SettingsStackScreen() {
 
 function OnboardingFlow() {
   return (
-    <OnboardingStack.Navigator screenOptions={{ headerShown: false }}>
-      <OnboardingStack.Screen name="Welcome" component={WelcomeScreen} />
-      <OnboardingStack.Screen name="Experience" component={ExperienceScreen} />
-      <OnboardingStack.Screen name="Schedule" component={ScheduleScreen} />
+    <OnboardingStack.Navigator
+      screenOptions={{
+        headerShown: true,
+        headerStyle: { backgroundColor: colors.background },
+        headerTintColor: colors.primary,
+        headerShadowVisible: false,
+      }}
+    >
+      <OnboardingStack.Screen
+        name="Welcome"
+        component={WelcomeScreen}
+        options={{ title: 'Boas-vindas' }}
+      />
+      <OnboardingStack.Screen
+        name="Experience"
+        component={ExperienceScreen}
+        options={{ title: 'Experiência', headerBackTitle: 'Voltar' }}
+      />
+      <OnboardingStack.Screen
+        name="Schedule"
+        component={ScheduleScreen}
+        options={{ title: 'Rotina', headerBackTitle: 'Voltar' }}
+      />
     </OnboardingStack.Navigator>
   );
 }
