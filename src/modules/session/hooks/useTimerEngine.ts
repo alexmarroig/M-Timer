@@ -15,11 +15,15 @@ import {
 } from '../../../services/timerEngine/timerMachine';
 import { storageService } from '../../../services/storage/storageService';
 import { STORAGE_KEYS } from '../../../services/storage/keys';
+import { consumeRestoredTimerState } from '../../../services/timerEngine/timerBootstrap';
+import { useUserStore } from '../../../store/userStore';
+import { triggerTransitionFeedback } from '../../../services/feedback/transitionFeedback';
 
 const TICK_INTERVAL = 100; // ms - only for UI refresh, not for time calculation
 
 export function useTimerEngine() {
   const [ctx, setCtx] = useState<TimerContext>({ ...INITIAL_CONTEXT });
+  const transitionSound = useUserStore((state) => state.transitionSound);
   const ctxRef = useRef(ctx);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -33,6 +37,12 @@ export function useTimerEngine() {
       return next;
     });
   }, []);
+
+  const transitionToNextPhase = useCallback((context: TimerContext): TimerContext => {
+    const next = timerTransition(context, { type: 'NEXT_PHASE' });
+    void triggerTransitionFeedback(transitionSound);
+    return next;
+  }, [transitionSound]);
 
   // Persist timer state on phase transitions
   const persistState = useCallback(async (context: TimerContext) => {
@@ -54,7 +64,7 @@ export function useTimerEngine() {
 
       // Check if current phase completed
       if (isPhaseComplete(current)) {
-        const nextCtx = timerTransition(current, { type: 'NEXT_PHASE' });
+        const nextCtx = transitionToNextPhase(current);
         ctxRef.current = nextCtx;
         setCtx(nextCtx);
         persistState(nextCtx);
@@ -68,7 +78,7 @@ export function useTimerEngine() {
       // Force re-render to update displayed time
       setCtx({ ...current });
     }, TICK_INTERVAL);
-  }, [persistState]);
+  }, [persistState, transitionToNextPhase]);
 
   const stopTicking = useCallback(() => {
     if (intervalRef.current) {
@@ -110,7 +120,7 @@ export function useTimerEngine() {
           if (isPhaseComplete(current)) {
             let updated = current;
             while (isPhaseComplete(updated) && updated.state !== 'finished') {
-              updated = timerTransition(updated, { type: 'NEXT_PHASE' });
+              updated = transitionToNextPhase(updated);
             }
             ctxRef.current = updated;
             setCtx(updated);
@@ -130,12 +140,14 @@ export function useTimerEngine() {
 
     const sub = AppState.addEventListener('change', handleAppState);
     return () => sub.remove();
-  }, [startTicking, stopTicking, persistState]);
+  }, [startTicking, stopTicking, persistState, transitionToNextPhase]);
 
   // Restore state on mount
   useEffect(() => {
     (async () => {
-      const saved = await storageService.get<TimerContext>(STORAGE_KEYS.TIMER_STATE);
+      const fromBootstrap = consumeRestoredTimerState();
+      const saved = fromBootstrap ?? await storageService.get<TimerContext>(STORAGE_KEYS.TIMER_STATE);
+
       if (saved && saved.state !== 'idle' && saved.state !== 'finished') {
         ctxRef.current = saved;
         setCtx(saved);
@@ -143,7 +155,7 @@ export function useTimerEngine() {
           // Recalculate - phases may have completed while app was closed
           let updated = saved;
           while (isPhaseComplete(updated) && updated.state !== 'finished') {
-            updated = timerTransition(updated, { type: 'NEXT_PHASE' });
+            updated = transitionToNextPhase(updated);
           }
           ctxRef.current = updated;
           setCtx(updated);
@@ -155,7 +167,7 @@ export function useTimerEngine() {
     })();
 
     return () => stopTicking();
-  }, [startTicking, stopTicking]);
+  }, [startTicking, stopTicking, transitionToNextPhase]);
 
   // Derived values
   const phaseRemaining = getPhaseRemaining(ctx);
