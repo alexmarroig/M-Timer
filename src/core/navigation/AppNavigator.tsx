@@ -2,7 +2,7 @@ import React, { useRef } from 'react';
 import { NavigationContainer, type NavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ActivityIndicator } from 'react-native';
 
 import { HomeScreen } from '../../modules/session/screens/HomeScreen';
 import { PlayerScreen } from '../../modules/session/screens/PlayerScreen';
@@ -12,8 +12,12 @@ import { AboutScreen } from '../../modules/settings/screens/AboutScreen';
 import { WelcomeScreen } from '../../modules/onboarding/screens/WelcomeScreen';
 import { ExperienceScreen } from '../../modules/onboarding/screens/ExperienceScreen';
 import { ScheduleScreen } from '../../modules/onboarding/screens/ScheduleScreen';
+import { LoginScreen } from '../../modules/auth/screens/LoginScreen';
+import { ForgotPasswordScreen } from '../../modules/auth/screens/ForgotPasswordScreen';
+import { ResetPasswordSentScreen } from '../../modules/auth/screens/ResetPasswordSentScreen';
 
 import { useUserStore } from '../../store/userStore';
+import { useAuthStore } from '../../store/authStore';
 import { colors } from '../theme';
 import { performanceService } from '../../services/performance/performanceService';
 
@@ -21,21 +25,18 @@ import type {
   SessionStackParamList,
   SettingsStackParamList,
   OnboardingStackParamList,
+  AuthStackParamList,
   TabParamList,
 } from './types';
 
 const SessionStack = createNativeStackNavigator<SessionStackParamList>();
 const SettingsStack = createNativeStackNavigator<SettingsStackParamList>();
 const OnboardingStack = createNativeStackNavigator<OnboardingStackParamList>();
+const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 const Tab = createBottomTabNavigator<TabParamList>();
 
-// Simple text-based tab icons (no icon library dependency)
 function TabIcon({ label, focused }: { label: string; focused: boolean }) {
-  return (
-    <Text style={[styles.tabIcon, focused && styles.tabIconFocused]}>
-      {label}
-    </Text>
-  );
+  return <Text style={[styles.tabIcon, focused && styles.tabIconFocused]}>{label}</Text>;
 }
 
 function SessionStackScreen() {
@@ -96,6 +97,21 @@ function OnboardingFlow() {
         options={{ title: 'Rotina', headerBackTitle: 'Voltar' }}
       />
     </OnboardingStack.Navigator>
+  );
+}
+
+function AuthFlow() {
+  return (
+    <AuthStack.Navigator
+      screenOptions={{
+        headerShown: false,
+        animation: 'slide_from_right',
+      }}
+    >
+      <AuthStack.Screen name="Login" component={LoginScreen} />
+      <AuthStack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+      <AuthStack.Screen name="ResetPasswordSent" component={ResetPasswordSentScreen} />
+    </AuthStack.Navigator>
   );
 }
 
@@ -163,8 +179,30 @@ function MainTabs() {
   );
 }
 
+function SplashGate() {
+  return (
+    <View style={styles.splash}>
+      <ActivityIndicator size="large" color={colors.primary} />
+    </View>
+  );
+}
+
 export function AppNavigator() {
   const hasCompletedOnboarding = useUserStore((s) => s.hasCompletedOnboarding);
+  const hydrated = useAuthStore((s) => s.hydrated);
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+
+  return (
+    <NavigationContainer>
+      {!hydrated ? (
+        <SplashGate />
+      ) : !hasCompletedOnboarding ? (
+        <OnboardingFlow />
+      ) : isAuthenticated ? (
+        <MainTabs />
+      ) : (
+        <AuthFlow />
+      )}
   const navigationRef = useRef<NavigationContainerRef<ReactNavigation.RootParamList>>(null);
   const previousRouteRef = useRef<string | undefined>(undefined);
 
@@ -206,5 +244,11 @@ const styles = StyleSheet.create({
   },
   tabIconFocused: {
     color: colors.primary,
+  },
+  splash: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.background,
   },
 });

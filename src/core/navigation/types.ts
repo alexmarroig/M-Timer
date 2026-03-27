@@ -17,6 +17,12 @@ export type OnboardingStackParamList = {
   Schedule: { experience: ExperienceLevel };
 };
 
+export type AuthStackParamList = {
+  Login: undefined;
+  ForgotPassword: undefined;
+  ResetPasswordSent: { email: string };
+};
+
 export type TabParamList = {
   SessionTab: undefined;
   HistoryTab: undefined;
