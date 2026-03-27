@@ -1,6 +1,9 @@
 /** Get date string in YYYY-MM-DD format */
 export function toDateKey(date: Date = new Date()): string {
-  return date.toISOString().split('T')[0];
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
 /** Check if two dates are the same calendar day */
@@ -35,14 +38,26 @@ export function calculateStreak(dateKeys: string[]): number {
 
   let streak = 1;
   for (let i = 1; i < dateKeys.length; i++) {
-    const prev = new Date(dateKeys[i - 1]);
-    const curr = new Date(dateKeys[i]);
-    const diffDays = Math.round((prev.getTime() - curr.getTime()) / 86400000);
-    if (diffDays === 1) {
+    if (areConsecutiveDateKeys(dateKeys[i - 1], dateKeys[i])) {
       streak++;
     } else {
       break;
     }
   }
   return streak;
+}
+
+/** Convert a YYYY-MM-DD date key into a local date at midnight */
+export function dateFromKey(dateKey: string): Date {
+  const [year, month, day] = dateKey.split('-').map(Number);
+  return new Date(year, month - 1, day);
+}
+
+/** Whether two YYYY-MM-DD keys represent consecutive local dates (prev > curr). */
+export function areConsecutiveDateKeys(prevDateKey: string, currDateKey: string): boolean {
+  const prev = dateFromKey(prevDateKey);
+  const curr = dateFromKey(currDateKey);
+  const nextCurr = new Date(curr);
+  nextCurr.setDate(curr.getDate() + 1);
+  return toDateKey(nextCurr) === toDateKey(prev);
 }
