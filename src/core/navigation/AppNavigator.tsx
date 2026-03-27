@@ -1,5 +1,5 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import React, { useRef } from 'react';
+import { NavigationContainer, type NavigationContainerRef } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { View, Text, StyleSheet } from 'react-native';
@@ -15,6 +15,7 @@ import { ScheduleScreen } from '../../modules/onboarding/screens/ScheduleScreen'
 
 import { useUserStore } from '../../store/userStore';
 import { colors } from '../theme';
+import { performanceService } from '../../services/performance/performanceService';
 
 import type {
   SessionStackParamList,
@@ -119,6 +120,12 @@ function MainTabs() {
       <Tab.Screen
         name="SessionTab"
         component={SessionStackScreen}
+        listeners={{
+          tabPress: () => {
+            void performanceService.markFirstInteraction('tab_session');
+            void performanceService.logEvent('navigation_tab_press', { tab: 'SessionTab' });
+          },
+        }}
         options={{
           tabBarLabel: 'Sessão',
           tabBarIcon: ({ focused }) => <TabIcon label="●" focused={focused} />,
@@ -127,6 +134,12 @@ function MainTabs() {
       <Tab.Screen
         name="HistoryTab"
         component={HistoryScreen}
+        listeners={{
+          tabPress: () => {
+            void performanceService.markFirstInteraction('tab_history');
+            void performanceService.logEvent('navigation_tab_press', { tab: 'HistoryTab' });
+          },
+        }}
         options={{
           tabBarLabel: 'Histórico',
           tabBarIcon: ({ focused }) => <TabIcon label="◷" focused={focused} />,
@@ -135,6 +148,12 @@ function MainTabs() {
       <Tab.Screen
         name="SettingsTab"
         component={SettingsStackScreen}
+        listeners={{
+          tabPress: () => {
+            void performanceService.markFirstInteraction('tab_settings');
+            void performanceService.logEvent('navigation_tab_press', { tab: 'SettingsTab' });
+          },
+        }}
         options={{
           tabBarLabel: 'Config',
           tabBarIcon: ({ focused }) => <TabIcon label="⚙" focused={focused} />,
@@ -146,9 +165,35 @@ function MainTabs() {
 
 export function AppNavigator() {
   const hasCompletedOnboarding = useUserStore((s) => s.hasCompletedOnboarding);
+  const navigationRef = useRef<NavigationContainerRef<ReactNavigation.RootParamList>>(null);
+  const previousRouteRef = useRef<string | undefined>(undefined);
 
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      ref={navigationRef}
+      onReady={() => {
+        const currentRoute = navigationRef.current?.getCurrentRoute()?.name;
+        previousRouteRef.current = currentRoute;
+
+        if (currentRoute) {
+          void performanceService.markColdStartReady(currentRoute);
+          void performanceService.logEvent('navigation_ready', { route: currentRoute });
+        }
+      }}
+      onStateChange={() => {
+        const currentRoute = navigationRef.current?.getCurrentRoute()?.name;
+        const previousRoute = previousRouteRef.current;
+
+        if (currentRoute && currentRoute !== previousRoute) {
+          previousRouteRef.current = currentRoute;
+          void performanceService.markFirstInteraction(`route_change_${currentRoute}`);
+          void performanceService.logEvent('navigation_route_change', {
+            from: previousRoute ?? 'unknown',
+            to: currentRoute,
+          });
+        }
+      }}
+    >
       {hasCompletedOnboarding ? <MainTabs /> : <OnboardingFlow />}
     </NavigationContainer>
   );

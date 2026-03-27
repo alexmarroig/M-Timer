@@ -12,6 +12,8 @@ import { PHASE_LABELS } from '../../../types/session';
 import { useHistoryStore } from '../../../store/historyStore';
 import { useUserStore } from '../../../store/userStore';
 import type { SessionStackParamList } from '../../../core/navigation/types';
+import { performanceService } from '../../../services/performance/performanceService';
+import { useFpsProbe } from '../hooks/useFpsProbe';
 
 type Props = NativeStackScreenProps<SessionStackParamList, 'Player'>;
 
@@ -45,6 +47,9 @@ export function PlayerScreen({ route, navigation }: Props) {
       start(template.phases);
     }
   }, []);
+
+
+  useFpsProbe({ enabled: isActive && !isPaused && !isFinished });
 
   // Save session when finished
   useEffect(() => {
@@ -83,6 +88,8 @@ export function PlayerScreen({ route, navigation }: Props) {
     }
 
     canExitRef.current = true;
+    void performanceService.markFirstInteraction('player_close');
+    void performanceService.logEvent('player_close');
     reset();
     navigation.goBack();
   }, [isActive, isFinished, isPaused, navigation, reset, state]);
@@ -121,6 +128,9 @@ export function PlayerScreen({ route, navigation }: Props) {
   }, [isFinished, navigation, reset, state]);
 
   const handlePauseResume = useCallback(() => {
+    void performanceService.markFirstInteraction('player_pause_resume');
+    void performanceService.logEvent('player_pause_resume', { action: isPaused ? 'resume' : 'pause' });
+
     if (isPaused) {
       resume();
     } else {
