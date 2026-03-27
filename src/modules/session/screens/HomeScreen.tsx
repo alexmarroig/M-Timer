@@ -6,6 +6,7 @@ import { ButtonPrimary } from '../../../components/ui/ButtonPrimary';
 import { MinimalText } from '../../../components/ui/MinimalText';
 import { PresetCard } from '../components/PresetCard';
 import { StreakBadge } from '../components/StreakBadge';
+import { GamificationPanel } from '../components/GamificationPanel';
 import { useSessionStore } from '../../../store/sessionStore';
 import { useHistoryStore } from '../../../store/historyStore';
 import { useUserStore } from '../../../store/userStore';
@@ -36,8 +37,10 @@ export function HomeScreen({ navigation }: Props) {
   const getDefault = useSessionStore((s) => s.getDefault);
   const getStats = useHistoryStore((s) => s.getStats);
   const experienceLevel = useUserStore((s) => s.experienceLevel);
+  const getGamification = useHistoryStore((s) => s.getGamification);
 
   const stats = getStats();
+  const gamification = getGamification();
   const defaultTemplate = getDefault();
   const homeCopy = HOME_COPY[experienceLevel];
 
@@ -85,6 +88,11 @@ export function HomeScreen({ navigation }: Props) {
           />
         </View>
 
+        {/* Weekly goals + achievements */}
+        <View style={styles.section}>
+          <GamificationPanel data={gamification} />
+        </View>
+
         {/* Presets */}
         <View style={styles.section}>
           <MinimalText variant="subheading" style={styles.sectionTitle}>
@@ -110,7 +118,7 @@ export function HomeScreen({ navigation }: Props) {
         {stats.totalSessions > 0 && (
           <View style={styles.section}>
             <MinimalText variant="caption" color={colors.textSecondary}>
-              {stats.totalMinutes} min no total · {stats.weeklyMinutes} min esta semana
+              {stats.totalMinutes} min válidos · {stats.weeklyMinutes} min esta semana · {stats.qualifiedSessions} sessões válidas
             </MinimalText>
           </View>
         )}

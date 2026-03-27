@@ -6,6 +6,7 @@ import { MinimalText } from '../../../components/ui/MinimalText';
 import { useUserStore } from '../../../store/userStore';
 import { useSessionStore } from '../../../store/sessionStore';
 import { colors, spacing, borderRadius } from '../../../core/theme';
+import { notificationService } from '../../../services/notifications/notificationService';
 import type { OnboardingStackParamList } from '../../../core/navigation/types';
 import type { ExperienceLevel } from '../../../types/user';
 
@@ -29,6 +30,9 @@ const REMINDER_SUGGESTIONS: Record<ExperienceLevel, { morningHour: number; after
   regular: { morningHour: 7, afternoonHour: 17 },
   experienced: { morningHour: 6, afternoonHour: 16 },
 };
+];
+const MORNING_REMINDER_ID = 'reminder-morning';
+const AFTERNOON_REMINDER_ID = 'reminder-afternoon';
 
 export function ScheduleScreen({ route }: Props) {
   const [selected, setSelected] = useState<string | null>(null);
@@ -57,6 +61,34 @@ export function ScheduleScreen({ route }: Props) {
 
     if (option?.morning) {
       setMorningReminder({ enabled: true, hour: suggestions.morningHour, minute: 0 });
+    if (option) {
+      const morningConfig = { enabled: option.morning, hour: 7, minute: 0 };
+      const afternoonConfig = { enabled: option.afternoon, hour: 17, minute: 0 };
+
+      setMorningReminder(morningConfig);
+      setAfternoonReminder(afternoonConfig);
+
+      if (option.morning) {
+        void notificationService.scheduleReminder(
+          MORNING_REMINDER_ID,
+          morningConfig,
+          'Hora da meditação da manhã',
+          'Reserve alguns minutos para sua prática.'
+        );
+      } else {
+        void notificationService.cancelReminder(MORNING_REMINDER_ID);
+      }
+
+      if (option.afternoon) {
+        void notificationService.scheduleReminder(
+          AFTERNOON_REMINDER_ID,
+          afternoonConfig,
+          'Hora da meditação da tarde',
+          'Que tal uma pausa para meditar agora?'
+        );
+      } else {
+        void notificationService.cancelReminder(AFTERNOON_REMINDER_ID);
+      }
     }
 
     if (option?.afternoon) {
