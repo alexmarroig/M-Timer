@@ -1,5 +1,7 @@
 export type TransitionSound = 'bell' | 'vibration' | 'none';
 
+export type ExperienceLevel = 'beginner' | 'regular' | 'experienced';
+
 export interface ReminderConfig {
   enabled: boolean;
   hour: number;
@@ -10,15 +12,23 @@ export interface UserPreferences {
   defaultTemplateId: string | null;
   transitionSound: TransitionSound;
   showTimer: boolean;
+  experienceLevel: ExperienceLevel;
   morningReminder: ReminderConfig;
   afternoonReminder: ReminderConfig;
   hasCompletedOnboarding: boolean;
 }
 
+export const EXPERIENCE_LABELS: Record<ExperienceLevel, string> = {
+  beginner: 'Iniciante',
+  regular: 'Regular',
+  experienced: 'Experiente',
+};
+
 export const DEFAULT_PREFERENCES: UserPreferences = {
   defaultTemplateId: null,
   transitionSound: 'bell',
   showTimer: true,
+  experienceLevel: 'regular',
   morningReminder: { enabled: false, hour: 7, minute: 0 },
   afternoonReminder: { enabled: false, hour: 17, minute: 0 },
   hasCompletedOnboarding: false,

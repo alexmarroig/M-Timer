@@ -6,6 +6,7 @@ const {
   calculateStreak,
   areConsecutiveDateKeys,
 } = require('../.tmp-test/core/utils/date.js');
+} = require('../.tmp-test/date.js');
 
 test('toDateKey uses local calendar date for late night negative offset sessions', () => {
   const sessionNearMidnight = new Date('2026-03-27T23:30:00-03:00');

@@ -1,0 +1,154 @@
+const fs = require('fs');
+const path = require('path');
+const { PNG } = require('pngjs');
+
+const ROOT = process.cwd();
+const OUT_DIR = path.join(ROOT, '.artifacts', 'icon-validation');
+fs.mkdirSync(OUT_DIR, { recursive: true });
+
+const ICONS = {
+  appIcon: 'assets/icon.png',
+  foreground: 'assets/android-icon-foreground.png',
+  background: 'assets/android-icon-background.png',
+  monochrome: 'assets/android-icon-monochrome.png',
+};
+
+const DENSITIES = [
+  { name: 'mdpi', size: 48 },
+  { name: 'hdpi', size: 72 },
+  { name: 'xhdpi', size: 96 },
+  { name: 'xxhdpi', size: 144 },
+  { name: 'xxxhdpi', size: 192 },
+];
+
+function loadPng(relPath) {
+  const full = path.join(ROOT, relPath);
+  return PNG.sync.read(fs.readFileSync(full));
+}
+
+function alphaBBox(png) {
+  let minX = png.width, minY = png.height, maxX = -1, maxY = -1;
+  let opaque = 0;
+  for (let y = 0; y < png.height; y++) {
+    for (let x = 0; x < png.width; x++) {
+      const a = png.data[(y * png.width + x) * 4 + 3];
+      if (a > 0) {
+        opaque++;
+        if (x < minX) minX = x;
+        if (y < minY) minY = y;
+        if (x > maxX) maxX = x;
+        if (y > maxY) maxY = y;
+      }
+    }
+  }
+  if (!opaque) return { empty: true, opaque };
+  return { minX, minY, maxX, maxY, width: maxX - minX + 1, height: maxY - minY + 1, opaque };
+}
+
+function maskContains(mask, x, y, size) {
+  const c = (size - 1) / 2;
+  const nx = (x - c) / (size / 2);
+  const ny = (y - c) / (size / 2);
+  const absx = Math.abs(nx);
+  const absy = Math.abs(ny);
+
+  if (mask === 'circle') return nx * nx + ny * ny <= 1;
+  if (mask === 'roundedSquare') {
+    const r = 0.22;
+    if (absx <= 1 - r || absy <= 1 - r) return absx <= 1 && absy <= 1;
+    const dx = absx - (1 - r);
+    const dy = absy - (1 - r);
+    return dx * dx + dy * dy <= r * r;
+  }
+  if (mask === 'squircle') return Math.pow(absx, 4) + Math.pow(absy, 4) <= 1;
+  return false;
+}
+
+function clippingStats(png, mask) {
+  let outsideOpaque = 0;
+  let totalOpaque = 0;
+  for (let y = 0; y < png.height; y++) {
+    for (let x = 0; x < png.width; x++) {
+      const a = png.data[(y * png.width + x) * 4 + 3];
+      if (a > 0) {
+        totalOpaque++;
+        if (!maskContains(mask, x, y, png.width)) outsideOpaque++;
+      }
+    }
+  }
+  return { totalOpaque, outsideOpaque, outsidePct: totalOpaque ? (outsideOpaque / totalOpaque) * 100 : 0 };
+}
+
+function safeAreaCheck(png) {
+  const safeDiameterRatio = 66 / 108;
+  const safeRadius = (png.width * safeDiameterRatio) / 2;
+  const c = (png.width - 1) / 2;
+  let outsideSafe = 0;
+  let totalOpaque = 0;
+
+  for (let y = 0; y < png.height; y++) {
+    for (let x = 0; x < png.width; x++) {
+      const idx = (y * png.width + x) * 4 + 3;
+      const a = png.data[idx];
+      if (a > 0) {
+        totalOpaque++;
+        const dx = x - c;
+        const dy = y - c;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist > safeRadius) outsideSafe++;
+      }
+    }
+  }
+
+  return {
+    totalOpaque,
+    outsideSafe,
+    outsideSafePct: totalOpaque ? (outsideSafe / totalOpaque) * 100 : 0,
+    safeRadius,
+  };
+}
+
+function run() {
+  const appIcon = loadPng(ICONS.appIcon);
+  const foreground = loadPng(ICONS.foreground);
+  const background = loadPng(ICONS.background);
+  const monochrome = loadPng(ICONS.monochrome);
+
+  const report = {
+    generatedAt: new Date().toISOString(),
+    files: {
+      appIcon: { path: ICONS.appIcon, size: [appIcon.width, appIcon.height], bbox: alphaBBox(appIcon) },
+      foreground: { path: ICONS.foreground, size: [foreground.width, foreground.height], bbox: alphaBBox(foreground) },
+      background: { path: ICONS.background, size: [background.width, background.height], bbox: alphaBBox(background) },
+      monochrome: { path: ICONS.monochrome, size: [monochrome.width, monochrome.height], bbox: alphaBBox(monochrome) },
+    },
+    densitySimulation: DENSITIES.map((d) => ({
+      density: d.name,
+      renderedPx: d.size,
+      foregroundBBoxPx: {
+        width: Number(((alphaBBox(foreground).width / foreground.width) * d.size).toFixed(2)),
+        height: Number(((alphaBBox(foreground).height / foreground.height) * d.size).toFixed(2)),
+      },
+      monochromeBBoxPx: {
+        width: Number(((alphaBBox(monochrome).width / monochrome.width) * d.size).toFixed(2)),
+        height: Number(((alphaBBox(monochrome).height / monochrome.height) * d.size).toFixed(2)),
+      },
+    })),
+    masks: {
+      circle: clippingStats(foreground, 'circle'),
+      squircle: clippingStats(foreground, 'squircle'),
+      roundedSquare: clippingStats(foreground, 'roundedSquare'),
+    },
+    safeArea: {
+      foreground: safeAreaCheck(foreground),
+      monochrome: safeAreaCheck(monochrome),
+    },
+  };
+
+  fs.writeFileSync(path.join(OUT_DIR, 'report.json'), JSON.stringify(report, null, 2));
+
+  console.log('Icon validation report written to', path.join('.artifacts', 'icon-validation', 'report.json'));
+  console.log('No binary artifacts are generated by this script.');
+}
+
+run();
