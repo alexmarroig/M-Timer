@@ -1,5 +1,5 @@
-import React, { useEffect, useCallback } from 'react';
-import { View, StyleSheet, StatusBar } from 'react-native';
+import React, { useEffect, useCallback, useRef } from 'react';
+import { View, StyleSheet, StatusBar, Alert } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTimerEngine } from '../hooks/useTimerEngine';
 import { TimelineProgress } from '../components/TimelineProgress';
@@ -16,6 +16,7 @@ import type { SessionStackParamList } from '../../../core/navigation/types';
 type Props = NativeStackScreenProps<SessionStackParamList, 'Player'>;
 
 export function PlayerScreen({ route, navigation }: Props) {
+  const canExitRef = useRef(false);
   const { template } = route.params;
   const showTimer = useUserStore((s) => s.showTimer);
   const addSession = useHistoryStore((s) => s.addSession);
@@ -59,9 +60,65 @@ export function PlayerScreen({ route, navigation }: Props) {
   }, [isFinished]);
 
   const handleClose = useCallback(() => {
+    const isSessionInProgress = !isFinished && (isActive || isPaused || state !== 'idle');
+
+    if (isSessionInProgress) {
+      Alert.alert(
+        'Abandonar sessão?',
+        'Se você sair agora, esta prática não será salva como concluída.',
+        [
+          { text: 'Continuar sessão', style: 'cancel' },
+          {
+            text: 'Sair',
+            style: 'destructive',
+            onPress: () => {
+              canExitRef.current = true;
+              reset();
+              navigation.goBack();
+            },
+          },
+        ],
+      );
+      return;
+    }
+
+    canExitRef.current = true;
     reset();
     navigation.goBack();
-  }, [reset, navigation]);
+  }, [isActive, isFinished, isPaused, navigation, reset, state]);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', (event) => {
+      if (canExitRef.current) {
+        return;
+      }
+
+      if (isFinished || state === 'idle') {
+        return;
+      }
+
+      event.preventDefault();
+
+      Alert.alert(
+        'Abandonar sessão?',
+        'Se você sair agora, esta prática não será salva como concluída.',
+        [
+          { text: 'Continuar sessão', style: 'cancel' },
+          {
+            text: 'Sair',
+            style: 'destructive',
+            onPress: () => {
+              canExitRef.current = true;
+              reset();
+              navigation.dispatch(event.data.action);
+            },
+          },
+        ],
+      );
+    });
+
+    return unsubscribe;
+  }, [isFinished, navigation, reset, state]);
 
   const handlePauseResume = useCallback(() => {
     if (isPaused) {
