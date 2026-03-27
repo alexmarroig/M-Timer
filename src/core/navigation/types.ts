@@ -1,4 +1,5 @@
 import { SessionTemplate } from '../../types/session';
+import { ExperienceLevel } from '../../types/user';
 
 export type SessionStackParamList = {
   Home: undefined;
@@ -13,7 +14,7 @@ export type SettingsStackParamList = {
 export type OnboardingStackParamList = {
   Welcome: undefined;
   Experience: undefined;
-  Schedule: { experience: string };
+  Schedule: { experience: ExperienceLevel };
 };
 
 export type AuthStackParamList = {

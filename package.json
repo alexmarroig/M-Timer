@@ -6,7 +6,10 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "test": "npm run test:unit",
+    "test:unit": "rm -rf .tmp-test && tsc --outDir .tmp-test --module commonjs --target es2020 src/core/utils/date.ts && node --test tests/date.test.cjs && rm -rf .tmp-test"
+    "perf:report": "node scripts/perf-report.js"
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^3.0.2",
