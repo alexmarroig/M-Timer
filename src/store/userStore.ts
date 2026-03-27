@@ -6,6 +6,7 @@ import {
   DEFAULT_PREFERENCES,
   TransitionSound,
   ReminderConfig,
+  AmbientTrack,
   ExperienceLevel,
 } from '../types/user';
 import { STORAGE_KEYS } from '../services/storage/keys';
@@ -13,6 +14,8 @@ import { STORAGE_KEYS } from '../services/storage/keys';
 interface UserStore extends UserPreferences {
   setTransitionSound: (sound: TransitionSound) => void;
   setShowTimer: (show: boolean) => void;
+  setAmbientEnabled: (enabled: boolean) => void;
+  setAmbientTrack: (track: AmbientTrack) => void;
   setExperienceLevel: (level: ExperienceLevel) => void;
   setMorningReminder: (config: ReminderConfig) => void;
   setAfternoonReminder: (config: ReminderConfig) => void;
@@ -27,6 +30,8 @@ export const useUserStore = create<UserStore>()(
 
       setTransitionSound: (sound) => set({ transitionSound: sound }),
       setShowTimer: (show) => set({ showTimer: show }),
+      setAmbientEnabled: (enabled) => set({ ambientEnabled: enabled }),
+      setAmbientTrack: (track) => set({ ambientTrack: track }),
       setExperienceLevel: (level) => set({ experienceLevel: level }),
       setMorningReminder: (config) => set({ morningReminder: config }),
       setAfternoonReminder: (config) => set({ afternoonReminder: config }),

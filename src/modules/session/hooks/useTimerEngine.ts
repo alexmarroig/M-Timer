@@ -1,7 +1,6 @@
 import { useRef, useCallback, useEffect, useState } from 'react';
 import { AppState, AppStateStatus } from 'react-native';
-import { PHASE_ORDER } from '../../../types/session';
-import { PhaseDuration } from '../../../types/session';
+import { PHASE_ORDER, PhaseDuration } from '../../../types/session';
 import {
   TimerContext,
   INITIAL_CONTEXT,
@@ -12,14 +11,12 @@ import {
   getTotalElapsed,
   getTotalDuration,
   getPhaseProgress,
+  isPhaseComplete,
 } from '../../../services/timerEngine/timerMachine';
 import { storageService } from '../../../services/storage/storageService';
 import { STORAGE_KEYS } from '../../../services/storage/keys';
-import { consumeRestoredTimerState } from '../../../services/timerEngine/timerBootstrap';
-import { useUserStore } from '../../../store/userStore';
-import { triggerTransitionFeedback } from '../../../services/feedback/transitionFeedback';
 
-const TICK_INTERVAL = 100; // ms - only for UI refresh, not for time calculation
+const TICK_INTERVAL = 100;
 
 function reconcileElapsedAcrossPhases(context: TimerContext, now: number): TimerContext {
   if (
@@ -34,19 +31,17 @@ function reconcileElapsedAcrossPhases(context: TimerContext, now: number): Timer
   const activeElapsed = Math.max(0, now - context.phaseStartTimestamp);
   let elapsedToConsume = context.phaseElapsedBeforePause + activeElapsed;
   let completedPhasesElapsed = context.completedPhasesElapsed;
-  let currentPhase = context.currentPhase;
-  let phaseIndex = PHASE_ORDER.indexOf(currentPhase);
+  let phaseIndex = PHASE_ORDER.indexOf(context.currentPhase);
 
   while (phaseIndex >= 0 && phaseIndex < PHASE_ORDER.length) {
     const phase = PHASE_ORDER[phaseIndex];
     const phaseDurationMs = context.phases[phase] * 1000;
 
     if (elapsedToConsume < phaseDurationMs) {
-      currentPhase = phase;
       return {
         ...context,
-        state: phase as TimerContext['state'],
-        currentPhase,
+        state: phase,
+        currentPhase: phase,
         completedPhasesElapsed,
         phaseStartTimestamp: now - elapsedToConsume,
         phaseElapsedBeforePause: 0,
@@ -72,73 +67,19 @@ function reconcileElapsedAcrossPhases(context: TimerContext, now: number): Timer
 
 export function useTimerEngine() {
   const [ctx, setCtx] = useState<TimerContext>({ ...INITIAL_CONTEXT });
-  const transitionSound = useUserStore((state) => state.transitionSound);
   const ctxRef = useRef(ctx);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Keep ref in sync
   ctxRef.current = ctx;
 
-  const dispatch = useCallback((event: Parameters<typeof timerTransition>[1]) => {
-    setCtx((prev) => {
-      const next = timerTransition(prev, event);
-      ctxRef.current = next;
-      return next;
-    });
-  }, []);
-
-  const transitionToNextPhase = useCallback((context: TimerContext): TimerContext => {
-    const next = timerTransition(context, { type: 'NEXT_PHASE' });
-    void triggerTransitionFeedback(transitionSound);
-    return next;
-  }, [transitionSound]);
-
-  // Persist timer state on phase transitions
   const persistState = useCallback(async (context: TimerContext) => {
     if (context.state === 'idle' || context.state === 'finished') {
       await storageService.remove(STORAGE_KEYS.TIMER_STATE);
-    } else {
-      await storageService.set(STORAGE_KEYS.TIMER_STATE, context);
+      return;
     }
+
+    await storageService.set(STORAGE_KEYS.TIMER_STATE, context);
   }, []);
-
-  // Start the tick interval
-  const startTicking = useCallback(() => {
-    if (intervalRef.current) return;
-    intervalRef.current = setInterval(() => {
-      const current = ctxRef.current;
-      if (current.state === 'idle' || current.state === 'finished' || current.state === 'paused') {
-        return;
-      }
-
-      const reconciled = reconcileElapsedAcrossPhases(current, Date.now());
-      const hasStateChange =
-        reconciled.state !== current.state ||
-        reconciled.currentPhase !== current.currentPhase ||
-        reconciled.completedPhasesElapsed !== current.completedPhasesElapsed;
-
-      if (hasStateChange) {
-        ctxRef.current = reconciled;
-        setCtx(reconciled);
-        persistState(reconciled);
-        if (reconciled.state === 'finished') {
-      // Check if current phase completed
-      if (isPhaseComplete(current)) {
-        const nextCtx = transitionToNextPhase(current);
-        ctxRef.current = nextCtx;
-        setCtx(nextCtx);
-        persistState(nextCtx);
-
-        if (nextCtx.state === 'finished') {
-          stopTicking();
-        }
-        return;
-      }
-
-      // Force re-render to update displayed time
-      setCtx({ ...current });
-    }, TICK_INTERVAL);
-  }, [persistState, transitionToNextPhase]);
 
   const stopTicking = useCallback(() => {
     if (intervalRef.current) {
@@ -147,98 +88,125 @@ export function useTimerEngine() {
     }
   }, []);
 
-  // Public actions
-  const start = useCallback((phases: PhaseDuration) => {
-    dispatch({ type: 'START', phases });
-    startTicking();
-  }, [dispatch, startTicking]);
+  const dispatch = useCallback((event: Parameters<typeof timerTransition>[1]) => {
+    setCtx((previous) => {
+      const next = timerTransition(previous, event);
+      ctxRef.current = next;
+      return next;
+    });
+  }, []);
+
+  const startTicking = useCallback(() => {
+    if (intervalRef.current) {
+      return;
+    }
+
+    intervalRef.current = setInterval(() => {
+      const current = ctxRef.current;
+      if (current.state === 'idle' || current.state === 'finished' || current.state === 'paused') {
+        return;
+      }
+
+      if (isPhaseComplete(current)) {
+        const nextContext = timerTransition(current, { type: 'NEXT_PHASE' });
+        ctxRef.current = nextContext;
+        setCtx(nextContext);
+        void persistState(nextContext);
+
+        if (nextContext.state === 'finished') {
+          stopTicking();
+        }
+        return;
+      }
+
+      setCtx({ ...current });
+    }, TICK_INTERVAL);
+  }, [persistState, stopTicking]);
+
+  const start = useCallback(
+    (phases: PhaseDuration) => {
+      dispatch({ type: 'START', phases });
+      startTicking();
+    },
+    [dispatch, startTicking]
+  );
 
   const pause = useCallback(() => {
-    dispatch({ type: 'PAUSE' });
-    persistState(timerTransition(ctxRef.current, { type: 'PAUSE' }));
-  }, [dispatch, persistState]);
+    const nextContext = timerTransition(ctxRef.current, { type: 'PAUSE' });
+    ctxRef.current = nextContext;
+    setCtx(nextContext);
+    void persistState(nextContext);
+    stopTicking();
+  }, [persistState, stopTicking]);
 
   const resume = useCallback(() => {
-    dispatch({ type: 'RESUME' });
+    const nextContext = timerTransition(ctxRef.current, { type: 'RESUME' });
+    ctxRef.current = nextContext;
+    setCtx(nextContext);
+    void persistState(nextContext);
     startTicking();
-  }, [dispatch, startTicking]);
+  }, [persistState, startTicking]);
 
   const reset = useCallback(() => {
     stopTicking();
     dispatch({ type: 'RESET' });
-    storageService.remove(STORAGE_KEYS.TIMER_STATE);
+    void storageService.remove(STORAGE_KEYS.TIMER_STATE);
   }, [dispatch, stopTicking]);
 
-  // Handle app state changes (background/foreground)
   useEffect(() => {
     const handleAppState = (nextState: AppStateStatus) => {
       const current = ctxRef.current;
+
       if (nextState === 'active') {
-        // Coming back to foreground - timer uses timestamps so no drift
         if (current.state !== 'idle' && current.state !== 'finished' && current.state !== 'paused') {
           const updated = reconcileElapsedAcrossPhases(current, Date.now());
           ctxRef.current = updated;
           setCtx(updated);
-          persistState(updated);
+          void persistState(updated);
+
           if (updated.state !== 'finished') {
-          // Check if phase(s) completed while in background
-          if (isPhaseComplete(current)) {
-            let updated = current;
-            while (isPhaseComplete(updated) && updated.state !== 'finished') {
-              updated = transitionToNextPhase(updated);
-            }
-            ctxRef.current = updated;
-            setCtx(updated);
-            persistState(updated);
-            if (updated.state !== 'finished') {
-              startTicking();
-            }
-          } else {
             startTicking();
           }
         }
-      } else if (nextState === 'background') {
+        return;
+      }
+
+      if (nextState === 'background') {
         stopTicking();
-        persistState(current);
+        void persistState(current);
       }
     };
 
-    const sub = AppState.addEventListener('change', handleAppState);
-    return () => sub.remove();
-  }, [startTicking, stopTicking, persistState, transitionToNextPhase]);
+    const subscription = AppState.addEventListener('change', handleAppState);
+    return () => subscription.remove();
+  }, [persistState, startTicking, stopTicking]);
 
-  // Restore state on mount
   useEffect(() => {
-    (async () => {
-      const fromBootstrap = consumeRestoredTimerState();
-      const saved = fromBootstrap ?? await storageService.get<TimerContext>(STORAGE_KEYS.TIMER_STATE);
+    void (async () => {
+      const saved = await storageService.get<TimerContext>(STORAGE_KEYS.TIMER_STATE);
+      if (!saved || saved.state === 'idle' || saved.state === 'finished') {
+        return;
+      }
 
-      if (saved && saved.state !== 'idle' && saved.state !== 'finished') {
-        if (saved.state !== 'paused') {
-          // Reconcile elapsed real time since persisted phaseStartTimestamp
-          const updated = reconcileElapsedAcrossPhases(saved, Date.now());
-          // Recalculate - phases may have completed while app was closed
-          let updated = saved;
-          while (isPhaseComplete(updated) && updated.state !== 'finished') {
-            updated = transitionToNextPhase(updated);
-          }
-          ctxRef.current = updated;
-          setCtx(updated);
-          persistState(updated);
-          if (updated.state !== 'finished') {
-            startTicking();
-          }
-        } else {
-          ctxRef.current = saved;
-          setCtx(saved);
-        }
+      if (saved.state === 'paused') {
+        ctxRef.current = saved;
+        setCtx(saved);
+        return;
+      }
+
+      const updated = reconcileElapsedAcrossPhases(saved, Date.now());
+      ctxRef.current = updated;
+      setCtx(updated);
+      await persistState(updated);
+
+      if (updated.state !== 'finished') {
+        startTicking();
       }
     })();
 
     return () => stopTicking();
-  }, [startTicking, stopTicking, transitionToNextPhase]);
+  }, [persistState, startTicking, stopTicking]);
 
-  // Derived values
   const phaseRemaining = getPhaseRemaining(ctx);
   const totalElapsed = getTotalElapsed(ctx);
   const totalDuration = getTotalDuration(ctx);

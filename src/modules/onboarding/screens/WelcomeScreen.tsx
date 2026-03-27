@@ -9,8 +9,8 @@ export function WelcomeScreen({ navigation }: Props) {
   return (
     <OnboardingPage
       title="M-Timer"
-      description="Seu companheiro de prática para Meditação Transcendental. Sessões estruturadas em 3 fases para uma experiência completa."
-      buttonTitle="Começar"
+      description="Seu companheiro de pratica para Meditacao Transcendental. Sessoes estruturadas em 3 fases para uma experiencia completa."
+      buttonTitle="Comecar"
       onNext={() => navigation.navigate('Experience')}
     />
   );

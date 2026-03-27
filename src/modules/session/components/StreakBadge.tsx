@@ -25,7 +25,7 @@ export function StreakBadge({ currentStreak, sessionsToday }: Props) {
           {sessionsToday}/2
         </MinimalText>
         <MinimalText variant="caption" align="center">
-          sessões hoje
+          sessoes hoje
         </MinimalText>
       </View>
     </View>

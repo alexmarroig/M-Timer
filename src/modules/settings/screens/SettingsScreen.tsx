@@ -1,24 +1,31 @@
 import React, { useCallback } from 'react';
-import { ScrollView, View, StyleSheet, Linking } from 'react-native';
+import { Alert, ScrollView, View, StyleSheet, Linking } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ScreenContainer } from '../../../components/layout/ScreenContainer';
 import { MinimalText } from '../../../components/ui/MinimalText';
 import { SettingRow } from '../components/SettingRow';
-import { useUserStore } from '../../../store/userStore';
 import { useAuthStore } from '../../../store/authStore';
+import { useUserStore } from '../../../store/userStore';
 import { colors, spacing } from '../../../core/theme';
-import { EXPERIENCE_LABELS, ExperienceLevel } from '../../../types/user';
 import { notificationService } from '../../../services/notifications/notificationService';
 import type { SettingsStackParamList } from '../../../core/navigation/types';
+import type { AmbientTrack, ExperienceLevel } from '../../../types/user';
+import { EXPERIENCE_LABELS } from '../../../types/user';
 
 type TransitionSoundLabel = Record<string, string>;
 const SOUND_LABELS: TransitionSoundLabel = {
   bell: 'Sino',
-  vibration: 'Vibração',
+  vibration: 'Vibracao',
   none: 'Nenhum',
 };
 
 const SOUND_OPTIONS = ['bell', 'vibration', 'none'] as const;
+const AMBIENT_LABELS: Record<AmbientTrack, string> = {
+  ambient: 'Pad ambiente',
+  rain: 'Chuva suave',
+  wind: 'Vento leve',
+};
+const AMBIENT_OPTIONS: AmbientTrack[] = ['ambient', 'rain', 'wind'];
 const EXPERIENCE_OPTIONS: ExperienceLevel[] = ['beginner', 'regular', 'experienced'];
 const MORNING_REMINDER_ID = 'reminder-morning';
 const AFTERNOON_REMINDER_ID = 'reminder-afternoon';
@@ -26,17 +33,21 @@ const AFTERNOON_REMINDER_ID = 'reminder-afternoon';
 type Props = NativeStackScreenProps<SettingsStackParamList, 'SettingsMain'>;
 
 export function SettingsScreen({ navigation }: Props) {
-  const logout = useAuthStore((s) => s.logout);
-
+  const userEmail = useAuthStore((state) => state.userEmail);
+  const logout = useAuthStore((state) => state.logout);
   const {
     transitionSound,
     showTimer,
     experienceLevel,
+    ambientEnabled,
+    ambientTrack,
     morningReminder,
     afternoonReminder,
     setTransitionSound,
     setShowTimer,
     setExperienceLevel,
+    setAmbientEnabled,
+    setAmbientTrack,
     setMorningReminder,
     setAfternoonReminder,
   } = useUserStore();
@@ -45,13 +56,19 @@ export function SettingsScreen({ navigation }: Props) {
     const currentIndex = SOUND_OPTIONS.indexOf(transitionSound);
     const nextIndex = (currentIndex + 1) % SOUND_OPTIONS.length;
     setTransitionSound(SOUND_OPTIONS[nextIndex]);
-  }, [transitionSound, setTransitionSound]);
+  }, [setTransitionSound, transitionSound]);
 
   const cycleExperience = useCallback(() => {
     const currentIndex = EXPERIENCE_OPTIONS.indexOf(experienceLevel);
     const nextIndex = (currentIndex + 1) % EXPERIENCE_OPTIONS.length;
     setExperienceLevel(EXPERIENCE_OPTIONS[nextIndex]);
   }, [experienceLevel, setExperienceLevel]);
+
+  const cycleAmbientTrack = useCallback(() => {
+    const currentIndex = AMBIENT_OPTIONS.indexOf(ambientTrack);
+    const nextIndex = (currentIndex + 1) % AMBIENT_OPTIONS.length;
+    setAmbientTrack(AMBIENT_OPTIONS[nextIndex]);
+  }, [ambientTrack, setAmbientTrack]);
 
   const toggleMorningReminder = useCallback(
     (enabled: boolean) => {
@@ -62,8 +79,8 @@ export function SettingsScreen({ navigation }: Props) {
         void notificationService.scheduleReminder(
           MORNING_REMINDER_ID,
           nextConfig,
-          'Hora da meditação da manhã',
-          'Reserve alguns minutos para sua prática.'
+          'Hora da meditacao da manha',
+          'Reserve alguns minutos para sua pratica.'
         );
         return;
       }
@@ -82,7 +99,7 @@ export function SettingsScreen({ navigation }: Props) {
         void notificationService.scheduleReminder(
           AFTERNOON_REMINDER_ID,
           nextConfig,
-          'Hora da meditação da tarde',
+          'Hora da meditacao da tarde',
           'Que tal uma pausa para meditar agora?'
         );
         return;
@@ -93,6 +110,13 @@ export function SettingsScreen({ navigation }: Props) {
     [afternoonReminder, setAfternoonReminder]
   );
 
+  const handleLogout = useCallback(() => {
+    Alert.alert('Sair da conta', 'Deseja encerrar a sessao demo neste dispositivo?', [
+      { text: 'Cancelar', style: 'cancel' },
+      { text: 'Sair', style: 'destructive', onPress: logout },
+    ]);
+  }, [logout]);
+
   return (
     <ScreenContainer>
       <ScrollView
@@ -101,46 +125,60 @@ export function SettingsScreen({ navigation }: Props) {
         showsVerticalScrollIndicator={false}
       >
         <MinimalText variant="heading" style={styles.title}>
-          Configurações
+          Configuracoes
         </MinimalText>
 
-        {/* Timer */}
         <MinimalText variant="subheading" style={styles.sectionTitle}>
-          Sessão
+          Sessao
         </MinimalText>
 
         <SettingRow
           type="toggle"
           label="Mostrar tempo"
-          description="Exibe contagem regressiva durante a sessão"
+          description="Exibe contagem regressiva durante a sessao"
           value={showTimer}
           onValueChange={setShowTimer}
         />
 
         <SettingRow
           type="select"
-          label="Som de transição"
-          description="Som entre fases da sessão"
+          label="Som de transicao"
+          description="Som curto entre fases da sessao"
           value={SOUND_LABELS[transitionSound]}
           onPress={cycleSound}
         />
 
         <SettingRow
           type="select"
-          label="Nível de experiência"
-          description="Personaliza recomendações e contexto da Home"
+          label="Nivel de experiencia"
+          description="Personaliza recomendacoes e contexto da Home"
           value={EXPERIENCE_LABELS[experienceLevel]}
           onPress={cycleExperience}
         />
 
-        {/* Reminders */}
+        <SettingRow
+          type="toggle"
+          label="Som ambiente"
+          description="Trilha continua durante a meditacao"
+          value={ambientEnabled}
+          onValueChange={setAmbientEnabled}
+        />
+
+        <SettingRow
+          type="select"
+          label="Trilha ambiente"
+          description="Escolha a textura sonora da pratica"
+          value={AMBIENT_LABELS[ambientTrack]}
+          onPress={cycleAmbientTrack}
+        />
+
         <MinimalText variant="subheading" style={styles.sectionTitle}>
           Lembretes
         </MinimalText>
 
         <SettingRow
           type="toggle"
-          label={`Manhã (${String(morningReminder.hour).padStart(2, '0')}:${String(morningReminder.minute).padStart(2, '0')})`}
+          label={`Manha (${String(morningReminder.hour).padStart(2, '0')}:${String(morningReminder.minute).padStart(2, '0')})`}
           value={morningReminder.enabled}
           onValueChange={toggleMorningReminder}
         />
@@ -152,14 +190,13 @@ export function SettingsScreen({ navigation }: Props) {
           onValueChange={toggleAfternoonReminder}
         />
 
-        {/* About */}
         <MinimalText variant="subheading" style={styles.sectionTitle}>
           Sobre
         </MinimalText>
 
         <SettingRow
           type="navigate"
-          label="Sobre a Meditação Transcendental"
+          label="Sobre a Meditacao Transcendental"
           onPress={() => navigation.navigate('About')}
         />
 
@@ -175,14 +212,16 @@ export function SettingsScreen({ navigation }: Props) {
 
         <SettingRow
           type="navigate"
-          label="Sair"
-          description="Encerra a sessão neste dispositivo"
-          onPress={() =>
-            Alert.alert('Sair da conta', 'Deseja realmente sair?', [
-              { text: 'Cancelar', style: 'cancel' },
-              { text: 'Sair', style: 'destructive', onPress: logout },
-            ])
-          }
+          label="Conta demo ativa"
+          description={userEmail || 'demo@mtimer.app'}
+          onPress={() => {}}
+        />
+
+        <SettingRow
+          type="navigate"
+          label="Sair da conta"
+          description="Volta para a tela de login demo"
+          onPress={handleLogout}
         />
 
         <View style={styles.footer}>
@@ -190,7 +229,7 @@ export function SettingsScreen({ navigation }: Props) {
             M-Timer v1.0.0
           </MinimalText>
           <MinimalText variant="caption" color={colors.textSecondary} align="center">
-            Este app não ensina a técnica de MT.
+            Este app nao ensina a tecnica de MT.
           </MinimalText>
         </View>
       </ScrollView>

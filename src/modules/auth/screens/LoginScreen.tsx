@@ -1,136 +1,121 @@
-import React, { useMemo, useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, TextInput, View } from 'react-native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, { useState } from 'react';
+import {
+  Alert,
+  Image,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  TextInput,
+  View,
+} from 'react-native';
 import { ScreenContainer } from '../../../components/layout/ScreenContainer';
-import { MinimalText } from '../../../components/ui/MinimalText';
 import { ButtonPrimary } from '../../../components/ui/ButtonPrimary';
-import { Card } from '../../../components/ui/Card';
-import type { AuthStackParamList } from '../../../core/navigation/types';
-import { borderRadius, colors, spacing } from '../../../core/theme';
+import { MinimalText } from '../../../components/ui/MinimalText';
+import { colors, spacing, borderRadius } from '../../../core/theme';
 import { useAuthStore } from '../../../store/authStore';
+import { DEMO_ACCOUNT } from '../../../types/auth';
 
-type Props = NativeStackScreenProps<AuthStackParamList, 'Login'>;
+export function LoginScreen() {
+  const login = useAuthStore((state) => state.login);
+  const [email, setEmail] = useState<string>(DEMO_ACCOUNT.email);
+  const [password, setPassword] = useState<string>(DEMO_ACCOUNT.password);
 
-function isEmailValid(email: string) {
-  return /\S+@\S+\.\S+/.test(email.trim());
-}
-
-export function LoginScreen({ navigation }: Props) {
-  const [email, setEmail] = useState('demo@mtimer.app');
-  const [password, setPassword] = useState('123456');
-  const [submitted, setSubmitted] = useState(false);
-
-  const { login, isLoading, error, clearError, isOffline } = useAuthStore();
-
-  const emailError = useMemo(() => {
-    if (!submitted) {
-      return null;
+  const handleLogin = () => {
+    const success = login(email, password);
+    if (!success) {
+      Alert.alert(
+        'Login invalido',
+        'Use as credenciais demo exibidas na tela para acessar o app.'
+      );
     }
+  };
 
-    if (!email.trim()) {
-      return 'Digite seu e-mail.';
-    }
-
-    if (!isEmailValid(email)) {
-      return 'Digite um e-mail válido.';
-    }
-
-    return null;
-  }, [email, submitted]);
-
-  const passwordError = useMemo(() => {
-    if (!submitted) {
-      return null;
-    }
-
-    if (!password.trim()) {
-      return 'Digite sua senha.';
-    }
-
-    return null;
-  }, [password, submitted]);
-
-  const canSubmit = !emailError && !passwordError;
-
-  const handleLogin = async () => {
-    setSubmitted(true);
-    clearError();
-
-    if (!canSubmit) {
-      return;
-    }
-
-    await login(email, password);
+  const fillDemoAccess = () => {
+    setEmail(DEMO_ACCOUNT.email);
+    setPassword(DEMO_ACCOUNT.password);
   };
 
   return (
     <ScreenContainer edges={['top', 'bottom']}>
       <KeyboardAvoidingView
-        style={styles.keyboard}
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        style={styles.keyboard}
       >
-        <View style={styles.content}>
-          <View style={styles.header}>
-            <MinimalText variant="heading">Entrar</MinimalText>
-            <MinimalText color={colors.textSecondary}>
-              Acesse sua conta para sincronizar sessões e histórico.
+        <View style={styles.hero}>
+          <Image source={require('../../../../assets/icon.png')} style={styles.logo} />
+          <MinimalText variant="heading" align="center">
+            M-Timer
+          </MinimalText>
+          <MinimalText variant="body" color={colors.textSecondary} align="center">
+            Meditacao guiada com login demo liberado para testes.
+          </MinimalText>
+        </View>
+
+        <View style={styles.card}>
+          <View style={styles.badge}>
+            <MinimalText variant="caption" color={colors.primary}>
+              Acesso pronto para usar
             </MinimalText>
           </View>
 
-          <Card style={styles.formCard}>
-            <MinimalText variant="caption" style={styles.inputLabel}>
-              E-mail
+          <MinimalText variant="subheading">Entrar</MinimalText>
+          <MinimalText variant="body" color={colors.textSecondary} style={styles.copy}>
+            Use o login demo abaixo para abrir o app imediatamente.
+          </MinimalText>
+
+          <View style={styles.fieldGroup}>
+            <MinimalText variant="caption" color={colors.textSecondary}>
+              Email
             </MinimalText>
             <TextInput
               value={email}
+              onChangeText={setEmail}
               autoCapitalize="none"
               keyboardType="email-address"
-              autoCorrect={false}
-              style={styles.input}
-              placeholder="voce@email.com"
+              placeholder="demo@mtimer.app"
               placeholderTextColor={colors.textSecondary}
-              onChangeText={setEmail}
+              style={styles.input}
             />
-            {emailError ? <MinimalText color={colors.error}>{emailError}</MinimalText> : null}
+          </View>
 
-            <MinimalText variant="caption" style={{ ...styles.inputLabel, ...styles.fieldGap }}>
+          <View style={styles.fieldGroup}>
+            <MinimalText variant="caption" color={colors.textSecondary}>
               Senha
             </MinimalText>
             <TextInput
               value={password}
-              secureTextEntry
-              style={styles.input}
-              placeholder="••••••"
-              placeholderTextColor={colors.textSecondary}
               onChangeText={setPassword}
+              secureTextEntry
+              placeholder="Respira123"
+              placeholderTextColor={colors.textSecondary}
+              style={styles.input}
             />
-            {passwordError ? <MinimalText color={colors.error}>{passwordError}</MinimalText> : null}
+          </View>
 
-            {error ? (
-              <MinimalText color={colors.error} style={styles.fieldGap}>
-                {error}
-              </MinimalText>
-            ) : null}
+          <View style={styles.credentialsBox}>
+            <MinimalText variant="caption" color={colors.textSecondary}>
+              Login demo
+            </MinimalText>
+            <MinimalText variant="body">demo@mtimer.app</MinimalText>
+            <MinimalText variant="caption" color={colors.textSecondary} style={styles.passwordLabel}>
+              Senha demo
+            </MinimalText>
+            <MinimalText variant="body">Respira123</MinimalText>
+          </View>
 
-            {isOffline ? (
-              <MinimalText variant="caption" color={colors.textSecondary} style={styles.fieldGap}>
-                Modo offline: se você já estava autenticado, sua sessão local permanece ativa.
-              </MinimalText>
-            ) : null}
+          <ButtonPrimary
+            title="Entrar no app"
+            onPress={handleLogin}
+            size="large"
+            style={styles.primaryButton}
+          />
 
-            <ButtonPrimary
-              title="Entrar"
-              onPress={handleLogin}
-              loading={isLoading}
-              style={styles.submit}
-            />
-
-            <ButtonPrimary
-              title="Esqueci minha senha"
-              variant="ghost"
-              onPress={() => navigation.navigate('ForgotPassword')}
-            />
-          </Card>
+          <ButtonPrimary
+            title="Preencher demo"
+            onPress={fillDemoAccess}
+            variant="secondary"
+            size="large"
+          />
         </View>
       </KeyboardAvoidingView>
     </ScreenContainer>
@@ -140,36 +125,62 @@ export function LoginScreen({ navigation }: Props) {
 const styles = StyleSheet.create({
   keyboard: {
     flex: 1,
-  },
-  content: {
-    flex: 1,
     justifyContent: 'center',
     paddingHorizontal: spacing.lg,
-    gap: spacing.lg,
+    paddingBottom: spacing.xl,
   },
-  header: {
-    gap: spacing.xs,
-  },
-  formCard: {
+  hero: {
+    alignItems: 'center',
+    marginBottom: spacing.xl,
     gap: spacing.sm,
   },
-  inputLabel: {
-    textTransform: 'uppercase',
-    letterSpacing: 0.4,
+  logo: {
+    width: 96,
+    height: 96,
+    borderRadius: 24,
   },
-  input: {
-    minHeight: 48,
-    borderRadius: borderRadius.sm,
+  card: {
+    backgroundColor: colors.surface,
+    borderRadius: borderRadius.lg,
+    padding: spacing.lg,
     borderWidth: 1,
     borderColor: colors.border,
+    gap: spacing.md,
+  },
+  badge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xs,
+    borderRadius: 999,
+    backgroundColor: colors.accentLight,
+  },
+  copy: {
+    marginTop: -spacing.sm,
+  },
+  fieldGroup: {
+    gap: spacing.xs,
+  },
+  input: {
+    minHeight: 52,
+    borderWidth: 1,
+    borderColor: colors.border,
+    borderRadius: borderRadius.md,
+    backgroundColor: colors.background,
     paddingHorizontal: spacing.md,
     color: colors.textPrimary,
+    fontSize: 16,
+  },
+  credentialsBox: {
+    borderRadius: borderRadius.md,
+    borderWidth: 1,
+    borderColor: colors.border,
     backgroundColor: colors.background,
+    padding: spacing.md,
   },
-  fieldGap: {
+  passwordLabel: {
+    marginTop: spacing.sm,
+  },
+  primaryButton: {
     marginTop: spacing.xs,
-  },
-  submit: {
-    marginTop: spacing.md,
   },
 });

@@ -3,9 +3,9 @@ export type SessionPhase = 'rampUp' | 'core' | 'cooldown';
 export type TimerState = 'idle' | 'rampUp' | 'core' | 'cooldown' | 'paused' | 'finished';
 
 export interface PhaseDuration {
-  rampUp: number;   // seconds
-  core: number;     // seconds
-  cooldown: number; // seconds
+  rampUp: number;
+  core: number;
+  cooldown: number;
 }
 
 export interface SessionTemplate {
@@ -13,7 +13,7 @@ export interface SessionTemplate {
   name: string;
   phases: PhaseDuration;
   isDefault: boolean;
-  createdAt: string; // ISO
+  createdAt: string;
 }
 
 export interface SessionInstance {
@@ -21,9 +21,9 @@ export interface SessionInstance {
   templateId: string;
   templateName: string;
   phases: PhaseDuration;
-  startedAt: string;  // ISO
-  completedAt: string; // ISO
-  totalDuration: number; // seconds
+  startedAt: string;
+  completedAt: string;
+  totalDuration: number;
   completed: boolean;
   countsForProgress: boolean;
   progressBlockedReason?: 'incomplete' | 'tooShort' | 'rapidRepeat' | 'dailyLimit';
@@ -31,14 +31,14 @@ export interface SessionInstance {
 
 export const PHASE_LABELS: Record<SessionPhase, string> = {
   rampUp: 'Entrada',
-  core: 'Meditação',
-  cooldown: 'Saída',
+  core: 'Meditacao',
+  cooldown: 'Saida',
 };
 
 export const PHASE_ORDER: SessionPhase[] = ['rampUp', 'core', 'cooldown'];
 
 export const DEFAULT_PHASES: PhaseDuration = {
-  rampUp: 120,    // 2 min
-  core: 1200,     // 20 min
-  cooldown: 180,  // 3 min
+  rampUp: 120,
+  core: 1200,
+  cooldown: 180,
 };

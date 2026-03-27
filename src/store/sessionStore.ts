@@ -2,7 +2,7 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { v4 as uuid } from 'uuid';
-import { SessionTemplate, DEFAULT_PHASES } from '../types/session';
+import { SessionTemplate } from '../types/session';
 import { STORAGE_KEYS } from '../services/storage/keys';
 
 interface SessionStore {
@@ -17,14 +17,14 @@ interface SessionStore {
 const BUILT_IN_TEMPLATES: SessionTemplate[] = [
   {
     id: 'preset-morning',
-    name: 'Manhã Padrão',
+    name: 'Manha Padrao',
     phases: { rampUp: 120, core: 1200, cooldown: 180 },
     isDefault: true,
     createdAt: new Date().toISOString(),
   },
   {
     id: 'preset-afternoon',
-    name: 'Tarde Padrão',
+    name: 'Tarde Padrao',
     phases: { rampUp: 60, core: 900, cooldown: 120 },
     isDefault: false,
     createdAt: new Date().toISOString(),
@@ -51,35 +51,35 @@ export const useSessionStore = create<SessionStore>()(
           isDefault: false,
           createdAt: new Date().toISOString(),
         };
-        set((s) => ({ templates: [...s.templates, template] }));
+        set((state) => ({ templates: [...state.templates, template] }));
       },
 
       updateTemplate: (id, updates) => {
-        set((s) => ({
-          templates: s.templates.map((t) =>
-            t.id === id ? { ...t, ...updates } : t
+        set((state) => ({
+          templates: state.templates.map((template) =>
+            template.id === id ? { ...template, ...updates } : template
           ),
         }));
       },
 
       deleteTemplate: (id) => {
-        set((s) => ({
-          templates: s.templates.filter((t) => t.id !== id),
+        set((state) => ({
+          templates: state.templates.filter((template) => template.id !== id),
         }));
       },
 
       setDefault: (id) => {
-        set((s) => ({
-          templates: s.templates.map((t) => ({
-            ...t,
-            isDefault: t.id === id,
+        set((state) => ({
+          templates: state.templates.map((template) => ({
+            ...template,
+            isDefault: template.id === id,
           })),
         }));
       },
 
       getDefault: () => {
         const { templates } = get();
-        return templates.find((t) => t.isDefault) || templates[0];
+        return templates.find((template) => template.isDefault) || templates[0];
       },
     }),
     {

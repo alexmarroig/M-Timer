@@ -1,5 +1,5 @@
 export type TransitionSound = 'bell' | 'vibration' | 'none';
-
+export type AmbientTrack = 'rain' | 'wind' | 'ambient';
 export type ExperienceLevel = 'beginner' | 'regular' | 'experienced';
 
 export interface ReminderConfig {
@@ -12,6 +12,8 @@ export interface UserPreferences {
   defaultTemplateId: string | null;
   transitionSound: TransitionSound;
   showTimer: boolean;
+  ambientEnabled: boolean;
+  ambientTrack: AmbientTrack;
   experienceLevel: ExperienceLevel;
   morningReminder: ReminderConfig;
   afternoonReminder: ReminderConfig;
@@ -28,6 +30,8 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   defaultTemplateId: null,
   transitionSound: 'bell',
   showTimer: true,
+  ambientEnabled: true,
+  ambientTrack: 'ambient',
   experienceLevel: 'regular',
   morningReminder: { enabled: false, hour: 7, minute: 0 },
   afternoonReminder: { enabled: false, hour: 17, minute: 0 },

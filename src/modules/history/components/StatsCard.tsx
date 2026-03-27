@@ -13,7 +13,7 @@ export function StatsCard({ stats }: Props) {
   return (
     <Card>
       <View style={styles.grid}>
-        <StatItem label="Total sessões" value={String(stats.totalSessions)} />
+        <StatItem label="Total sessoes" value={String(stats.totalSessions)} />
         <StatItem label="Total minutos" value={String(stats.totalMinutes)} />
         <StatItem label="Streak atual" value={`${stats.currentStreak} dias`} />
         <StatItem label="Maior streak" value={`${stats.longestStreak} dias`} />

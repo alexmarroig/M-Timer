@@ -23,7 +23,7 @@ export function SessionListItem({ session }: Props) {
             {session.templateName}
           </MinimalText>
           <MinimalText variant="caption" color={colors.textSecondary}>
-            {dateStr} · {timeStr}
+            {dateStr} - {timeStr}
           </MinimalText>
         </View>
         <View style={styles.right}>
