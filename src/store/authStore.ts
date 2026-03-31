@@ -6,6 +6,7 @@ import { DEFAULT_AUTH_SESSION, DEMO_ACCOUNT, AuthSession } from '../types/auth';
 
 interface AuthStore extends AuthSession {
   login: (email: string, password: string) => boolean;
+  loginGuest: () => void;
   logout: () => void;
 }
 
@@ -29,10 +30,20 @@ export const useAuthStore = create<AuthStore>()(
 
         set({
           isAuthenticated: true,
+          isGuest: false,
           userEmail: DEMO_ACCOUNT.email,
           displayName: DEMO_ACCOUNT.displayName,
         });
         return true;
+      },
+
+      loginGuest: () => {
+        set({
+          isAuthenticated: true,
+          isGuest: true,
+          userEmail: null,
+          displayName: 'Convidado',
+        });
       },
 
       logout: () => {

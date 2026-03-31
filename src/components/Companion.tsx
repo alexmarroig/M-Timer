@@ -41,6 +41,8 @@ function CompanionComponent({
   const motion = useRef(new Animated.Value(0)).current;
   const visibility = useRef(new Animated.Value(state.baseOpacity)).current;
 
+  const sparkle = useRef(new Animated.Value(0)).current;
+
   useEffect(() => {
     motion.stopAnimation();
     motion.setValue(0);
@@ -62,9 +64,31 @@ function CompanionComponent({
       ])
     );
 
+    const sparkleLoop = Animated.loop(
+      Animated.sequence([
+        Animated.timing(sparkle, {
+          toValue: 1,
+          duration: 950,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+        Animated.timing(sparkle, {
+          toValue: 0,
+          duration: 850,
+          easing: Easing.inOut(Easing.ease),
+          useNativeDriver: true,
+        }),
+      ])
+    );
+
     loop.start();
-    return () => loop.stop();
-  }, [motion, state.cycleDurationMs]);
+    sparkleLoop.start();
+
+    return () => {
+      loop.stop();
+      sparkleLoop.stop();
+    };
+  }, [motion, sparkle, state.cycleDurationMs]);
 
   useEffect(() => {
     Animated.timing(visibility, {
@@ -107,6 +131,11 @@ function CompanionComponent({
       ? colors.cooldown
       : '#F0D9A3';
 
+  const sparkleOpacity = sparkle.interpolate({
+    inputRange: [0, 0.5, 1],
+    outputRange: [0.15, 0.9, 0.15],
+  });
+
   const mediaStyle = {
     width: size,
     height: size,
@@ -135,6 +164,42 @@ function CompanionComponent({
           },
         ]}
       />
+
+      <Animated.View
+        style={[
+          styles.sparkleContainer,
+          {
+            opacity: sparkleOpacity,
+            transform: [
+              {
+                scale: sparkle.interpolate({
+                  inputRange: [0, 0.5, 1],
+                  outputRange: [0.9, 1.05, 0.9],
+                }),
+              },
+            ],
+          },
+        ]}
+      >
+        {[...Array(6)].map((_, index) => {
+          const angle = (Math.PI * 2 * index) / 6;
+          const radius = size * 0.75;
+          const left = radius + Math.cos(angle) * radius * 0.65;
+          const top = radius + Math.sin(angle) * radius * 0.65;
+
+          const starStyle = {
+            left,
+            top,
+            transform: [
+              {
+                rotate: `${index * 60}deg`,
+              },
+            ],
+          };
+
+          return <View key={index} style={[styles.sparkle, starStyle]} />;
+        })}
+      </Animated.View>
 
       <Animated.View
         style={[
@@ -171,6 +236,10 @@ function CompanionComponent({
           },
         ]}
       />
+
+      <View style={styles.lightBurst}>
+        <View style={styles.lightRing} />
+      </View>
     </View>
   );
 }
@@ -184,6 +253,22 @@ const styles = StyleSheet.create({
   },
   glow: {
     position: 'absolute',
+  },
+  sparkleContainer: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+  },
+  sparkle: {
+    position: 'absolute',
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#fff',
+    shadowColor: '#fff',
+    shadowOpacity: 0.9,
+    shadowRadius: 10,
+    elevation: 12,
   },
   orbWrap: {
     alignItems: 'center',
@@ -205,5 +290,24 @@ const styles = StyleSheet.create({
     height: 16,
     borderRadius: 999,
     backgroundColor: '#CDA96D',
+  },
+  lightBurst: {
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lightRing: {
+    width: '150%',
+    height: '150%',
+    borderRadius: 999,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255, 255, 255, 0.35)',
+    shadowColor: '#F8EDC1',
+    shadowOpacity: 0.8,
+    shadowRadius: 24,
+    elevation: 14,
+    transform: [{ scale: 1.02 }],
   },
 });

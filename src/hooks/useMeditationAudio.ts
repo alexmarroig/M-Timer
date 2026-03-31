@@ -9,6 +9,25 @@ import type { SessionPhase, TimerState } from '../types/session';
 import { useUserStore } from '../store/userStore';
 import { createAudioEngine, type AmbientTrack } from '../services/audioEngine';
 
+export interface AmbientAudioControl {
+  ambientEnabled: boolean;
+  ambientTrack: AmbientTrack;
+  ambientVolume: number;
+  ambientMuted: boolean;
+  isMeditating: boolean;
+}
+
+export function getAmbientTargetVolume({
+  ambientEnabled,
+  ambientMuted,
+  ambientVolume,
+  isMeditating,
+}: AmbientAudioControl): number {
+  if (!ambientEnabled || ambientMuted || !isMeditating) return 0;
+  return Math.max(0, Math.min(1, ambientVolume));
+}
+
+
 const AMBIENT_SOURCES: Record<AmbientTrack, AVPlaybackSource> = {
   rain: require('../../assets/audio/rain.mp3'),
   wind: require('../../assets/audio/wind.mp3'),
@@ -24,7 +43,17 @@ export function useMeditationAudio({
 }) {
   const ambientEnabled = useUserStore((store) => store.ambientEnabled);
   const ambientTrack = useUserStore((store) => store.ambientTrack);
+  const ambientVolume = useUserStore((store) => store.ambientVolume);
+  const ambientMuted = useUserStore((store) => store.ambientMuted);
   const engineRef = useRef(createAudioEngine());
+
+  const targetVolume = getAmbientTargetVolume({
+    ambientEnabled,
+    ambientMuted,
+    ambientVolume,
+    isMeditating: state !== 'idle' && state !== 'paused' && state !== 'finished',
+  });
+
 
   useEffect(() => {
     void Audio.setAudioModeAsync({
@@ -43,17 +72,23 @@ export function useMeditationAudio({
     const isMeditating =
       state !== 'idle' && state !== 'paused' && state !== 'finished';
 
-    if (!ambientEnabled || !isMeditating) {
+    if (!ambientEnabled || ambientMuted || !isMeditating) {
       void engine.stopAndUnload({ fadeDurationMs: state === 'paused' ? 400 : 0 });
       return;
     }
 
     const source = AMBIENT_SOURCES[ambientTrack];
+    const targetVolume = getAmbientTargetVolume({
+      ambientEnabled,
+      ambientMuted,
+      ambientVolume,
+      isMeditating,
+    });
 
     if (currentPhase === 'rampUp') {
       void (async () => {
         await engine.playLoop(ambientTrack, source);
-        await engine.fadeTo(0.28, 1600);
+        await engine.fadeTo(targetVolume, 1600);
       })();
       return;
     }
@@ -61,7 +96,7 @@ export function useMeditationAudio({
     if (currentPhase === 'core') {
       void (async () => {
         await engine.playLoop(ambientTrack, source);
-        await engine.fadeTo(0.28, 800);
+        await engine.fadeTo(targetVolume, 800);
       })();
       return;
     }

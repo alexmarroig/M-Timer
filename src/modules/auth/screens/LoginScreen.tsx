@@ -17,6 +17,7 @@ import { DEMO_ACCOUNT } from '../../../types/auth';
 
 export function LoginScreen() {
   const login = useAuthStore((state) => state.login);
+  const loginGuest = useAuthStore((state) => state.loginGuest);
   const [email, setEmail] = useState<string>(DEMO_ACCOUNT.email);
   const [password, setPassword] = useState<string>(DEMO_ACCOUNT.password);
 
@@ -28,6 +29,10 @@ export function LoginScreen() {
         'Use as credenciais demo exibidas na tela para acessar o app.'
       );
     }
+  };
+
+  const handleGuestLogin = () => {
+    loginGuest();
   };
 
   const fillDemoAccess = () => {
@@ -108,6 +113,13 @@ export function LoginScreen() {
             onPress={handleLogin}
             size="large"
             style={styles.primaryButton}
+          />
+
+          <ButtonPrimary
+            title="Entrar como convidado"
+            onPress={handleGuestLogin}
+            variant="secondary"
+            size="large"
           />
 
           <ButtonPrimary

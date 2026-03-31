@@ -8,13 +8,14 @@
     "ios": "expo run:ios",
     "web": "expo start --web",
     "test": "npm run test:unit",
-    "test:unit": "node -e \"require('fs').rmSync('.tmp-test',{recursive:true,force:true})\" && tsc --outDir .tmp-test --module commonjs --target es2020 --skipLibCheck --esModuleInterop src/core/utils/date.ts src/services/gamificationEngine.ts src/services/companionEngine.ts src/services/audioEngine.ts && node --test tests/date.test.cjs tests/gamification.test.cjs tests/companionEngine.test.cjs tests/audioEngine.test.cjs && node -e \"require('fs').rmSync('.tmp-test',{recursive:true,force:true})\"",
+    "test:unit": "node -e \"require('fs').rmSync('.tmp-test',{recursive:true,force:true})\" && tsc --outDir .tmp-test --module commonjs --target es2020 --skipLibCheck --esModuleInterop src/core/utils/date.ts src/services/gamificationEngine.ts src/services/companionEngine.ts src/services/audioEngine.ts src/hooks/useMeditationAudio.ts src/store/userStore.ts && node --test tests/date.test.cjs tests/gamification.test.cjs tests/companionEngine.test.cjs tests/audioEngine.test.cjs tests/useMeditation.test.cjs && node -e \"require('fs').rmSync('.tmp-test',{recursive:true,force:true})\"","
     "validate:icons": "node scripts/validate-icons.js",
     "perf:report": "node scripts/perf-report.js"
   },
   "dependencies": {
     "@expo/metro-runtime": "~55.0.7",
     "@react-native-async-storage/async-storage": "2.2.0",
+    "@react-native-community/slider": "^5.1.2",
     "@react-navigation/bottom-tabs": "^7.15.8",
     "@react-navigation/native": "^7.2.1",
     "@react-navigation/native-stack": "^7.14.9",

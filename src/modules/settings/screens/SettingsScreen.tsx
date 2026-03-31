@@ -1,5 +1,6 @@
 import React, { useCallback } from 'react';
-import { Alert, ScrollView, View, StyleSheet, Linking } from 'react-native';
+import { Alert, ScrollView, View, StyleSheet, Linking, Text } from 'react-native';
+import Slider from '@react-native-community/slider';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ScreenContainer } from '../../../components/layout/ScreenContainer';
 import { MinimalText } from '../../../components/ui/MinimalText';
@@ -34,6 +35,7 @@ type Props = NativeStackScreenProps<SettingsStackParamList, 'SettingsMain'>;
 
 export function SettingsScreen({ navigation }: Props) {
   const userEmail = useAuthStore((state) => state.userEmail);
+  const isGuest = useAuthStore((state) => state.isGuest);
   const logout = useAuthStore((state) => state.logout);
   const {
     transitionSound,
@@ -41,6 +43,8 @@ export function SettingsScreen({ navigation }: Props) {
     experienceLevel,
     ambientEnabled,
     ambientTrack,
+    ambientVolume,
+    ambientMuted,
     morningReminder,
     afternoonReminder,
     setTransitionSound,
@@ -48,6 +52,8 @@ export function SettingsScreen({ navigation }: Props) {
     setExperienceLevel,
     setAmbientEnabled,
     setAmbientTrack,
+    setAmbientVolume,
+    toggleAmbientMuted,
     setMorningReminder,
     setAfternoonReminder,
   } = useUserStore();
@@ -172,6 +178,30 @@ export function SettingsScreen({ navigation }: Props) {
           onPress={cycleAmbientTrack}
         />
 
+        <SettingRow
+          type="toggle"
+          label="Silenciar ambiente"
+          description={ambientMuted ? 'Ativado' : 'Desativado'}
+          value={ambientMuted}
+          onValueChange={toggleAmbientMuted}
+        />
+
+        <View style={styles.sliderRow}>
+          <Text style={styles.sliderLabel}>Volume ambiente: {Math.round(ambientVolume * 100)}%</Text>
+          <Slider
+            style={styles.slider}
+            minimumValue={0}
+            maximumValue={1}
+            step={0.01}
+            value={ambientVolume}
+            disabled={!ambientEnabled || ambientMuted}
+            onValueChange={(value) => setAmbientVolume(value)}
+            minimumTrackTintColor={colors.primary}
+            maximumTrackTintColor={colors.textSecondary}
+            thumbTintColor={colors.primary}
+          />
+        </View>
+
         <MinimalText variant="subheading" style={styles.sectionTitle}>
           Lembretes
         </MinimalText>
@@ -212,8 +242,8 @@ export function SettingsScreen({ navigation }: Props) {
 
         <SettingRow
           type="navigate"
-          label="Conta demo ativa"
-          description={userEmail || 'demo@mtimer.app'}
+          label={isGuest ? 'Modo Convidado' : 'Conta demo ativa'}
+          description={isGuest ? 'Sem email vinculado' : userEmail || 'demo@mtimer.app'}
           onPress={() => {}}
         />
 
@@ -252,6 +282,20 @@ const styles = StyleSheet.create({
   sectionTitle: {
     marginTop: spacing.lg,
     marginBottom: spacing.sm,
+  },
+  sliderRow: {
+    marginTop: spacing.sm,
+    marginBottom: spacing.md,
+    paddingHorizontal: spacing.sm,
+    gap: spacing.xs,
+  },
+  sliderLabel: {
+    fontSize: 12,
+    color: colors.textSecondary,
+  },
+  slider: {
+    width: '100%',
+    height: 40,
   },
   footer: {
     marginTop: spacing.xxl,

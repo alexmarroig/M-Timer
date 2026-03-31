@@ -14,6 +14,8 @@ export interface UserPreferences {
   showTimer: boolean;
   ambientEnabled: boolean;
   ambientTrack: AmbientTrack;
+  ambientVolume: number;
+  ambientMuted: boolean;
   experienceLevel: ExperienceLevel;
   morningReminder: ReminderConfig;
   afternoonReminder: ReminderConfig;
@@ -32,6 +34,8 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   showTimer: true,
   ambientEnabled: true,
   ambientTrack: 'ambient',
+  ambientVolume: 0.28,
+  ambientMuted: false,
   experienceLevel: 'regular',
   morningReminder: { enabled: false, hour: 7, minute: 0 },
   afternoonReminder: { enabled: false, hour: 17, minute: 0 },

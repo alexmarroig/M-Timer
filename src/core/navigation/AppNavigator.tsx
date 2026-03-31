@@ -99,7 +99,7 @@ function MainTabs() {
         component={SessionStackScreen}
         options={{
           tabBarLabel: 'Sessao',
-          tabBarIcon: ({ focused }) => <TabIcon label="o" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon label="🧘" focused={focused} />,
         }}
       />
       <Tab.Screen
@@ -107,7 +107,7 @@ function MainTabs() {
         component={HistoryScreen}
         options={{
           tabBarLabel: 'Historico',
-          tabBarIcon: ({ focused }) => <TabIcon label="[]" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon label="📅" focused={focused} />,
         }}
       />
       <Tab.Screen
@@ -115,7 +115,7 @@ function MainTabs() {
         component={SettingsStackScreen}
         options={{
           tabBarLabel: 'Config',
-          tabBarIcon: ({ focused }) => <TabIcon label="*" focused={focused} />,
+          tabBarIcon: ({ focused }) => <TabIcon label="⚙️" focused={focused} />,
         }}
       />
     </Tab.Navigator>

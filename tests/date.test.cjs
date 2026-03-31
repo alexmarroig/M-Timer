@@ -18,23 +18,19 @@ test('toDateKey uses local calendar date for early morning positive offset sessi
 });
 
 test('calculateStreak counts consecutive local keys including today', () => {
-  const realDateNow = Date.now;
-  Date.now = () => new Date('2026-03-27T12:00:00Z').getTime();
-  try {
-    assert.equal(calculateStreak(['2026-03-27', '2026-03-26', '2026-03-25']), 3);
-  } finally {
-    Date.now = realDateNow;
-  }
+  const today = toDateKey(new Date());
+  const yesterday = toDateKey(new Date(Date.now() - 86400000));
+  const dayBefore = toDateKey(new Date(Date.now() - 86400000 * 2));
+
+  assert.equal(calculateStreak([today, yesterday, dayBefore]), 3);
 });
 
 test('calculateStreak accepts yesterday but breaks on first gap', () => {
-  const realDateNow = Date.now;
-  Date.now = () => new Date('2026-03-27T12:00:00Z').getTime();
-  try {
-    assert.equal(calculateStreak(['2026-03-26', '2026-03-24', '2026-03-23']), 1);
-  } finally {
-    Date.now = realDateNow;
-  }
+  const yesterday = toDateKey(new Date(Date.now() - 86400000));
+  const twoDaysAgo = toDateKey(new Date(Date.now() - 86400000 * 2));
+  const fourDaysAgo = toDateKey(new Date(Date.now() - 86400000 * 4));
+
+  assert.equal(calculateStreak([yesterday, twoDaysAgo, fourDaysAgo]), 2);
 });
 
 test('areConsecutiveDateKeys handles month transitions', () => {

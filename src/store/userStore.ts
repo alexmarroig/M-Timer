@@ -16,6 +16,8 @@ interface UserStore extends UserPreferences {
   setShowTimer: (show: boolean) => void;
   setAmbientEnabled: (enabled: boolean) => void;
   setAmbientTrack: (track: AmbientTrack) => void;
+  setAmbientVolume: (volume: number) => void;
+  toggleAmbientMuted: (muted: boolean) => void;
   setExperienceLevel: (level: ExperienceLevel) => void;
   setMorningReminder: (config: ReminderConfig) => void;
   setAfternoonReminder: (config: ReminderConfig) => void;
@@ -32,6 +34,8 @@ export const useUserStore = create<UserStore>()(
       setShowTimer: (show) => set({ showTimer: show }),
       setAmbientEnabled: (enabled) => set({ ambientEnabled: enabled }),
       setAmbientTrack: (track) => set({ ambientTrack: track }),
+      setAmbientVolume: (volume) => set({ ambientVolume: Math.min(1, Math.max(0, volume)) }),
+      toggleAmbientMuted: (muted) => set({ ambientMuted: muted }),
       setExperienceLevel: (level) => set({ experienceLevel: level }),
       setMorningReminder: (config) => set({ morningReminder: config }),
       setAfternoonReminder: (config) => set({ afternoonReminder: config }),

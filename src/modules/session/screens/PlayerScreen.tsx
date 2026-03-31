@@ -23,6 +23,7 @@ export function PlayerScreen({ route, navigation }: Props) {
   const canExitRef = useRef(false);
   const { template } = route.params;
   const showTimer = useUserStore((state) => state.showTimer);
+  const ambientMuted = useUserStore((state) => state.ambientMuted);
   const addSession = useHistoryStore((state) => state.addSession);
   const rewardSentRef = useRef(false);
 
@@ -213,6 +214,11 @@ export function PlayerScreen({ route, navigation }: Props) {
                 <MinimalText variant="caption" align="center" color={colors.textSecondary}>
                   Companion {profile.levelLabel.toLowerCase()} - {profile.xpTotal} XP
                 </MinimalText>
+                {ambientMuted && (
+                  <MinimalText variant="caption" align="center" color={colors.error}>
+                    Sem som ambiente (mute ativo)
+                  </MinimalText>
+                )}
               </View>
             ) : (
               <View style={styles.timerContainer}>
