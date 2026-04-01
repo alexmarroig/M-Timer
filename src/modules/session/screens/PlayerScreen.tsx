@@ -4,6 +4,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTimerEngine } from '../hooks/useTimerEngine';
 import { TimelineProgress } from '../components/TimelineProgress';
 import { PhaseIndicator } from '../components/PhaseIndicator';
+import { CompanionCharacter } from '../../companion/CompanionCharacter';
 import { ButtonPrimary } from '../../../components/ui/ButtonPrimary';
 import { MinimalText } from '../../../components/ui/MinimalText';
 import { Companion } from '../../../components/Companion';
@@ -12,7 +13,9 @@ import { useMeditationAudio } from '../../../hooks/useMeditationAudio';
 import { colors, spacing } from '../../../core/theme';
 import { formatTime } from '../../../core/utils/time';
 import { PHASE_LABELS } from '../../../types/session';
+import { getSessionExpression } from '../../../types/companion';
 import { useHistoryStore } from '../../../store/historyStore';
+import { useCompanionStore } from '../../../store/companionStore';
 import { useUserStore } from '../../../store/userStore';
 import type { SessionStackParamList } from '../../../core/navigation/types';
 import { useSessionCues } from '../hooks/useSessionCues';
@@ -22,6 +25,9 @@ type Props = NativeStackScreenProps<SessionStackParamList, 'Player'>;
 export function PlayerScreen({ route, navigation }: Props) {
   const canExitRef = useRef(false);
   const { template } = route.params;
+  const showTimer = useUserStore((s) => s.showTimer);
+  const addSession = useHistoryStore((s) => s.addSession);
+  const addSessionXp = useCompanionStore((s) => s.addSessionXp);
   const showTimer = useUserStore((state) => state.showTimer);
   const ambientMuted = useUserStore((state) => state.ambientMuted);
   const addSession = useHistoryStore((state) => state.addSession);
@@ -60,6 +66,7 @@ export function PlayerScreen({ route, navigation }: Props) {
     }
   }, [start, state, template.phases]);
 
+  // Save session when finished + award XP
   useEffect(() => {
     if (isFinished && sessionStartTimestamp > 0 && !rewardSentRef.current) {
       rewardSentRef.current = true;
@@ -70,6 +77,9 @@ export function PlayerScreen({ route, navigation }: Props) {
         startedAt: sessionStartTimestamp,
         completed: true,
       });
+      // Award XP - need fresh stats after adding session
+      const freshStats = useHistoryStore.getState().getStats();
+      addSessionXp(freshStats.currentStreak, freshStats.sessionsToday);
     }
   }, [addSession, isFinished, sessionStartTimestamp, template]);
 
@@ -147,6 +157,17 @@ export function PlayerScreen({ route, navigation }: Props) {
       <View style={styles.content}>
         {isFinished ? (
           <View style={styles.finishedContainer}>
+            <CompanionCharacter
+              sessionExpression="finished"
+              size={100}
+            />
+            <MinimalText
+              variant="heading"
+              align="center"
+              color={colors.primary}
+              style={{ marginTop: spacing.lg }}
+            >
+              Sessão completa
             <MinimalText variant="heading" align="center" color={colors.primary}>
               Sessao completa
             </MinimalText>
@@ -191,6 +212,16 @@ export function PlayerScreen({ route, navigation }: Props) {
           </View>
         ) : (
           <>
+            {/* Companion reacting to phase */}
+            <CompanionCharacter
+              sessionExpression={getSessionExpression(state, currentPhase)}
+              size={state === 'core' ? 80 : 100}
+            />
+
+            {/* Phase indicator */}
+            <View style={{ marginTop: spacing.md }}>
+              <PhaseIndicator currentPhase={currentPhase} state={state} />
+            </View>
             <View style={styles.companionContainer}>
               <Companion
                 placement="player"

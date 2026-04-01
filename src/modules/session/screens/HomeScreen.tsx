@@ -9,6 +9,7 @@ import { Companion } from '../../../components/Companion';
 import { useCompanion } from '../../../hooks/useCompanion';
 import { PresetCard } from '../components/PresetCard';
 import { StreakBadge } from '../components/StreakBadge';
+import { CompanionCharacter } from '../../companion/CompanionCharacter';
 import { useAuthStore } from '../../../store/authStore';
 import { useSessionStore } from '../../../store/sessionStore';
 import { useUserStore } from '../../../store/userStore';
@@ -75,6 +76,12 @@ export function HomeScreen({ navigation }: Props) {
           </MinimalText>
         </View>
 
+        {/* Companion */}
+        <View style={styles.companionSection}>
+          <CompanionCharacter size={110} showLevel />
+        </View>
+
+        {/* Main CTA */}
         <View style={styles.section}>
           <Card style={styles.companionCard}>
             <View style={styles.companionRow}>
@@ -177,6 +184,12 @@ const styles = StyleSheet.create({
   },
   greetingSection: {
     marginTop: spacing.lg,
+    marginBottom: spacing.md,
+  },
+  companionSection: {
+    alignItems: 'center',
+    marginBottom: spacing.lg,
+    paddingVertical: spacing.md,
     marginBottom: spacing.lg,
   },
   mainButton: {
