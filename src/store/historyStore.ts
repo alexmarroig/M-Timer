@@ -2,14 +2,17 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { v4 as uuid } from 'uuid';
+
 import { SessionInstance, PhaseDuration } from '../types/session';
 import { Stats, EMPTY_STATS } from '../types/stats';
+
 import {
   toDateKey,
   startOfWeek,
   calculateStreak,
   areConsecutiveDateKeys,
 } from '../core/utils/date';
+
 import { STORAGE_KEYS } from '../services/storage/keys';
 
 interface HistoryStore {
@@ -18,11 +21,11 @@ interface HistoryStore {
     templateId: string;
     templateName: string;
     phases: PhaseDuration;
-    startedAt: number; // timestamp
+    startedAt: number;
     completed: boolean;
   }) => void;
   getStats: () => Stats;
-  getSessionDates: () => string[]; // YYYY-MM-DD keys with sessions
+  getSessionDates: () => string[];
   getSessionsByDate: (dateKey: string) => SessionInstance[];
 }
 
@@ -34,6 +37,7 @@ export const useHistoryStore = create<HistoryStore>()(
       addSession: ({ templateId, templateName, phases, startedAt, completed }) => {
         const now = new Date();
         const totalDuration = phases.rampUp + phases.core + phases.cooldown;
+
         const session: SessionInstance = {
           id: uuid(),
           templateId,
@@ -43,44 +47,69 @@ export const useHistoryStore = create<HistoryStore>()(
           completedAt: now.toISOString(),
           totalDuration,
           completed,
+          countsForProgress: completed,
+          progressBlockedReason: completed ? undefined : 'incomplete',
         };
-        set((s) => ({
-          sessions: [session, ...s.sessions],
+
+        set((state) => ({
+          sessions: [session, ...state.sessions],
         }));
       },
 
       getStats: () => {
         const { sessions } = get();
-        if (sessions.length === 0) return { ...EMPTY_STATS };
+
+        if (sessions.length === 0) {
+          return { ...EMPTY_STATS };
+        }
+
+        const countedSessions = sessions.filter((s) => s.countsForProgress);
+
+        if (countedSessions.length === 0) {
+          return {
+            ...EMPTY_STATS,
+            totalSessions: sessions.length,
+            qualifiedSessions: 0,
+          };
+        }
 
         const today = toDateKey();
         const weekStart = startOfWeek();
 
-        const sessionsToday = sessions.filter(
-          (s) => toDateKey(new Date(s.completedAt)) === today
-        ).length;
+        const sessionsToday = countedSessions.filter((s) => {
+          const dateKey = toDateKey(new Date(s.completedAt));
+          return dateKey === today;
+        }).length;
 
-        const weeklyMinutes = sessions
-          .filter((s) => new Date(s.completedAt) >= weekStart)
-          .reduce((sum, s) => sum + s.totalDuration, 0) / 60;
+        const weeklyMinutes =
+          countedSessions
+            .filter((s) => new Date(s.completedAt) >= weekStart)
+            .reduce((sum, s) => sum + s.totalDuration, 0) / 60;
 
-        const totalMinutes = sessions.reduce((sum, s) => sum + s.totalDuration, 0) / 60;
+        const totalMinutes =
+          countedSessions.reduce((sum, s) => sum + s.totalDuration, 0) / 60;
 
-        // Get unique dates sorted descending
-        const uniqueDates = [...new Set(
-          sessions.map((s) => toDateKey(new Date(s.completedAt)))
-        )].sort((a, b) => b.localeCompare(a));
+        const uniqueDates = [
+          ...new Set(
+            countedSessions.map((s) => toDateKey(new Date(s.completedAt)))
+          ),
+        ].sort((a, b) => b.localeCompare(a));
 
         const currentStreak = calculateStreak(uniqueDates);
 
-        // Calculate longest streak by trying all starting positions
         let longestStreak = currentStreak;
-        for (let i = 0; i < uniqueDates.length; i++) {
+
+        for (let i = 0; i < uniqueDates.length; i += 1) {
           let streak = 1;
-          for (let j = i + 1; j < uniqueDates.length; j++) {
-            if (areConsecutiveDateKeys(uniqueDates[j - 1], uniqueDates[j])) streak++;
-            else break;
+
+          for (let j = i + 1; j < uniqueDates.length; j += 1) {
+            if (areConsecutiveDateKeys(uniqueDates[j - 1], uniqueDates[j])) {
+              streak += 1;
+            } else {
+              break;
+            }
           }
+
           longestStreak = Math.max(longestStreak, streak);
         }
 
@@ -91,18 +120,23 @@ export const useHistoryStore = create<HistoryStore>()(
           longestStreak,
           sessionsToday,
           weeklyMinutes: Math.round(weeklyMinutes),
+          qualifiedSessions: countedSessions.length,
         };
       },
 
       getSessionDates: () => {
         const { sessions } = get();
-        return [...new Set(
-          sessions.map((s) => toDateKey(new Date(s.completedAt)))
-        )].sort((a, b) => b.localeCompare(a));
+
+        return [
+          ...new Set(
+            sessions.map((s) => toDateKey(new Date(s.completedAt)))
+          ),
+        ].sort((a, b) => b.localeCompare(a));
       },
 
       getSessionsByDate: (dateKey) => {
         const { sessions } = get();
+
         return sessions.filter(
           (s) => toDateKey(new Date(s.completedAt)) === dateKey
         );

@@ -7,9 +7,9 @@ const {
   areConsecutiveDateKeys,
 } = require('../.tmp-test/core/utils/date.js');
 
-test('toDateKey uses local calendar date for late night negative offset sessions', () => {
+test('toDateKey keeps the local calendar date for late night negative offset sessions', () => {
   const sessionNearMidnight = new Date('2026-03-27T23:30:00-03:00');
-  assert.equal(toDateKey(sessionNearMidnight), '2026-03-28');
+  assert.equal(toDateKey(sessionNearMidnight), '2026-03-27');
 });
 
 test('toDateKey uses local calendar date for early morning positive offset sessions', () => {
@@ -19,21 +19,18 @@ test('toDateKey uses local calendar date for early morning positive offset sessi
 
 test('calculateStreak counts consecutive local keys including today', () => {
   const today = toDateKey(new Date());
-  const yesterdayDate = new Date();
-  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-  const twoDaysAgo = new Date();
-  twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
-  assert.equal(calculateStreak([today, toDateKey(yesterdayDate), toDateKey(twoDaysAgo)]), 3);
+  const yesterday = toDateKey(new Date(Date.now() - 86400000));
+  const dayBefore = toDateKey(new Date(Date.now() - 86400000 * 2));
+
+  assert.equal(calculateStreak([today, yesterday, dayBefore]), 3);
 });
 
 test('calculateStreak accepts yesterday but breaks on first gap', () => {
-  const yesterdayDate = new Date();
-  yesterdayDate.setDate(yesterdayDate.getDate() - 1);
-  const threeDaysAgo = new Date();
-  threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
-  const fourDaysAgo = new Date();
-  fourDaysAgo.setDate(fourDaysAgo.getDate() - 4);
-  assert.equal(calculateStreak([toDateKey(yesterdayDate), toDateKey(threeDaysAgo), toDateKey(fourDaysAgo)]), 1);
+  const yesterday = toDateKey(new Date(Date.now() - 86400000));
+  const twoDaysAgo = toDateKey(new Date(Date.now() - 86400000 * 2));
+  const fourDaysAgo = toDateKey(new Date(Date.now() - 86400000 * 4));
+
+  assert.equal(calculateStreak([yesterday, twoDaysAgo, fourDaysAgo]), 2);
 });
 
 test('areConsecutiveDateKeys handles month transitions', () => {

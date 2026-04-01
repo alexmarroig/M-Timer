@@ -2,6 +2,7 @@
   "expo": {
     "name": "M-Timer",
     "slug": "m-timer",
+    "owner": "alexmarroig",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -9,7 +10,7 @@
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#F8F7F4"
+      "backgroundColor": "#0F2B41"
     },
     "ios": {
       "supportsTablet": true,
@@ -17,18 +18,31 @@
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#F8F7F4",
+        "backgroundColor": "#0F2B41",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
-      "package": "com.mtimer.app"
+      "package": "com.mtimer.app",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ]
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-notifications"
-    ]
+      "expo-notifications",
+      "expo-audio",
+      "expo-asset"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "ff551d77-3de9-42d9-ab43-f63236dca5d4"
+      }
+    }
   }
 }

@@ -5,45 +5,46 @@ import { OnboardingPage } from '../components/OnboardingPage';
 import { MinimalText } from '../../../components/ui/MinimalText';
 import { colors, spacing, borderRadius } from '../../../core/theme';
 import type { OnboardingStackParamList } from '../../../core/navigation/types';
+import type { ExperienceLevel } from '../../../types/user';
 
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'Experience'>;
 
-const OPTIONS = [
+const OPTIONS: Array<{ id: ExperienceLevel; label: string; desc: string }> = [
   { id: 'beginner', label: 'Iniciante', desc: 'Aprendi recentemente' },
-  { id: 'regular', label: 'Regular', desc: 'Pratico há alguns meses' },
-  { id: 'experienced', label: 'Experiente', desc: 'Pratico há mais de 1 ano' },
+  { id: 'regular', label: 'Regular', desc: 'Pratico ha alguns meses' },
+  { id: 'experienced', label: 'Experiente', desc: 'Pratico ha mais de 1 ano' },
 ];
 
 export function ExperienceScreen({ navigation }: Props) {
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<ExperienceLevel | null>(null);
 
   return (
     <OnboardingPage
-      title="Sua experiência"
-      description="Há quanto tempo você pratica Meditação Transcendental?"
+      title="Sua experiencia"
+      description="Ha quanto tempo voce pratica Meditacao Transcendental?"
       buttonTitle="Continuar"
       onNext={() => navigation.navigate('Schedule', { experience: selected || 'regular' })}
     >
       <View style={styles.options}>
-        {OPTIONS.map((opt) => (
+        {OPTIONS.map((option) => (
           <TouchableOpacity
-            key={opt.id}
-            style={[styles.option, selected === opt.id && styles.optionSelected]}
-            onPress={() => setSelected(opt.id)}
+            key={option.id}
+            style={[styles.option, selected === option.id && styles.optionSelected]}
+            onPress={() => setSelected(option.id)}
             activeOpacity={0.7}
           >
             <MinimalText
               variant="body"
-              color={selected === opt.id ? colors.textInverse : colors.textPrimary}
-              style={{ fontWeight: '600' }}
+              color={selected === option.id ? colors.textInverse : colors.textPrimary}
+              style={styles.optionLabel}
             >
-              {opt.label}
+              {option.label}
             </MinimalText>
             <MinimalText
               variant="caption"
-              color={selected === opt.id ? colors.accentLight : colors.textSecondary}
+              color={selected === option.id ? colors.accentLight : colors.textSecondary}
             >
-              {opt.desc}
+              {option.desc}
             </MinimalText>
           </TouchableOpacity>
         ))}
@@ -66,5 +67,8 @@ const styles = StyleSheet.create({
   optionSelected: {
     backgroundColor: colors.primary,
     borderColor: colors.primary,
+  },
+  optionLabel: {
+    fontWeight: '600',
   },
 });

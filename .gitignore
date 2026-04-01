@@ -10,3 +10,6 @@ dist/
 web-build/
 .env
 .env.*
+
+.artifacts/
+builds/
