@@ -1,26 +1,34 @@
 import React, { useCallback } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+
 import { ScreenContainer } from '../../../components/layout/ScreenContainer';
 import { ButtonPrimary } from '../../../components/ui/ButtonPrimary';
 import { Card } from '../../../components/ui/Card';
 import { MinimalText } from '../../../components/ui/MinimalText';
 import { Companion } from '../../../components/Companion';
+
 import { useCompanion } from '../../../hooks/useCompanion';
 import { PresetCard } from '../components/PresetCard';
 import { StreakBadge } from '../components/StreakBadge';
 import { CompanionCharacter } from '../../companion/CompanionCharacter';
+
 import { useAuthStore } from '../../../store/authStore';
 import { useSessionStore } from '../../../store/sessionStore';
 import { useUserStore } from '../../../store/userStore';
+
 import { colors, spacing, borderRadius } from '../../../core/theme';
+
 import { SessionTemplate } from '../../../types/session';
 import type { ExperienceLevel } from '../../../types/user';
 import type { SessionStackParamList } from '../../../core/navigation/types';
 
 type Props = NativeStackScreenProps<SessionStackParamList, 'Home'>;
 
-const HOME_COPY: Record<ExperienceLevel, { subtitle: string; presetTitle: string }> = {
+const HOME_COPY: Record<
+  ExperienceLevel,
+  { subtitle: string; presetTitle: string }
+> = {
   beginner: {
     subtitle: 'vamos consolidar sua pratica com sessoes leves e consistentes.',
     presetTitle: 'Presets para comecar',
@@ -40,6 +48,7 @@ export function HomeScreen({ navigation }: Props) {
   const templates = useSessionStore((state) => state.templates);
   const getDefault = useSessionStore((state) => state.getDefault);
   const experienceLevel = useUserStore((state) => state.experienceLevel);
+
   const { stats, profile, companionState } = useCompanion({
     placement: 'home',
   });
@@ -67,6 +76,7 @@ export function HomeScreen({ navigation }: Props) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
+        {/* Greeting */}
         <View style={styles.greetingSection}>
           <MinimalText variant="heading">M-Timer</MinimalText>
           <MinimalText variant="body" color={colors.textSecondary}>
@@ -76,12 +86,12 @@ export function HomeScreen({ navigation }: Props) {
           </MinimalText>
         </View>
 
-        {/* Companion */}
+        {/* Companion Character */}
         <View style={styles.companionSection}>
           <CompanionCharacter size={110} showLevel />
         </View>
 
-        {/* Main CTA */}
+        {/* Companion Card */}
         <View style={styles.section}>
           <Card style={styles.companionCard}>
             <View style={styles.companionRow}>
@@ -96,26 +106,38 @@ export function HomeScreen({ navigation }: Props) {
               </View>
 
               <View style={styles.companionCopy}>
-                <MinimalText variant="subheading">Companion em evolucao</MinimalText>
+                <MinimalText variant="subheading">
+                  Companion em evolucao
+                </MinimalText>
+
                 <MinimalText variant="caption" color={colors.textSecondary}>
                   Nivel {profile.currentLevel} - {profile.levelLabel}
                 </MinimalText>
+
                 <MinimalText variant="body" style={styles.metricText}>
                   {profile.xpTotal} XP acumulado
                 </MinimalText>
+
                 <View style={styles.progressTrack}>
                   <View
                     style={[
                       styles.progressFill,
-                      { width: `${Math.max(profile.progressWithinLevel * 100, 6)}%` },
+                      {
+                        width: `${Math.max(
+                          profile.progressWithinLevel * 100,
+                          6
+                        )}%`,
+                      },
                     ]}
                   />
                 </View>
+
                 <MinimalText variant="caption" color={colors.textSecondary}>
                   {profile.nextLevelLabel
                     ? `${profile.xpToNextLevel} XP para ${profile.nextLevelLabel}`
                     : 'Seu companion entrou em estado integrado.'}
                 </MinimalText>
+
                 <MinimalText
                   variant="caption"
                   color={colors.textSecondary}
@@ -130,6 +152,7 @@ export function HomeScreen({ navigation }: Props) {
           </Card>
         </View>
 
+        {/* CTA */}
         <ButtonPrimary
           title="Iniciar Sessao"
           onPress={handleStartDefault}
@@ -137,14 +160,20 @@ export function HomeScreen({ navigation }: Props) {
           style={styles.mainButton}
         />
 
+        {/* Streak */}
         <View style={styles.section}>
-          <StreakBadge currentStreak={stats.currentStreak} sessionsToday={stats.sessionsToday} />
+          <StreakBadge
+            currentStreak={stats.currentStreak}
+            sessionsToday={stats.sessionsToday}
+          />
         </View>
 
+        {/* Presets */}
         <View style={styles.section}>
           <MinimalText variant="subheading" style={styles.sectionTitle}>
             {homeCopy.presetTitle}
           </MinimalText>
+
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
@@ -161,6 +190,7 @@ export function HomeScreen({ navigation }: Props) {
           </ScrollView>
         </View>
 
+        {/* Stats footer */}
         {stats.totalSessions > 0 && (
           <View style={styles.section}>
             <MinimalText variant="caption" color={colors.textSecondary}>
@@ -188,7 +218,6 @@ const styles = StyleSheet.create({
   },
   companionSection: {
     alignItems: 'center',
-    marginBottom: spacing.lg,
     paddingVertical: spacing.md,
     marginBottom: spacing.lg,
   },

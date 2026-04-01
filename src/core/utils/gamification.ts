@@ -20,8 +20,14 @@ export function calculateSessionReward(
 ): SessionReward {
   const durationMinutes = Math.max(1, Math.round(totalDurationSeconds / 60));
   const streakBonus = Math.min(20, currentStreak * 2);
+
   const xp = 10 + durationMinutes + streakBonus;
-  const coins = 2 + Math.floor(durationMinutes / 5) + Math.floor(currentStreak / 3);
+
+  const coins =
+    2 +
+    Math.floor(durationMinutes / 5) +
+    Math.floor(currentStreak / 3);
+
   return { xp, coins };
 }
 
@@ -29,3 +35,15 @@ export function levelFromXp(xp: number): number {
   return Math.floor(Math.sqrt(Math.max(0, xp) / 30)) + 1;
 }
 
+export function moodWithRewardBoost(
+  baseMood: CompanionMood,
+  hasRewardToday: boolean
+): CompanionMood {
+  if (!hasRewardToday) return baseMood;
+
+  // boost progressivo (mais natural, sem salto brusco)
+  if (baseMood === 'sleepy') return 'calm';
+  if (baseMood === 'calm') return 'happy';
+
+  return baseMood;
+}

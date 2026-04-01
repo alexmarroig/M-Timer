@@ -7,12 +7,15 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
-    "build:android": "npx expo prebuild --platform android --clean && cd android && gradlew.bat assembleRelease"
-    "android": "expo run:android",
-    "ios": "expo run:ios",
-    "web": "expo start --web",
+
+    "run:android": "expo run:android",
+    "run:ios": "expo run:ios",
+
+    "build:android": "npx expo prebuild --platform android --clean && cd android && gradlew.bat assembleRelease",
+
     "test": "npm run test:unit",
     "test:unit": "node -e \"require('fs').rmSync('.tmp-test',{recursive:true,force:true})\" && tsc --outDir .tmp-test --module commonjs --target es2020 --skipLibCheck --esModuleInterop src/core/utils/date.ts src/services/gamificationEngine.ts src/services/companionEngine.ts src/services/audioEngine.ts src/hooks/useMeditationAudio.ts src/store/userStore.ts && node --test tests/date.test.cjs tests/gamification.test.cjs tests/companionEngine.test.cjs tests/audioEngine.test.cjs tests/useMeditation.test.cjs && node -e \"require('fs').rmSync('.tmp-test',{recursive:true,force:true})\"",
+
     "validate:icons": "node scripts/validate-icons.js",
     "perf:report": "node scripts/perf-report.js"
   },
@@ -49,9 +52,7 @@
   "expo": {
     "doctor": {
       "reactNativeDirectoryCheck": {
-        "exclude": [
-          "expo-av"
-        ]
+        "exclude": ["expo-av"]
       }
     }
   },

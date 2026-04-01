@@ -5,6 +5,8 @@ export const STORAGE_KEYS = {
   AUTH_SESSION: '@mtimer/auth_session',
   TIMER_STATE: '@mtimer/timer_state',
   COMPANION: '@mtimer/companion',
+
+  // performance / observability
   PERF_EVENTS: '@mtimer/perf_events',
   PERF_METRICS: '@mtimer/perf_metrics',
   PERF_SNAPSHOT_CURRENT: '@mtimer/perf_snapshot_current',

@@ -2,14 +2,17 @@ import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { v4 as uuid } from 'uuid';
+
 import { SessionInstance, PhaseDuration } from '../types/session';
 import { Stats, EMPTY_STATS } from '../types/stats';
+
 import {
   toDateKey,
   startOfWeek,
   calculateStreak,
   areConsecutiveDateKeys,
 } from '../core/utils/date';
+
 import { STORAGE_KEYS } from '../services/storage/keys';
 
 interface HistoryStore {
@@ -34,6 +37,7 @@ export const useHistoryStore = create<HistoryStore>()(
       addSession: ({ templateId, templateName, phases, startedAt, completed }) => {
         const now = new Date();
         const totalDuration = phases.rampUp + phases.core + phases.cooldown;
+
         const session: SessionInstance = {
           id: uuid(),
           templateId,
@@ -54,11 +58,13 @@ export const useHistoryStore = create<HistoryStore>()(
 
       getStats: () => {
         const { sessions } = get();
+
         if (sessions.length === 0) {
           return { ...EMPTY_STATS };
         }
 
-        const countedSessions = sessions.filter((session) => session.countsForProgress);
+        const countedSessions = sessions.filter((s) => s.countsForProgress);
+
         if (countedSessions.length === 0) {
           return {
             ...EMPTY_STATS,
@@ -70,27 +76,32 @@ export const useHistoryStore = create<HistoryStore>()(
         const today = toDateKey();
         const weekStart = startOfWeek();
 
-        const sessionsToday = countedSessions.filter(
-          (session) => toDateKey(new Date(session.completedAt)) === today
-        ).length;
+        const sessionsToday = countedSessions.filter((s) => {
+          const dateKey = toDateKey(new Date(s.completedAt));
+          return dateKey === today;
+        }).length;
 
         const weeklyMinutes =
           countedSessions
-            .filter((session) => new Date(session.completedAt) >= weekStart)
-            .reduce((sum, session) => sum + session.totalDuration, 0) / 60;
+            .filter((s) => new Date(s.completedAt) >= weekStart)
+            .reduce((sum, s) => sum + s.totalDuration, 0) / 60;
 
         const totalMinutes =
-          countedSessions.reduce((sum, session) => sum + session.totalDuration, 0) / 60;
+          countedSessions.reduce((sum, s) => sum + s.totalDuration, 0) / 60;
 
-        const uniqueDates = [...new Set(countedSessions.map((session) => toDateKey(new Date(session.completedAt))))].sort(
-          (left, right) => right.localeCompare(left)
-        );
+        const uniqueDates = [
+          ...new Set(
+            countedSessions.map((s) => toDateKey(new Date(s.completedAt)))
+          ),
+        ].sort((a, b) => b.localeCompare(a));
 
         const currentStreak = calculateStreak(uniqueDates);
 
         let longestStreak = currentStreak;
+
         for (let i = 0; i < uniqueDates.length; i += 1) {
           let streak = 1;
+
           for (let j = i + 1; j < uniqueDates.length; j += 1) {
             if (areConsecutiveDateKeys(uniqueDates[j - 1], uniqueDates[j])) {
               streak += 1;
@@ -98,6 +109,7 @@ export const useHistoryStore = create<HistoryStore>()(
               break;
             }
           }
+
           longestStreak = Math.max(longestStreak, streak);
         }
 
@@ -114,14 +126,20 @@ export const useHistoryStore = create<HistoryStore>()(
 
       getSessionDates: () => {
         const { sessions } = get();
-        return [...new Set(sessions.map((session) => toDateKey(new Date(session.completedAt))))].sort(
-          (left, right) => right.localeCompare(left)
-        );
+
+        return [
+          ...new Set(
+            sessions.map((s) => toDateKey(new Date(s.completedAt)))
+          ),
+        ].sort((a, b) => b.localeCompare(a));
       },
 
       getSessionsByDate: (dateKey) => {
         const { sessions } = get();
-        return sessions.filter((session) => toDateKey(new Date(session.completedAt)) === dateKey);
+
+        return sessions.filter(
+          (s) => toDateKey(new Date(s.completedAt)) === dateKey
+        );
       },
     }),
     {
