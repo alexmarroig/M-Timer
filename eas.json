@@ -7,6 +7,13 @@
       "android": {
         "buildType": "apk",
         "gradleCommand": ":app:assembleRelease"
+    "version": ">= 18.4.0"
+  },
+  "build": {
+    "preview": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
       }
     },
     "production": {

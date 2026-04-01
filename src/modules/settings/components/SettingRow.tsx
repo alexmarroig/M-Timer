@@ -56,7 +56,7 @@ export function SettingRow(props: Props) {
         )}
         {props.type === 'navigate' && (
           <MinimalText variant="body" color={colors.textSecondary}>
-            →
+            {'>'}
           </MinimalText>
         )}
       </View>

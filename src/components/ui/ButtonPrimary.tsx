@@ -3,6 +3,7 @@ import {
   TouchableOpacity,
   Text,
   StyleSheet,
+  StyleProp,
   ViewStyle,
   ActivityIndicator,
 } from 'react-native';
@@ -15,7 +16,7 @@ interface Props {
   size?: 'large' | 'medium' | 'small';
   disabled?: boolean;
   loading?: boolean;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export function ButtonPrimary({
