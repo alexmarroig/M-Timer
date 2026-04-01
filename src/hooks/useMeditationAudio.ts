@@ -11,7 +11,6 @@ import { createAudioEngine, type AmbientTrack } from '../services/audioEngine';
 
 export interface AmbientAudioControl {
   ambientEnabled: boolean;
-  ambientTrack: AmbientTrack;
   ambientVolume: number;
   ambientMuted: boolean;
   isMeditating: boolean;
