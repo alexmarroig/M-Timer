@@ -1,39 +1,5 @@
 import React, { useEffect, useCallback, useRef } from 'react';
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
 import { Alert, View, StyleSheet, StatusBar } from 'react-native';
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-import { View, StyleSheet, StatusBar } from 'react-native';
->>>>>>> theirs
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useTimerEngine } from '../hooks/useTimerEngine';
 import { TimelineProgress } from '../components/TimelineProgress';
@@ -48,8 +14,6 @@ import { formatTime } from '../../../core/utils/time';
 import { PHASE_LABELS } from '../../../types/session';
 import { useHistoryStore } from '../../../store/historyStore';
 import { useUserStore } from '../../../store/userStore';
-import { useCompanionStore } from '../../../store/companionStore';
-import { CompanionPet } from '../components/CompanionPet';
 import type { SessionStackParamList } from '../../../core/navigation/types';
 import { useSessionCues } from '../hooks/useSessionCues';
 
@@ -58,52 +22,9 @@ type Props = NativeStackScreenProps<SessionStackParamList, 'Player'>;
 export function PlayerScreen({ route, navigation }: Props) {
   const canExitRef = useRef(false);
   const { template } = route.params;
-<<<<<<< ours
   const showTimer = useUserStore((state) => state.showTimer);
   const ambientMuted = useUserStore((state) => state.ambientMuted);
   const addSession = useHistoryStore((state) => state.addSession);
-=======
-  const showTimer = useUserStore((s) => s.showTimer);
-  const addSession = useHistoryStore((s) => s.addSession);
-  const getStats = useHistoryStore((s) => s.getStats);
-  const grantSessionReward = useCompanionStore((s) => s.grantSessionReward);
-  const mood = useCompanionStore((s) => s.mood);
-  const level = useCompanionStore((s) => s.level);
-  const coins = useCompanionStore((s) => s.coins);
-  const xp = useCompanionStore((s) => s.xp);
-  const lastRewardXp = useCompanionStore((s) => s.lastRewardXp);
-  const lastRewardCoins = useCompanionStore((s) => s.lastRewardCoins);
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
   const rewardSentRef = useRef(false);
 
   const {
@@ -149,55 +70,8 @@ export function PlayerScreen({ route, navigation }: Props) {
         startedAt: sessionStartTimestamp,
         completed: true,
       });
-
-      const streak = getStats().currentStreak;
-      grantSessionReward(totalPhaseDuration(template.phases), streak);
     }
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
   }, [addSession, isFinished, sessionStartTimestamp, template]);
-=======
-  }, [isFinished, sessionStartTimestamp, addSession, template, getStats, grantSessionReward]);
->>>>>>> theirs
-=======
-  }, [isFinished, sessionStartTimestamp, addSession, template, getStats, grantSessionReward]);
->>>>>>> theirs
-=======
-  }, [isFinished, sessionStartTimestamp, addSession, template, getStats, grantSessionReward]);
->>>>>>> theirs
-=======
-  }, [isFinished, sessionStartTimestamp, addSession, template, getStats, grantSessionReward]);
->>>>>>> theirs
-=======
-  }, [isFinished, sessionStartTimestamp, addSession, template, getStats, grantSessionReward]);
->>>>>>> theirs
-=======
-  }, [isFinished, sessionStartTimestamp, addSession, template, getStats, grantSessionReward]);
->>>>>>> theirs
-=======
-  }, [isFinished, sessionStartTimestamp, addSession, template, getStats, grantSessionReward]);
->>>>>>> theirs
-=======
-  }, [isFinished, sessionStartTimestamp, addSession, template, getStats, grantSessionReward]);
->>>>>>> theirs
-=======
-  }, [isFinished, sessionStartTimestamp, addSession, template, getStats, grantSessionReward]);
->>>>>>> theirs
-=======
-  }, [isFinished, sessionStartTimestamp, addSession, template, getStats, grantSessionReward]);
->>>>>>> theirs
-=======
-  }, [isFinished, sessionStartTimestamp, addSession, template, getStats, grantSessionReward]);
->>>>>>> theirs
 
   const exitSession = useCallback(() => {
     canExitRef.current = true;
@@ -284,9 +158,6 @@ export function PlayerScreen({ route, navigation }: Props) {
             >
               {formatTime(totalDuration)} de pratica
             </MinimalText>
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
 
             <View style={styles.companionContainer}>
               <Companion
@@ -306,81 +177,11 @@ export function PlayerScreen({ route, navigation }: Props) {
             >
               Nivel {profile.currentLevel} - {profile.levelLabel}
             </MinimalText>
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
             <MinimalText variant="caption" align="center" color={colors.textSecondary}>
               {profile.xpTotal} XP acumulado
               {profile.nextLevelLabel ? ` - ${profile.xpToNextLevel} XP para ${profile.nextLevelLabel}` : ''}
             </MinimalText>
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
 
-=======
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-            <View style={styles.finishedPet}>
-              <CompanionPet
-                mood={mood}
-                level={level}
-                coins={coins}
-                xp={xp}
-                lastRewardXp={lastRewardXp}
-                lastRewardCoins={lastRewardCoins}
-              />
-            </View>
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
             <ButtonPrimary
               title="Concluir"
               onPress={handleClose}
@@ -496,17 +297,6 @@ const styles = StyleSheet.create({
   finishedContainer: {
     alignItems: 'center',
   },
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
   finishedText: {
     marginTop: spacing.md,
   },
@@ -515,61 +305,6 @@ const styles = StyleSheet.create({
   },
   finishButton: {
     marginTop: spacing.xl,
-=======
-  finishedPet: {
-    marginTop: spacing.lg,
-    width: '100%',
->>>>>>> theirs
-=======
-  finishedPet: {
-    marginTop: spacing.lg,
-    width: '100%',
->>>>>>> theirs
-=======
-  finishedPet: {
-    marginTop: spacing.lg,
-    width: '100%',
->>>>>>> theirs
-=======
-  finishedPet: {
-    marginTop: spacing.lg,
-    width: '100%',
->>>>>>> theirs
-=======
-  finishedPet: {
-    marginTop: spacing.lg,
-    width: '100%',
->>>>>>> theirs
-=======
-  finishedPet: {
-    marginTop: spacing.lg,
-    width: '100%',
->>>>>>> theirs
-=======
-  finishedPet: {
-    marginTop: spacing.lg,
-    width: '100%',
->>>>>>> theirs
-=======
-  finishedPet: {
-    marginTop: spacing.lg,
-    width: '100%',
->>>>>>> theirs
-=======
-  finishedPet: {
-    marginTop: spacing.lg,
-    width: '100%',
->>>>>>> theirs
-=======
-  finishedPet: {
-    marginTop: spacing.lg,
-    width: '100%',
->>>>>>> theirs
-=======
-  finishedPet: {
-    marginTop: spacing.lg,
-    width: '100%',
->>>>>>> theirs
   },
   timelineContainer: {
     paddingHorizontal: spacing.xl,

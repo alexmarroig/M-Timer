@@ -91,18 +91,12 @@ export const useHistoryStore = create<HistoryStore>()(
         let longestStreak = currentStreak;
         for (let i = 0; i < uniqueDates.length; i += 1) {
           let streak = 1;
-<<<<<<< ours
           for (let j = i + 1; j < uniqueDates.length; j += 1) {
             if (areConsecutiveDateKeys(uniqueDates[j - 1], uniqueDates[j])) {
               streak += 1;
             } else {
               break;
             }
-=======
-          for (let j = i + 1; j < uniqueDates.length; j++) {
-            if (areConsecutiveDateKeys(uniqueDates[j - 1], uniqueDates[j])) streak++;
-            else break;
->>>>>>> theirs
           }
           longestStreak = Math.max(longestStreak, streak);
         }
