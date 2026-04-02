@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { View, ScrollView, StyleSheet } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ScreenContainer } from '../../../components/layout/ScreenContainer';
@@ -9,10 +9,42 @@ import { Companion } from '../../../components/Companion';
 import { useCompanion } from '../../../hooks/useCompanion';
 import { PresetCard } from '../components/PresetCard';
 import { StreakBadge } from '../components/StreakBadge';
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 import { useAuthStore } from '../../../store/authStore';
 import { useSessionStore } from '../../../store/sessionStore';
 import { useUserStore } from '../../../store/userStore';
 import { colors, spacing, borderRadius } from '../../../core/theme';
+=======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+import { CompanionPet } from '../components/CompanionPet';
+import { useSessionStore } from '../../../store/sessionStore';
+import { useHistoryStore } from '../../../store/historyStore';
+import { useCompanionStore } from '../../../store/companionStore';
+import { colors, spacing } from '../../../core/theme';
+>>>>>>> theirs
 import { SessionTemplate } from '../../../types/session';
 import type { ExperienceLevel } from '../../../types/user';
 import type { SessionStackParamList } from '../../../core/navigation/types';
@@ -35,6 +67,7 @@ const HOME_COPY: Record<ExperienceLevel, { subtitle: string; presetTitle: string
 };
 
 export function HomeScreen({ navigation }: Props) {
+<<<<<<< ours
   const displayName = useAuthStore((state) => state.displayName);
   const templates = useSessionStore((state) => state.templates);
   const getDefault = useSessionStore((state) => state.getDefault);
@@ -42,9 +75,81 @@ export function HomeScreen({ navigation }: Props) {
   const { stats, profile, companionState } = useCompanion({
     placement: 'home',
   });
+=======
+  const templates = useSessionStore((s) => s.templates);
+  const getDefault = useSessionStore((s) => s.getDefault);
+  const getStats = useHistoryStore((s) => s.getStats);
+  const syncMoodFromStats = useCompanionStore((s) => s.syncMoodFromStats);
+  const mood = useCompanionStore((s) => s.mood);
+  const level = useCompanionStore((s) => s.level);
+  const coins = useCompanionStore((s) => s.coins);
+  const xp = useCompanionStore((s) => s.xp);
+  const lastRewardXp = useCompanionStore((s) => s.lastRewardXp);
+  const lastRewardCoins = useCompanionStore((s) => s.lastRewardCoins);
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 
   const defaultTemplate = getDefault();
   const homeCopy = HOME_COPY[experienceLevel];
+
+  useEffect(() => {
+    syncMoodFromStats(stats);
+  }, [stats.currentStreak, stats.sessionsToday, syncMoodFromStats]);
+
+  useEffect(() => {
+    syncMoodFromStats(stats);
+  }, [stats.currentStreak, stats.sessionsToday, syncMoodFromStats]);
+
+  useEffect(() => {
+    syncMoodFromStats(stats);
+  }, [stats.currentStreak, stats.sessionsToday, syncMoodFromStats]);
+
+  useEffect(() => {
+    syncMoodFromStats(stats);
+  }, [stats.currentStreak, stats.sessionsToday, syncMoodFromStats]);
+
+  useEffect(() => {
+    syncMoodFromStats(stats);
+  }, [stats.currentStreak, stats.sessionsToday, syncMoodFromStats]);
+
+  useEffect(() => {
+    syncMoodFromStats(stats);
+  }, [stats.currentStreak, stats.sessionsToday, syncMoodFromStats]);
+
+  useEffect(() => {
+    syncMoodFromStats(stats);
+  }, [stats.currentStreak, stats.sessionsToday, syncMoodFromStats]);
+
+  useEffect(() => {
+    syncMoodFromStats(stats);
+  }, [stats.currentStreak, stats.sessionsToday, syncMoodFromStats]);
+
+  useEffect(() => {
+    syncMoodFromStats(stats);
+  }, [stats.currentStreak, stats.sessionsToday, syncMoodFromStats]);
 
   const handleStartDefault = useCallback(() => {
     if (defaultTemplate) {
@@ -134,6 +239,109 @@ export function HomeScreen({ navigation }: Props) {
           <StreakBadge currentStreak={stats.currentStreak} sessionsToday={stats.sessionsToday} />
         </View>
 
+<<<<<<< ours
+=======
+        <View style={styles.section}>
+          <CompanionPet
+            mood={mood}
+            level={level}
+            coins={coins}
+            xp={xp}
+            lastRewardXp={lastRewardXp}
+            lastRewardCoins={lastRewardCoins}
+          />
+        </View>
+
+        <View style={styles.section}>
+          <CompanionPet
+            mood={mood}
+            level={level}
+            coins={coins}
+            xp={xp}
+            lastRewardXp={lastRewardXp}
+            lastRewardCoins={lastRewardCoins}
+          />
+        </View>
+
+        <View style={styles.section}>
+          <CompanionPet
+            mood={mood}
+            level={level}
+            coins={coins}
+            xp={xp}
+            lastRewardXp={lastRewardXp}
+            lastRewardCoins={lastRewardCoins}
+          />
+        </View>
+
+        <View style={styles.section}>
+          <CompanionPet
+            mood={mood}
+            level={level}
+            coins={coins}
+            xp={xp}
+            lastRewardXp={lastRewardXp}
+            lastRewardCoins={lastRewardCoins}
+          />
+        </View>
+
+        <View style={styles.section}>
+          <CompanionPet
+            mood={mood}
+            level={level}
+            coins={coins}
+            xp={xp}
+            lastRewardXp={lastRewardXp}
+            lastRewardCoins={lastRewardCoins}
+          />
+        </View>
+
+        <View style={styles.section}>
+          <CompanionPet
+            mood={mood}
+            level={level}
+            coins={coins}
+            xp={xp}
+            lastRewardXp={lastRewardXp}
+            lastRewardCoins={lastRewardCoins}
+          />
+        </View>
+
+        <View style={styles.section}>
+          <CompanionPet
+            mood={mood}
+            level={level}
+            coins={coins}
+            xp={xp}
+            lastRewardXp={lastRewardXp}
+            lastRewardCoins={lastRewardCoins}
+          />
+        </View>
+
+        <View style={styles.section}>
+          <CompanionPet
+            mood={mood}
+            level={level}
+            coins={coins}
+            xp={xp}
+            lastRewardXp={lastRewardXp}
+            lastRewardCoins={lastRewardCoins}
+          />
+        </View>
+
+        <View style={styles.section}>
+          <CompanionPet
+            mood={mood}
+            level={level}
+            coins={coins}
+            xp={xp}
+            lastRewardXp={lastRewardXp}
+            lastRewardCoins={lastRewardCoins}
+          />
+        </View>
+
+        {/* Presets */}
+>>>>>>> theirs
         <View style={styles.section}>
           <MinimalText variant="subheading" style={styles.sectionTitle}>
             {homeCopy.presetTitle}

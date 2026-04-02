@@ -7,6 +7,26 @@ import {
   calculateSessionReward,
   getMoodFromStats,
   levelFromXp,
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+=======
+  moodWithRewardBoost,
+>>>>>>> theirs
+=======
+  moodWithRewardBoost,
+>>>>>>> theirs
+=======
+  moodWithRewardBoost,
+>>>>>>> theirs
+=======
+  moodWithRewardBoost,
+>>>>>>> theirs
+=======
+  moodWithRewardBoost,
+>>>>>>> theirs
   type CompanionMood,
 } from '../core/utils/gamification';
 import { toDateKey } from '../core/utils/date';
@@ -51,9 +71,47 @@ export const useCompanionStore = create<CompanionStore>()(
       },
 
       syncMoodFromStats: (stats) => {
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
         set(() => ({
           mood: getMoodFromStats(stats),
         }));
+=======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+        set((s) => {
+          const today = toDateKey();
+          const baseMood = getMoodFromStats(stats);
+          const hasRewardToday =
+            s.lastRewardDate === today &&
+            (s.lastRewardXp > 0 || s.lastRewardCoins > 0);
+
+          return {
+            mood: moodWithRewardBoost(baseMood, hasRewardToday),
+          };
+        });
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
       },
     }),
     {
