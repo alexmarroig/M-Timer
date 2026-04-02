@@ -4,7 +4,6 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
-<<<<<<< ours
     "android": "expo run:android",
     "ios": "expo run:ios",
     "web": "expo start --web",
@@ -12,37 +11,6 @@
     "test:unit": "node -e \"require('fs').rmSync('.tmp-test',{recursive:true,force:true})\" && tsc --outDir .tmp-test --module commonjs --target es2020 --skipLibCheck --esModuleInterop src/core/utils/date.ts src/services/gamificationEngine.ts src/services/companionEngine.ts src/services/audioEngine.ts src/hooks/useMeditationAudio.ts src/store/userStore.ts && node --test tests/date.test.cjs tests/gamification.test.cjs tests/companionEngine.test.cjs tests/audioEngine.test.cjs tests/useMeditation.test.cjs && node -e \"require('fs').rmSync('.tmp-test',{recursive:true,force:true})\"",
     "validate:icons": "node scripts/validate-icons.js",
     "perf:report": "node scripts/perf-report.js"
-=======
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
-    "test": "npm run test:unit",
-    "test:unit": "rm -rf .tmp-test && tsc --outDir .tmp-test --module commonjs --target es2020 src/core/utils/date.ts src/core/utils/gamification.ts && node --test tests/date.test.cjs tests/gamification.test.cjs && rm -rf .tmp-test"
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
-<<<<<<< ours
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
-=======
->>>>>>> theirs
   },
   "dependencies": {
     "@expo/metro-runtime": "~55.0.7",

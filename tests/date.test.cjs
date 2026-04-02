@@ -16,9 +16,21 @@ const {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 test('toDateKey keeps the local calendar date for late night negative offset sessions', () => {
   const sessionNearMidnight = new Date('2026-03-27T23:30:00-03:00');
   assert.equal(toDateKey(sessionNearMidnight), '2026-03-27');
+=======
+test('toDateKey uses local calendar date for late night negative offset sessions', () => {
+  const sessionNearMidnight = new Date('2026-03-27T23:30:00-03:00');
+  assert.equal(toDateKey(sessionNearMidnight), '2026-03-28');
+>>>>>>> theirs
+=======
+test('toDateKey uses local calendar date for late night negative offset sessions', () => {
+  const sessionNearMidnight = new Date('2026-03-27T23:30:00-03:00');
+  assert.equal(toDateKey(sessionNearMidnight), '2026-03-28');
+>>>>>>> theirs
 =======
 test('toDateKey uses local calendar date for late night negative offset sessions', () => {
   const sessionNearMidnight = new Date('2026-03-27T23:30:00-03:00');
@@ -72,6 +84,8 @@ test('toDateKey uses local calendar date for early morning positive offset sessi
 });
 
 test('calculateStreak counts consecutive local keys including today', () => {
+<<<<<<< ours
+<<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
@@ -137,6 +151,10 @@ test('calculateStreak accepts yesterday but breaks on first gap', () => {
 >>>>>>> theirs
 =======
 >>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
   const today = toDateKey(new Date());
   const yesterdayDate = new Date();
   yesterdayDate.setDate(yesterdayDate.getDate() - 1);
@@ -157,6 +175,12 @@ test('calculateStreak accepts yesterday but breaks on first gap', () => {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs

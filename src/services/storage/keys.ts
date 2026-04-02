@@ -14,9 +14,15 @@ export const STORAGE_KEYS = {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
   PERF_EVENTS: '@mtimer/perf_events',
   PERF_METRICS: '@mtimer/perf_metrics',
   PERF_SNAPSHOT_CURRENT: '@mtimer/perf_snapshot_current',
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======

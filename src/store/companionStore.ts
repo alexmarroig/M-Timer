@@ -12,6 +12,14 @@ import {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+=======
+  moodWithRewardBoost,
+>>>>>>> theirs
+=======
+  moodWithRewardBoost,
+>>>>>>> theirs
 =======
   moodWithRewardBoost,
 >>>>>>> theirs
@@ -76,10 +84,16 @@ export const useCompanionStore = create<CompanionStore>()(
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
         set(() => ({
           mood: getMoodFromStats(stats),
         }));
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -103,6 +117,12 @@ export const useCompanionStore = create<CompanionStore>()(
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs

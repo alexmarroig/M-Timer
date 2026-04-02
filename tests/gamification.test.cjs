@@ -11,6 +11,8 @@ const {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
   calculateSessionXp,
   deriveGamificationProfile,
 } = require('../.tmp-test/services/gamificationEngine.js');
@@ -128,6 +130,10 @@ test('deriveGamificationProfile uses stats.longestStreak as bestStreak', () => {
 >>>>>>> theirs
 =======
 >>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
   calculateSessionReward,
   getMoodFromStats,
   levelFromXp,
@@ -136,6 +142,12 @@ test('deriveGamificationProfile uses stats.longestStreak as bestStreak', () => {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
@@ -176,6 +188,8 @@ test('levelFromXp starts at level 1 and grows with xp', () => {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 >>>>>>> theirs
 =======
 >>>>>>> theirs
@@ -184,6 +198,10 @@ test('levelFromXp starts at level 1 and grows with xp', () => {
 =======
 >>>>>>> theirs
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -202,6 +220,12 @@ test('moodWithRewardBoost keeps companion happy on reward day for low base mood'
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs

@@ -8,8 +8,14 @@ import React, { useEffect, useCallback, useRef } from 'react';
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 import { Alert, View, StyleSheet, StatusBar } from 'react-native';
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -75,6 +81,12 @@ export function PlayerScreen({ route, navigation }: Props) {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
@@ -150,7 +162,15 @@ export function PlayerScreen({ route, navigation }: Props) {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
   }, [addSession, isFinished, sessionStartTimestamp, template]);
+=======
+  }, [isFinished, sessionStartTimestamp, addSession, template, getStats, grantSessionReward]);
+>>>>>>> theirs
+=======
+  }, [isFinished, sessionStartTimestamp, addSession, template, getStats, grantSessionReward]);
+>>>>>>> theirs
 =======
   }, [isFinished, sessionStartTimestamp, addSession, template, getStats, grantSessionReward]);
 >>>>>>> theirs
@@ -288,6 +308,7 @@ export function PlayerScreen({ route, navigation }: Props) {
             </MinimalText>
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
             <MinimalText variant="caption" align="center" color={colors.textSecondary}>
               {profile.xpTotal} XP acumulado
               {profile.nextLevelLabel ? ` - ${profile.xpToNextLevel} XP para ${profile.nextLevelLabel}` : ''}
@@ -296,8 +317,13 @@ export function PlayerScreen({ route, navigation }: Props) {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
 
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -332,6 +358,12 @@ export function PlayerScreen({ route, navigation }: Props) {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
@@ -473,6 +505,8 @@ const styles = StyleSheet.create({
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
   finishedText: {
     marginTop: spacing.md,
   },
@@ -481,6 +515,16 @@ const styles = StyleSheet.create({
   },
   finishButton: {
     marginTop: spacing.xl,
+=======
+  finishedPet: {
+    marginTop: spacing.lg,
+    width: '100%',
+>>>>>>> theirs
+=======
+  finishedPet: {
+    marginTop: spacing.lg,
+    width: '100%',
+>>>>>>> theirs
 =======
   finishedPet: {
     marginTop: spacing.lg,

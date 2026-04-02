@@ -18,11 +18,17 @@ import { StreakBadge } from '../components/StreakBadge';
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
 import { useAuthStore } from '../../../store/authStore';
 import { useSessionStore } from '../../../store/sessionStore';
 import { useUserStore } from '../../../store/userStore';
 import { colors, spacing, borderRadius } from '../../../core/theme';
 =======
+=======
+>>>>>>> theirs
+=======
+>>>>>>> theirs
 =======
 >>>>>>> theirs
 =======
@@ -94,6 +100,12 @@ export function HomeScreen({ navigation }: Props) {
 <<<<<<< ours
 <<<<<<< ours
 <<<<<<< ours
+<<<<<<< ours
+<<<<<<< ours
+>>>>>>> theirs
+=======
+>>>>>>> theirs
+=======
 >>>>>>> theirs
 =======
 >>>>>>> theirs
@@ -114,6 +126,14 @@ export function HomeScreen({ navigation }: Props) {
 
   const defaultTemplate = getDefault();
   const homeCopy = HOME_COPY[experienceLevel];
+
+  useEffect(() => {
+    syncMoodFromStats(stats);
+  }, [stats.currentStreak, stats.sessionsToday, syncMoodFromStats]);
+
+  useEffect(() => {
+    syncMoodFromStats(stats);
+  }, [stats.currentStreak, stats.sessionsToday, syncMoodFromStats]);
 
   useEffect(() => {
     syncMoodFromStats(stats);
@@ -241,6 +261,28 @@ export function HomeScreen({ navigation }: Props) {
 
 <<<<<<< ours
 =======
+        <View style={styles.section}>
+          <CompanionPet
+            mood={mood}
+            level={level}
+            coins={coins}
+            xp={xp}
+            lastRewardXp={lastRewardXp}
+            lastRewardCoins={lastRewardCoins}
+          />
+        </View>
+
+        <View style={styles.section}>
+          <CompanionPet
+            mood={mood}
+            level={level}
+            coins={coins}
+            xp={xp}
+            lastRewardXp={lastRewardXp}
+            lastRewardCoins={lastRewardCoins}
+          />
+        </View>
+
         <View style={styles.section}>
           <CompanionPet
             mood={mood}
