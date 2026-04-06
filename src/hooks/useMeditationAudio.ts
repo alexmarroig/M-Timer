@@ -1,10 +1,8 @@
 import { useEffect, useRef } from 'react';
 import {
-  Audio,
-  InterruptionModeAndroid,
-  InterruptionModeIOS,
-  type AVPlaybackSource,
-} from 'expo-av';
+  setAudioModeAsync,
+  type AudioSource,
+} from 'expo-audio';
 import type { SessionPhase, TimerState } from '../types/session';
 import { useUserStore } from '../store/userStore';
 import { createAudioEngine, type AmbientTrack } from '../services/audioEngine';
@@ -27,7 +25,7 @@ export function getAmbientTargetVolume({
 }
 
 
-const AMBIENT_SOURCES: Record<AmbientTrack, AVPlaybackSource> = {
+const AMBIENT_SOURCES: Record<AmbientTrack, AudioSource> = {
   rain: require('../../assets/audio/rain.mp3'),
   wind: require('../../assets/audio/wind.mp3'),
   ambient: require('../../assets/audio/ambient.mp3'),
@@ -46,23 +44,13 @@ export function useMeditationAudio({
   const ambientMuted = useUserStore((store) => store.ambientMuted);
   const engineRef = useRef(createAudioEngine());
 
-  const targetVolume = getAmbientTargetVolume({
-    ambientEnabled,
-    ambientMuted,
-    ambientVolume,
-    isMeditating: state !== 'idle' && state !== 'paused' && state !== 'finished',
-  });
-
-
   useEffect(() => {
-    void Audio.setAudioModeAsync({
-      playsInSilentModeIOS: true,
-      staysActiveInBackground: false,
-      interruptionModeIOS: InterruptionModeIOS.MixWithOthers,
-      interruptionModeAndroid: InterruptionModeAndroid.DuckOthers,
-      shouldDuckAndroid: true,
-      playThroughEarpieceAndroid: false,
-      allowsRecordingIOS: false,
+    void setAudioModeAsync({
+      playsInSilentMode: true,
+      shouldPlayInBackground: false,
+      interruptionMode: 'duckOthers',
+      allowsRecording: false,
+      shouldRouteThroughEarpiece: false,
     }).catch(() => {});
   }, []);
 

@@ -23,7 +23,6 @@ import { getSessionExpression } from '../../../types/companion';
 import { useHistoryStore } from '../../../store/historyStore';
 import { useCompanionStore } from '../../../store/companionStore';
 import { useUserStore } from '../../../store/userStore';
-
 import type { SessionStackParamList } from '../../../core/navigation/types';
 
 type Props = NativeStackScreenProps<SessionStackParamList, 'Player'>;
@@ -34,11 +33,11 @@ export function PlayerScreen({ route, navigation }: Props) {
 
   const { template } = route.params;
 
-  const showTimer = useUserStore((s) => s.showTimer);
-  const ambientMuted = useUserStore((s) => s.ambientMuted);
+  const showTimer = useUserStore((state) => state.showTimer);
+  const ambientMuted = useUserStore((state) => state.ambientMuted);
 
-  const addSession = useHistoryStore((s) => s.addSession);
-  const addSessionXp = useCompanionStore((s) => s.addSessionXp);
+  const addSession = useHistoryStore((state) => state.addSession);
+  const addSessionXp = useCompanionStore((state) => state.addSessionXp);
 
   const {
     state,
@@ -68,14 +67,12 @@ export function PlayerScreen({ route, navigation }: Props) {
   useSessionCues(currentPhase, state);
   useMeditationAudio({ currentPhase, state });
 
-  // inicia sessão
   useEffect(() => {
     if (state === 'idle') {
       start(template.phases);
     }
   }, [start, state, template.phases]);
 
-  // salva sessão + recompensa
   useEffect(() => {
     if (isFinished && sessionStartTimestamp > 0 && !rewardSentRef.current) {
       rewardSentRef.current = true;
@@ -101,8 +98,8 @@ export function PlayerScreen({ route, navigation }: Props) {
 
   const confirmExit = useCallback((onExit: () => void) => {
     Alert.alert(
-      'Abandonar sessão?',
-      'Se você sair agora, esta prática não será salva como concluída.',
+      'Abandonar sessao?',
+      'Se voce sair agora, esta pratica nao sera salva como concluida.',
       [
         { text: 'Continuar', style: 'cancel' },
         { text: 'Sair', style: 'destructive', onPress: onExit },
@@ -125,7 +122,6 @@ export function PlayerScreen({ route, navigation }: Props) {
     isPaused ? resume() : pause();
   }, [isPaused, pause, resume]);
 
-  // proteção de navegação
   useEffect(() => {
     const unsubscribe = navigation.addListener('beforeRemove', (event) => {
       if (canExitRef.current || isFinished || state === 'idle') return;
@@ -146,7 +142,6 @@ export function PlayerScreen({ route, navigation }: Props) {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
 
-      {/* HEADER */}
       <View style={styles.header}>
         <ButtonPrimary
           title={isFinished ? 'Fechar' : 'Sair'}
@@ -160,7 +155,6 @@ export function PlayerScreen({ route, navigation }: Props) {
         <View style={styles.headerSpacer} />
       </View>
 
-      {/* CONTENT */}
       <View style={styles.content}>
         {isFinished ? (
           <View style={styles.finishedContainer}>
@@ -172,7 +166,7 @@ export function PlayerScreen({ route, navigation }: Props) {
               color={colors.primary}
               style={{ marginTop: spacing.lg }}
             >
-              Sessão completa
+              Sessao completa
             </MinimalText>
 
             <MinimalText
@@ -181,7 +175,7 @@ export function PlayerScreen({ route, navigation }: Props) {
               color={colors.textSecondary}
               style={styles.finishedText}
             >
-              {formatTime(totalDuration)} de prática
+              {formatTime(totalDuration)} de pratica
             </MinimalText>
 
             <View style={styles.companionContainer}>
@@ -200,7 +194,7 @@ export function PlayerScreen({ route, navigation }: Props) {
               color={colors.primary}
               style={styles.finishedLevel}
             >
-              Nível {profile.currentLevel} - {profile.levelLabel}
+              Nivel {profile.currentLevel} - {profile.levelLabel}
             </MinimalText>
 
             <MinimalText variant="caption" align="center" color={colors.textSecondary}>
@@ -273,14 +267,13 @@ export function PlayerScreen({ route, navigation }: Props) {
         )}
       </View>
 
-      {/* TIMELINE */}
       <View style={styles.timelineContainer}>
         <TimelineProgress phases={phases} progress={phaseProgress} />
 
         <View style={styles.phaseLabels}>
           <MinimalText variant="caption" color={colors.rampUp}>Entrada</MinimalText>
-          <MinimalText variant="caption" color={colors.core}>Meditação</MinimalText>
-          <MinimalText variant="caption" color={colors.cooldown}>Saída</MinimalText>
+          <MinimalText variant="caption" color={colors.core}>Meditacao</MinimalText>
+          <MinimalText variant="caption" color={colors.cooldown}>Saida</MinimalText>
         </View>
       </View>
 

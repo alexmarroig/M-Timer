@@ -19,18 +19,26 @@ test('toDateKey uses local calendar date for early morning positive offset sessi
 
 test('calculateStreak counts consecutive local keys including today', () => {
   const today = toDateKey(new Date());
-  const yesterday = toDateKey(new Date(Date.now() - 86400000));
-  const dayBefore = toDateKey(new Date(Date.now() - 86400000 * 2));
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const dayBefore = new Date();
+  dayBefore.setDate(dayBefore.getDate() - 2);
 
-  assert.equal(calculateStreak([today, yesterday, dayBefore]), 3);
+  assert.equal(calculateStreak([today, toDateKey(yesterday), toDateKey(dayBefore)]), 3);
 });
 
 test('calculateStreak accepts yesterday but breaks on first gap', () => {
-  const yesterday = toDateKey(new Date(Date.now() - 86400000));
-  const twoDaysAgo = toDateKey(new Date(Date.now() - 86400000 * 2));
-  const fourDaysAgo = toDateKey(new Date(Date.now() - 86400000 * 4));
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const twoDaysAgo = new Date();
+  twoDaysAgo.setDate(twoDaysAgo.getDate() - 2);
+  const fourDaysAgo = new Date();
+  fourDaysAgo.setDate(fourDaysAgo.getDate() - 4);
 
-  assert.equal(calculateStreak([yesterday, twoDaysAgo, fourDaysAgo]), 2);
+  assert.equal(
+    calculateStreak([toDateKey(yesterday), toDateKey(twoDaysAgo), toDateKey(fourDaysAgo)]),
+    2
+  );
 });
 
 test('areConsecutiveDateKeys handles month transitions', () => {

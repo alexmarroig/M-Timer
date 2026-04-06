@@ -4,27 +4,23 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { STORAGE_KEYS } from '../services/storage/keys';
 import type { Stats } from '../types/stats';
-
 import {
   getMoodFromStats,
   type CompanionMood,
 } from '../core/utils/gamification';
-
 import {
   XP_REWARDS,
   getLevelFromXp,
   getXpProgress,
-  CompanionLevel,
+  type CompanionLevel,
 } from '../types/companion';
 
 interface CompanionStore {
   xp: number;
   totalSessionsCompleted: number;
   mood: CompanionMood;
-
   addSessionXp: (currentStreak: number, sessionsToday: number) => void;
   syncMoodFromStats: (stats: Stats) => void;
-
   getLevel: () => CompanionLevel;
   getXpProgress: () => number;
 }
@@ -49,9 +45,9 @@ export const useCompanionStore = create<CompanionStore>()(
           earned += XP_REWARDS.DOUBLE_SESSION_BONUS;
         }
 
-        set((s) => ({
-          xp: s.xp + earned,
-          totalSessionsCompleted: s.totalSessionsCompleted + 1,
+        set((state) => ({
+          xp: state.xp + earned,
+          totalSessionsCompleted: state.totalSessionsCompleted + 1,
         }));
       },
 

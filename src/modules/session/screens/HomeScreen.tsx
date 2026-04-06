@@ -18,7 +18,6 @@ import { useSessionStore } from '../../../store/sessionStore';
 import { useUserStore } from '../../../store/userStore';
 
 import { colors, spacing, borderRadius } from '../../../core/theme';
-
 import { SessionTemplate } from '../../../types/session';
 import type { ExperienceLevel } from '../../../types/user';
 import type { SessionStackParamList } from '../../../core/navigation/types';
@@ -76,7 +75,6 @@ export function HomeScreen({ navigation }: Props) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Greeting */}
         <View style={styles.greetingSection}>
           <MinimalText variant="heading">M-Timer</MinimalText>
           <MinimalText variant="body" color={colors.textSecondary}>
@@ -86,12 +84,10 @@ export function HomeScreen({ navigation }: Props) {
           </MinimalText>
         </View>
 
-        {/* Companion Character */}
         <View style={styles.companionSection}>
           <CompanionCharacter size={110} showLevel />
         </View>
 
-        {/* Companion Card */}
         <View style={styles.section}>
           <Card style={styles.companionCard}>
             <View style={styles.companionRow}>
@@ -152,7 +148,6 @@ export function HomeScreen({ navigation }: Props) {
           </Card>
         </View>
 
-        {/* CTA */}
         <ButtonPrimary
           title="Iniciar Sessao"
           onPress={handleStartDefault}
@@ -160,7 +155,6 @@ export function HomeScreen({ navigation }: Props) {
           style={styles.mainButton}
         />
 
-        {/* Streak */}
         <View style={styles.section}>
           <StreakBadge
             currentStreak={stats.currentStreak}
@@ -168,7 +162,6 @@ export function HomeScreen({ navigation }: Props) {
           />
         </View>
 
-        {/* Presets */}
         <View style={styles.section}>
           <MinimalText variant="subheading" style={styles.sectionTitle}>
             {homeCopy.presetTitle}
@@ -190,7 +183,6 @@ export function HomeScreen({ navigation }: Props) {
           </ScrollView>
         </View>
 
-        {/* Stats footer */}
         {stats.totalSessions > 0 && (
           <View style={styles.section}>
             <MinimalText variant="caption" color={colors.textSecondary}>

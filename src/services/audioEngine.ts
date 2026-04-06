@@ -1,4 +1,4 @@
-import type { AVPlaybackSource } from 'expo-av';
+import type { AudioSource } from 'expo-audio';
 
 export type AmbientTrack = 'rain' | 'wind' | 'ambient';
 
@@ -22,13 +22,34 @@ export interface AudioEngine {
 type CreateSound = (source: unknown) => Promise<AmbientSound>;
 
 async function defaultCreateSound(source: unknown): Promise<AmbientSound> {
-  const { Audio } = await import('expo-av');
-  const { sound } = await Audio.Sound.createAsync(source as AVPlaybackSource, {
-    shouldPlay: false,
-    isLooping: true,
-    volume: 0,
+  const { createAudioPlayer } = await import('expo-audio');
+  const player = createAudioPlayer(source as AudioSource, {
+    keepAudioSessionActive: true,
   });
-  return sound as unknown as AmbientSound;
+
+  player.loop = true;
+  player.volume = 0;
+
+  return {
+    async setIsLoopingAsync(isLooping: boolean) {
+      player.loop = isLooping;
+    },
+    async setVolumeAsync(volume: number) {
+      player.volume = volume;
+    },
+    async playAsync() {
+      player.play();
+    },
+    async stopAsync() {
+      player.pause();
+      await player.seekTo(0);
+    },
+    async unloadAsync() {
+      player.pause();
+      await player.seekTo(0);
+      player.remove();
+    },
+  };
 }
 
 function clamp(value: number, min: number, max: number) {

@@ -8,7 +8,6 @@ import {
   type ImageStyle,
   type ViewStyle,
 } from 'react-native';
-import { ResizeMode, Video } from 'expo-av';
 import { colors } from '../core/theme';
 import type { SessionPhase } from '../types/session';
 import type {
@@ -19,7 +18,6 @@ import type {
 import type { EvolutionTier } from '../services/gamificationEngine';
 
 const COMPANION_IMAGE = require('../../assets/companion/companion.png');
-const COMPANION_VIDEO = require('../../assets/companion/companion.mp4');
 
 interface Props {
   placement: CompanionPlacement;
@@ -211,18 +209,7 @@ function CompanionComponent({
         ]}
       >
         <View style={[styles.frame, frameStyle]}>
-          {preferredMode === 'video' && state.renderMode === 'video' ? (
-            <Video
-              source={COMPANION_VIDEO}
-              shouldPlay
-              isLooping
-              isMuted
-              resizeMode={ResizeMode.COVER}
-              style={mediaStyle}
-            />
-          ) : (
-            <Image source={COMPANION_IMAGE} style={mediaStyle} resizeMode="cover" />
-          )}
+          <Image source={COMPANION_IMAGE} style={mediaStyle} resizeMode="cover" />
         </View>
       </Animated.View>
 

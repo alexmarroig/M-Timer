@@ -6,6 +6,13 @@ const {
   deriveGamificationProfile,
 } = require('../.tmp-test/services/gamificationEngine.js');
 
+const {
+  calculateSessionReward,
+  getMoodFromStats,
+  levelFromXp,
+  moodWithRewardBoost,
+} = require('../.tmp-test/core/utils/gamification.js');
+
 function createSession(id, completedAt) {
   return {
     id,
@@ -16,6 +23,7 @@ function createSession(id, completedAt) {
     completedAt,
     totalDuration: 1380,
     completed: true,
+    countsForProgress: true,
   };
 }
 
@@ -50,6 +58,7 @@ test('deriveGamificationProfile returns the beginner baseline with no sessions',
       longestStreak: 0,
       sessionsToday: 0,
       weeklyMinutes: 0,
+      qualifiedSessions: 0,
     },
   });
 
@@ -77,6 +86,7 @@ test('deriveGamificationProfile crosses into stabilizing when XP passes 50', () 
       longestStreak: 4,
       sessionsToday: 1,
       weeklyMinutes: 115,
+      qualifiedSessions: 5,
     },
   });
 
@@ -96,8 +106,40 @@ test('deriveGamificationProfile uses stats.longestStreak as bestStreak', () => {
       longestStreak: 7,
       sessionsToday: 1,
       weeklyMinutes: 23,
+      qualifiedSessions: 1,
     },
   });
 
   assert.equal(profile.bestStreak, 7);
+});
+
+test('calculateSessionReward increases with duration and streak', () => {
+  const reward = calculateSessionReward(30 * 60, 5);
+  assert.equal(reward.xp, 50);
+  assert.equal(reward.coins, 9);
+});
+
+test('getMoodFromStats returns excited with high streak', () => {
+  const mood = getMoodFromStats({
+    totalSessions: 10,
+    totalMinutes: 200,
+    currentStreak: 7,
+    longestStreak: 8,
+    sessionsToday: 0,
+    weeklyMinutes: 80,
+    qualifiedSessions: 10,
+  });
+
+  assert.equal(mood, 'excited');
+});
+
+test('levelFromXp starts at level 1 and grows with xp', () => {
+  assert.equal(levelFromXp(0), 1);
+  assert.equal(levelFromXp(120), 3);
+});
+
+test('moodWithRewardBoost raises low moods gradually on reward day', () => {
+  assert.equal(moodWithRewardBoost('sleepy', true), 'calm');
+  assert.equal(moodWithRewardBoost('calm', true), 'happy');
+  assert.equal(moodWithRewardBoost('excited', true), 'excited');
 });

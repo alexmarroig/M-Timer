@@ -5,14 +5,12 @@ import { v4 as uuid } from 'uuid';
 
 import { SessionInstance, PhaseDuration } from '../types/session';
 import { Stats, EMPTY_STATS } from '../types/stats';
-
 import {
   toDateKey,
   startOfWeek,
   calculateStreak,
   areConsecutiveDateKeys,
 } from '../core/utils/date';
-
 import { STORAGE_KEYS } from '../services/storage/keys';
 
 interface HistoryStore {
@@ -63,7 +61,7 @@ export const useHistoryStore = create<HistoryStore>()(
           return { ...EMPTY_STATS };
         }
 
-        const countedSessions = sessions.filter((s) => s.countsForProgress);
+        const countedSessions = sessions.filter((session) => session.countsForProgress);
 
         if (countedSessions.length === 0) {
           return {
@@ -76,24 +74,22 @@ export const useHistoryStore = create<HistoryStore>()(
         const today = toDateKey();
         const weekStart = startOfWeek();
 
-        const sessionsToday = countedSessions.filter((s) => {
-          const dateKey = toDateKey(new Date(s.completedAt));
+        const sessionsToday = countedSessions.filter((session) => {
+          const dateKey = toDateKey(new Date(session.completedAt));
           return dateKey === today;
         }).length;
 
         const weeklyMinutes =
           countedSessions
-            .filter((s) => new Date(s.completedAt) >= weekStart)
-            .reduce((sum, s) => sum + s.totalDuration, 0) / 60;
+            .filter((session) => new Date(session.completedAt) >= weekStart)
+            .reduce((sum, session) => sum + session.totalDuration, 0) / 60;
 
         const totalMinutes =
-          countedSessions.reduce((sum, s) => sum + s.totalDuration, 0) / 60;
+          countedSessions.reduce((sum, session) => sum + session.totalDuration, 0) / 60;
 
         const uniqueDates = [
-          ...new Set(
-            countedSessions.map((s) => toDateKey(new Date(s.completedAt)))
-          ),
-        ].sort((a, b) => b.localeCompare(a));
+          ...new Set(countedSessions.map((session) => toDateKey(new Date(session.completedAt)))),
+        ].sort((left, right) => right.localeCompare(left));
 
         const currentStreak = calculateStreak(uniqueDates);
 
@@ -128,17 +124,15 @@ export const useHistoryStore = create<HistoryStore>()(
         const { sessions } = get();
 
         return [
-          ...new Set(
-            sessions.map((s) => toDateKey(new Date(s.completedAt)))
-          ),
-        ].sort((a, b) => b.localeCompare(a));
+          ...new Set(sessions.map((session) => toDateKey(new Date(session.completedAt)))),
+        ].sort((left, right) => right.localeCompare(left));
       },
 
       getSessionsByDate: (dateKey) => {
         const { sessions } = get();
 
         return sessions.filter(
-          (s) => toDateKey(new Date(s.completedAt)) === dateKey
+          (session) => toDateKey(new Date(session.completedAt)) === dateKey
         );
       },
     }),
