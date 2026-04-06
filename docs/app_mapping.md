@@ -183,3 +183,36 @@ Após a revisão técnica do código, o estado atual das telas é:
 - [x] Sem botões mortos (todos os TouchableOpacity possuem handlers).
 - [x] Sem `console.log` ou logs de debug no código de produção.
 - [x] Temas e cores consistentes usando a paleta definida em `src/core/theme`.
+
+---
+
+## 8. Guia de Testes e Distribuição Gratuita (Sócio/Equipe)
+
+Como você deseja que seu sócio instale o app no iPhone sem custos de conta Apple Developer (9/ano), existem as seguintes opções para o M-Timer:
+
+### 8.1. Expo Go (Recomendado para Testes Iniciais)
+O M-Timer é compatível com o **Expo Go** padrão, pois não utiliza módulos nativos personalizados fora do SDK do Expo.
+- **Passos:**
+  1. Seu sócio baixa o app "Expo Go" na App Store.
+  2. Você roda `npx expo start --go` no terminal.
+  3. Você envia o link/QR Code gerado para ele (ele precisa estar na mesma rede Wi-Fi ou você pode usar o parâmetro `--tunnel` se o seu ambiente permitir).
+- **Vantagem:** Totalmente gratuito e instantâneo.
+- **Desvantagem:** Requer que o computador que está "servindo" o app esteja ligado durante o teste inicial.
+
+### 8.2. EAS Update (Over-the-Air)
+Uma vez que o app esteja publicado no canal `preview` ou `production` do Expo:
+- **Passos:**
+  1. Você publica uma atualização: `npx eas-cli update --branch preview`.
+  2. Ele abre o link do projeto no navegador do iPhone e clica em "Open in Expo Go".
+- **Vantagem:** Ele pode abrir o app de qualquer lugar, sem você precisar estar com o computador ligado no momento.
+
+### 8.3. Build de Desenvolvimento (Development Build) com conta Gratuita
+Se você precisar de funcionalidades que o Expo Go não suporta (como In-App Purchases no futuro), você pode gerar um build:
+- **Passos:**
+  1. Conectar o iPhone ao Mac via cabo.
+  2. Usar o Xcode para compilar o app para o dispositivo físico usando uma "Personal Team" (conta Apple gratuita).
+- **Vantagem:** Instala um app "real" no celular.
+- **Desvantagem:** O app expira após 7 dias e precisa ser reinstalado via cabo.
+
+---
+**Conclusão:** Para o seu sócio testar agora de forma simples e gratuita, a melhor opção é o **Expo Go** via `npx expo start --go --tunnel`.
