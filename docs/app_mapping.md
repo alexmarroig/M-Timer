@@ -216,3 +216,24 @@ Se você precisar de funcionalidades que o Expo Go não suporta (como In-App Pur
 
 ---
 **Conclusão:** Para o seu sócio testar agora de forma simples e gratuita, a melhor opção é o **Expo Go** via `npx expo start --go --tunnel`.
+
+---
+
+## 9. Versão Web e Testes no PC
+
+Para facilitar o teste rápido e a visualização das mecânicas, foram disponibilizadas duas formas de rodar o M-Timer no computador:
+
+### 9.1. Web Preview (Adaptação v0)
+Esta é uma versão hospedada que traduz fielmente a lógica do repositório para a web.
+- **Base Técnica:** Replicado o motor de cronômetro, sistema de XP (0-1000+) e tiers de evolução (Semente -> Transcendência).
+- **Animações:** Mapeamento 1:1 dos estados de flutuação e respiração usando Framer Motion.
+- **Link:** [Web Preview M-Timer](https://v0.app/chat/dqKnluab0H0)
+
+### 9.2. Execução Local do Código Fonte
+Para rodar o código real contido neste repositório na versão web:
+1. Instale as dependências: `npm install`
+2. Inicie o modo web: `npx expo start --web`
+3. O projeto real será compilado e aberto no navegador padrão.
+
+---
+**Nota:** Todas as melhorias visuais de evolução implementadas nesta tarefa (partículas, bordas internas, auréola refinada) foram aplicadas diretamente no código-fonte em `src/modules/companion/CompanionCharacter.tsx`.
