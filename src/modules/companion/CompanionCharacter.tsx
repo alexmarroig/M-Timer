@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { View, Animated, StyleSheet, TouchableWithoutFeedback } from 'react-native';
 import { CompanionFace } from './CompanionFace';
 import { useCompanionAnimations } from './useCompanionAnimations';
@@ -54,9 +54,31 @@ export function CompanionCharacter({
   }, [triggerBounce, onPress]);
 
   // Glow intensity based on mood/level
-  const glowSize = size * 0.15 + level.level * 4;
-  const bodyColor = '#FFF5E1';
+  const glowSize = size * 0.15 + level.level * 5;
+  const bodyColor = level.level >= 2 ? '#FFF9ED' : '#FFF5E1';
   const glowColor = level.level >= 4 ? '#C9A84C' : '#FFE4B5';
+
+  // Level 3+ Particles
+  const particles = useMemo(() => {
+    if (level.level < 3) return null;
+    return [0, 1, 2].map((i) => {
+      const angle = (i * 120 * Math.PI) / 180;
+      const radius = size * 0.65;
+      return (
+        <View
+          key={i}
+          style={[
+            styles.particle,
+            {
+              top: size / 2 + Math.sin(angle) * radius - 3,
+              left: size / 2 + Math.cos(angle) * radius - 3,
+              opacity: 0.6 + i * 0.1,
+            },
+          ]}
+        />
+      );
+    });
+  }, [level.level, size]);
 
   return (
     <TouchableWithoutFeedback onPress={handlePress}>
@@ -82,7 +104,7 @@ export function CompanionCharacter({
                 height: size + glowSize * 2,
                 borderRadius: (size + glowSize * 2) / 2,
                 backgroundColor: glowColor,
-                opacity: glowOpacity,
+                opacity: level.level >= 3 ? Animated.multiply(glowOpacity, 1.2) : glowOpacity,
                 top: -glowSize,
                 left: -glowSize,
               },
@@ -100,18 +122,26 @@ export function CompanionCharacter({
                 backgroundColor: bodyColor,
                 shadowColor: glowColor,
                 shadowRadius: glowSize,
+                borderWidth: level.level >= 2 ? 1 : 0,
+                borderColor: level.level >= 2 ? 'rgba(255,255,255,0.8)' : 'transparent',
               },
             ]}
           >
+            {/* Level 2 inner glow effect using shadow */}
+            {level.level >= 2 && (
+               <View style={[styles.innerGlow, { width: size, height: size, borderRadius: size/2 }]} />
+            )}
+
             {/* Level 4+ golden rim */}
             {level.level >= 4 && (
               <View
                 style={[
                   styles.goldenRim,
                   {
-                    width: size + 4,
-                    height: size + 4,
-                    borderRadius: (size + 4) / 2,
+                    width: size + 6,
+                    height: size + 6,
+                    borderRadius: (size + 6) / 2,
+                    opacity: 0.8,
                   },
                 ]}
               />
@@ -123,30 +153,38 @@ export function CompanionCharacter({
                 style={[
                   styles.halo,
                   {
-                    width: size * 0.5,
-                    height: size * 0.15,
-                    borderRadius: size * 0.075,
-                    top: -size * 0.12,
+                    width: size * 0.6,
+                    height: size * 0.12,
+                    borderRadius: size * 0.06,
+                    top: -size * 0.15,
                   },
                 ]}
-              />
+              >
+                <View style={styles.haloInner} />
+              </View>
             )}
 
             <CompanionFace expression={expression} size={size} />
           </View>
+
+          {/* Level 3+ Particles container */}
+          {particles && <View style={[styles.particlesOverlay, { width: size, height: size }]}>{particles}</View>}
         </Animated.View>
 
         {/* Level info */}
         {showLevel && (
           <View style={styles.levelInfo}>
-            <MinimalText variant="caption" align="center" color={colors.accent}>
-              {level.name} · Nv. {level.level}
+            <MinimalText variant="caption" align="center" color={colors.accent} style={{ fontWeight: '700' }}>
+              {level.name.toUpperCase()}
+            </MinimalText>
+            <MinimalText variant="caption" align="center" color={colors.textSecondary} style={{ fontSize: 10 }}>
+              NÍVEL {level.level}
             </MinimalText>
             {/* XP progress bar */}
             <View style={styles.xpBarContainer}>
               <View style={[styles.xpBarFill, { width: `${Math.min(100, progress * 100)}%` }]} />
             </View>
-            <MinimalText variant="caption" align="center" color={colors.textSecondary} style={{ fontSize: 11 }}>
+            <MinimalText variant="caption" align="center" color={colors.textSecondary} style={{ fontSize: 11, opacity: 0.7 }}>
               {xp} XP
             </MinimalText>
           </View>
@@ -173,35 +211,69 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
     elevation: 8,
+    overflow: 'hidden',
+  },
+  innerGlow: {
+    position: 'absolute',
+    borderWidth: 8,
+    borderColor: 'rgba(255, 255, 255, 0.4)',
+    opacity: 0.5,
   },
   goldenRim: {
     position: 'absolute',
-    borderWidth: 2,
+    borderWidth: 2.5,
     borderColor: '#C9A84C',
-    top: -2,
-    left: -2,
+    top: -3,
+    left: -3,
   },
   halo: {
     position: 'absolute',
-    backgroundColor: '#C9A84C',
-    opacity: 0.6,
+    borderWidth: 2,
+    borderColor: '#C9A84C',
     alignSelf: 'center',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(201, 168, 76, 0.1)',
+  },
+  haloInner: {
+    width: '80%',
+    height: '40%',
+    backgroundColor: '#C9A84C',
+    borderRadius: 99,
+    opacity: 0.3,
+  },
+  particlesOverlay: {
+    position: 'absolute',
+    pointerEvents: 'none',
+  },
+  particle: {
+    position: 'absolute',
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#FFF',
+    shadowColor: '#FFF',
+    shadowRadius: 4,
+    shadowOpacity: 0.8,
+    elevation: 4,
   },
   levelInfo: {
     marginTop: spacing.md,
     alignItems: 'center',
-    gap: spacing.xs,
+    gap: 2,
   },
   xpBarContainer: {
-    width: 100,
-    height: 4,
-    backgroundColor: colors.border,
-    borderRadius: 2,
+    width: 110,
+    height: 5,
+    backgroundColor: 'rgba(0,0,0,0.05)',
+    borderRadius: 3,
     overflow: 'hidden',
+    marginTop: 4,
+    marginBottom: 2,
   },
   xpBarFill: {
     height: '100%',
     backgroundColor: colors.accent,
-    borderRadius: 2,
+    borderRadius: 3,
   },
 });
