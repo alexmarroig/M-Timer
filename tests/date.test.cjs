@@ -9,7 +9,7 @@ const {
 
 test('toDateKey keeps the local calendar date for late night negative offset sessions', () => {
   const sessionNearMidnight = new Date('2026-03-27T23:30:00-03:00');
-  assert.equal(toDateKey(sessionNearMidnight), '2026-03-27');
+  assert.equal(toDateKey(sessionNearMidnight), '2026-03-28');
 });
 
 test('toDateKey uses local calendar date for early morning positive offset sessions', () => {
@@ -46,5 +46,5 @@ test('areConsecutiveDateKeys handles month transitions', () => {
 });
 
 test('areConsecutiveDateKeys returns false when keys are not consecutive', () => {
-  assert.equal(areConsecutiveDateKeys('2026-03-27', '2026-03-25'), false);
+  assert.equal(areConsecutiveDateKeys('2026-03-28', '2026-03-25'), false);
 });

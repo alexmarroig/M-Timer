@@ -34,13 +34,15 @@
       ]
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
     },
     "plugins": [
       "expo-notifications",
       "expo-audio",
       "expo-asset"
     ],
+    "platforms": ["android", "ios", "web"],
     "extra": {
       "eas": {
         "projectId": "ff551d77-3de9-42d9-ab43-f63236dca5d4"
