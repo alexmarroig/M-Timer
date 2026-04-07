@@ -1,46 +1,149 @@
 # M-Timer
 
-## Guideline de navegação (Back)
+M-Timer é um companion mobile-first para praticantes de Meditação Transcendental (MT), focado em constância, ritual e acompanhamento de prática — não ensino.
 
-- **Padrão único de retorno:** sempre priorizar o botão nativo de back no header para telas em stack. O texto do botão deve ser **"Voltar"** quando suportado (iOS).
-- **Onboarding (`Welcome`, `Experience`, `Schedule`):** header habilitado em todas as etapas, com retorno visual consistente e previsível entre passos.
-- **Player (`Sair/Fechar`):** ao tentar sair com sessão ativa, exibir confirmação antes de abandonar a prática. Se a sessão já estiver concluída, fechar diretamente.
-- **Botão físico Android:** toda ação de voltar durante sessão ativa no Player deve passar pela mesma confirmação de saída.
-- **Gesto iOS (swipe back/dismiss):** manter gesto habilitado e aplicar a mesma regra de confirmação do botão físico para evitar perda acidental da sessão.
+O app estrutura sessões em 3 fases, reforça o hábito com gamificação leve e mantém continuidade entre dispositivos via sync local-first.
 
-## Android: fluxo de testes recomendado
+---
 
-1. Instalar dependências:
-   - `npm install`
-   - `npm install @react-native-community/slider`
+# 🧠 PRODUCT OVERVIEW
 
-2. Validação local:
-   - `npm run test` (unittest)
-   - `npx tsc --noEmit` (opcional para tipos)
+## O que é
+Um app de suporte à prática de meditação (não guiada), com foco em:
 
-3. Rodar em dispositivo físico:
-   - habilitar USB debugging no Android
-   - conectar dispositivo
-   - `npx expo run:android`
+- iniciar rapidamente sessões
+- manter consistência (streak)
+- reforço emocional (companion)
+- acompanhamento de progresso
 
-4. Verificações de QA:
-   - Login com `demo@mtimer.app` / `Respira123`.
-   - Botão `Entrar como convidado`.
-   - Onboarding completa (Welcome->Experience->Schedule).
-   - Iniciar sessão, pausar, retomar, concluir.
-   - Companion animado na Home e Player e textoferiado no Player.
-   - Áudio ambiente com controle:
-     - `Configuracoes` > `Som ambiente` ON/OFF.
-     - `Silenciar ambiente` ON/OFF.
-     - Slider de volume 0-100%.
-   - Histórico atualizado com conclusão de sessão.
-   - Logout volta para tela de login.
+## Problema que resolve
 
-5. Build para distribuição de testes:
-   - `eas build --platform android --profile preview`
-   - instalar APK gerado em dispositivo.
+Praticantes de MT frequentemente:
 
-6. Verificar persistência de preferências:
-   - sair do app e reabrir após alterações de ``ambientMuted``+``ambientVolume``.
-   - o estado deve ser mantido (via ``useRememberAudioStatus``/AsyncStorage).
+- perdem consistência
+- não têm estrutura clara para prática
+- não acompanham evolução
+- não têm ritual digital consistente
 
+O M-Timer resolve isso com:
+
+- timer estruturado
+- lembretes
+- histórico
+- reforço leve (gamificação + companion)
+
+---
+
+# 👥 TARGET USERS
+
+- praticantes de Meditação Transcendental já iniciados
+- usuários que querem manter hábito diário (manhã/tarde)
+- usuários mobile-first (principalmente Brasil / PT-BR)
+
+---
+
+# 🏗️ ARQUITETURA
+
+## Stack
+
+- React Native (Expo)
+- TypeScript
+- Zustand (state)
+- AsyncStorage (persistência local)
+- SecureStore (tokens)
+- Supabase (auth + DB + sync)
+- Expo APIs (audio, notifications, haptics)
+
+---
+
+## Estrutura de Pastas
+src/
+core/ → navegação, tema, utilitários base
+modules/ → features por domínio (auth, session, etc)
+services/ → engines e integrações
+store/ → estado global (Zustand)
+components/ → componentes reutilizáveis
+types/ → contratos de domínio
+
+
+---
+
+## Módulos principais
+
+- `auth` → login, signup, reset
+- `onboarding` → setup inicial
+- `session` → timer + player
+- `history` → histórico e stats
+- `settings` → preferências
+- `companion` → camada emocional/visual
+
+---
+
+# ⚙️ SISTEMAS PRINCIPAIS
+
+## 1. Timer Engine
+
+- máquina de estados (rampUp → core → cooldown)
+- pausa / resume
+- persistência local
+
+## 2. Gamification Engine
+
+- XP por sessão
+- streak
+- níveis
+- progressão
+
+## 3. Companion System
+
+- estado emocional (mood)
+- animações (glow, pulse, aura)
+- evolução visual
+
+⚠️ atualmente coexistem múltiplas versões (ver seção de gaps)
+
+## 4. Sync Engine (CRÍTICO)
+
+- modelo local-first
+- snapshot por escopo:
+  - guest
+  - user:{id}
+- merge local/remoto
+
+---
+
+# 🔄 FLUXOS PRINCIPAIS
+
+## 1. First Use (Guest)
+
+Auth → Guest → Onboarding → Home
+
+## 2. Sessão
+
+Home → Player → Timer → Conclusão → Histórico
+
+## 3. Sync
+
+Login → Merge local + remoto → Persistência
+
+---
+
+# 📱 UX GUIDELINES
+
+## Navegação
+
+- botão "Voltar" padrão (iOS)
+- confirmação ao sair do Player ativo
+- gesto iOS mantém comportamento seguro
+- botão físico Android respeita confirmação
+
+---
+
+# 🧪 ANDROID TEST FLOW
+
+## Setup
+
+```bash
+npm install
+npm run test
+npx expo run:android
