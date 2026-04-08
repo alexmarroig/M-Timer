@@ -9,7 +9,7 @@ const {
 
 test('toDateKey keeps the local calendar date for late night negative offset sessions', () => {
   const sessionNearMidnight = new Date('2026-03-27T23:30:00-03:00');
-  assert.equal(toDateKey(sessionNearMidnight), '2026-03-28');
+  assert.equal(toDateKey(sessionNearMidnight), '2026-03-27');
 });
 
 test('toDateKey uses local calendar date for early morning positive offset sessions', () => {
