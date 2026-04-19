@@ -32,6 +32,10 @@ export const notificationService = {
         name: 'Lembretes de meditação',
         importance: Notifications.AndroidImportance.HIGH,
       });
+      await Notifications.setNotificationChannelAsync('intervention', {
+        name: 'Lembretes do Companion',
+        importance: Notifications.AndroidImportance.MAX,
+      });
     }
 
     return true;
@@ -63,6 +67,34 @@ export const notificationService = {
         type: Notifications.SchedulableTriggerInputTypes.DAILY,
         hour: config.hour,
         minute: config.minute,
+      },
+    });
+  },
+
+  async scheduleIntervention(
+    id: string,
+    title: string,
+    body: string,
+    secondsDelay: number
+  ): Promise<void> {
+    await this.cancelReminder(id);
+
+    const hasPermission = await this.requestPermissions();
+    if (!hasPermission) return;
+
+    await Notifications.scheduleNotificationAsync({
+      identifier: id,
+      content: {
+        title,
+        body,
+        sound: true,
+        priority: Notifications.AndroidNotificationPriority.MAX,
+        ...(Platform.OS === 'android' && { channelId: 'intervention' }),
+      },
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: secondsDelay,
+        repeats: false,
       },
     });
   },

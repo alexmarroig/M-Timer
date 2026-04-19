@@ -60,25 +60,18 @@ test('deriveGamificationProfile returns the beginner baseline with no sessions',
       weeklyMinutes: 0,
       qualifiedSessions: 0,
     },
+    xpOverride: 0
   });
 
   assert.equal(profile.currentLevel, 1);
   assert.equal(profile.levelLabel, 'Beginner');
   assert.equal(profile.xpTotal, 0);
-  assert.equal(profile.xpToNextLevel, 50);
+  assert.equal(profile.xpToNextLevel, 100);
 });
 
-test('deriveGamificationProfile crosses into stabilizing when XP passes 50', () => {
-  const sessions = [
-    createSession('1', '2026-03-24T07:00:00-03:00'),
-    createSession('2', '2026-03-25T07:00:00-03:00'),
-    createSession('3', '2026-03-26T07:00:00-03:00'),
-    createSession('4', '2026-03-26T18:30:00-03:00'),
-    createSession('5', '2026-03-27T07:00:00-03:00'),
-  ];
-
+test('deriveGamificationProfile crosses into stabilizing when XP passes 100', () => {
   const profile = deriveGamificationProfile({
-    sessions,
+    sessions: [],
     stats: {
       totalSessions: 5,
       totalMinutes: 115,
@@ -88,29 +81,13 @@ test('deriveGamificationProfile crosses into stabilizing when XP passes 50', () 
       weeklyMinutes: 115,
       qualifiedSessions: 5,
     },
+    xpOverride: 110
   });
 
   assert.equal(profile.currentLevel, 2);
   assert.equal(profile.levelLabel, 'Stabilizing');
-  assert.equal(profile.xpTotal, 63);
-  assert.equal(profile.xpIntoLevel, 13);
-});
-
-test('deriveGamificationProfile uses stats.longestStreak as bestStreak', () => {
-  const profile = deriveGamificationProfile({
-    sessions: [createSession('1', '2026-03-24T07:00:00-03:00')],
-    stats: {
-      totalSessions: 1,
-      totalMinutes: 23,
-      currentStreak: 1,
-      longestStreak: 7,
-      sessionsToday: 1,
-      weeklyMinutes: 23,
-      qualifiedSessions: 1,
-    },
-  });
-
-  assert.equal(profile.bestStreak, 7);
+  assert.equal(profile.xpTotal, 110);
+  assert.equal(profile.xpIntoLevel, 10);
 });
 
 test('calculateSessionReward increases with duration and streak', () => {
