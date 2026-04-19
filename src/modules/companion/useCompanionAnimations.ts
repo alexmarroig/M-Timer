@@ -139,23 +139,23 @@ export function useCompanionAnimations(
 
     switch (sessionExpression) {
       case 'rampUp':
-        startFloat(4, 4000);
-        startBreathe(0.98, 1.04, 5000);
-        startGlow(0.2, 0.5, 3000);
+        startFloat(4, 4500);
+        startBreathe(0.98, 1.03, 5500);
+        startGlow(0.2, 0.45, 3500);
         break;
       case 'core':
-        startFloat(3, 6000); // Very slow
-        startBreathe(0.99, 1.02, 6000);
-        startGlow(0.3, 0.6, 4000);
+        startFloat(2, 8000); // Extremely slow and subtle
+        startBreathe(0.99, 1.01, 8000);
+        startGlow(0.25, 0.5, 5000);
         break;
       case 'cooldown':
-        startFloat(5, 3500);
-        startBreathe(0.97, 1.05, 3500);
-        startGlow(0.3, 0.7, 2500);
+        startFloat(5, 4000);
+        startBreathe(0.97, 1.05, 4000);
+        startGlow(0.35, 0.75, 3000);
         break;
       case 'finished':
-        startFloat(6, 2500);
-        startGlow(0.5, 0.9, 2000);
+        startFloat(8, 2000);
+        startGlow(0.6, 1.0, 1500);
         triggerBounce();
         break;
       case 'paused':

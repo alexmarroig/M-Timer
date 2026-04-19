@@ -29,16 +29,16 @@ const HOME_COPY: Record<
   { subtitle: string; presetTitle: string }
 > = {
   beginner: {
-    subtitle: 'vamos consolidar sua pratica com sessoes leves e consistentes.',
-    presetTitle: 'Presets para comecar',
+    subtitle: 'estabeleca sua clareza com sessoes leves.',
+    presetTitle: 'Comece sua jornada',
   },
   regular: {
-    subtitle: 'vamos manter sua pratica diaria de meditacao.',
-    presetTitle: 'Presets',
+    subtitle: 'mantenha a profundidade do seu mantra hoje.',
+    presetTitle: 'Seus Presets',
   },
   experienced: {
-    subtitle: 'vamos manter profundidade e constancia na pratica.',
-    presetTitle: 'Presets para aprofundar',
+    subtitle: 'cultive a presenca pura e o silencio interior.',
+    presetTitle: 'Aprofunde sua pratica',
   },
 };
 
@@ -205,7 +205,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxl,
   },
   greetingSection: {
-    marginTop: spacing.lg,
+    marginTop: spacing.xl,
     marginBottom: spacing.md,
   },
   companionSection: {
@@ -214,27 +214,43 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   mainButton: {
-    marginBottom: spacing.lg,
+    marginBottom: spacing.xl,
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
   section: {
-    marginBottom: spacing.lg,
+    marginBottom: spacing.xl,
   },
   sectionTitle: {
-    marginBottom: spacing.sm,
+    marginBottom: spacing.md,
+    fontWeight: '700',
+    color: colors.primary,
   },
   presetsRow: {
     paddingRight: spacing.lg,
   },
   companionCard: {
-    borderRadius: borderRadius.lg,
+    borderRadius: borderRadius.xl,
+    padding: spacing.lg,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: 'rgba(0,0,0,0.02)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 10,
+    elevation: 3,
   },
   companionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.md,
+    gap: spacing.lg,
   },
   companionVisual: {
-    width: 132,
+    width: 100,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -242,14 +258,15 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   metricText: {
-    marginTop: spacing.sm,
+    marginTop: spacing.xs,
+    fontWeight: '600',
   },
   progressTrack: {
-    height: 8,
+    height: 6,
     borderRadius: 999,
     backgroundColor: colors.border,
     overflow: 'hidden',
-    marginTop: spacing.sm,
+    marginTop: spacing.md,
     marginBottom: spacing.xs,
   },
   progressFill: {
@@ -258,6 +275,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent,
   },
   statusText: {
-    marginTop: spacing.xs,
+    marginTop: spacing.sm,
+    lineHeight: 16,
   },
 });

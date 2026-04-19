@@ -11,7 +11,7 @@ export function WelcomeScreen({ navigation }: Props) {
       title="M-Timer"
       description="Seu companheiro de pratica para Meditacao Transcendental. Sessoes estruturadas em 3 fases para uma experiencia completa."
       buttonTitle="Comecar"
-      onNext={() => navigation.navigate('Experience')}
+      onNext={() => navigation.navigate('MantraInfo')}
     />
   );
 }

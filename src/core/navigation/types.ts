@@ -15,6 +15,7 @@ export type SettingsStackParamList = {
 
 export type OnboardingStackParamList = {
   Welcome: undefined;
+  MantraInfo: undefined;
   Experience: undefined;
   Schedule: { experience: ExperienceLevel };
 };

@@ -139,11 +139,59 @@ Login → Merge local + remoto → Persistência
 
 ---
 
-# 🧪 ANDROID TEST FLOW
+# 🧪 TEST & BUILD FLOW
 
-## Setup
+## 1. Local Development (Expo Go)
+A maneira mais rápida de testar as mudanças de UI e lógica básica.
 
 ```bash
+# Instalar dependências
 npm install
-npm run test
-npx expo run:android
+
+# Iniciar o servidor Expo
+npx expo start
+```
+*Aponte a câmera do seu celular para o QR Code (requer app **Expo Go** instalado).*
+
+---
+
+## 2. Testing on Physical Devices (EAS Preview)
+Para testar áudio em background, vibrações e comportamento real do sistema.
+
+### Android (Gerar APK)
+```bash
+# Gerar um link para download do APK
+eas build --profile preview --platform android
+```
+
+### iOS (Simulador)
+```bash
+# Para rodar no simulador local
+npx expo run:ios
+```
+
+---
+
+## 3. Production Build
+Quando o app estiver pronto para as lojas.
+
+```bash
+# Para Android (Play Store)
+eas build --profile production --platform android
+
+# Para iOS (App Store)
+eas build --profile production --platform ios
+```
+
+---
+
+## 4. Troubleshooting
+- **Audio no iOS**: Se o áudio parar ao bloquear a tela, verifique se o switch de "Silencioso" do iPhone não está ativado.
+- **Sync**: Se os dados não aparecerem, verifique sua conexão com o Supabase nas configurações.
+
+---
+
+# 🛠️ COMING SOON
+- [ ] Widgets de Home Screen para acesso rápido à meditação.
+- [ ] Integração com Apple Health / Google Fit.
+- [ ] Temas dinâmicos baseados no horário do dia.

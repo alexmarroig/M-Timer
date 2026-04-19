@@ -238,28 +238,34 @@ export function PlayerScreen({ route, navigation }: Props) {
                   {formatTime(phaseRemaining)}
                 </MinimalText>
 
-                <MinimalText variant="caption" align="center" color={colors.textSecondary}>
-                  {formatTime(totalDuration - totalElapsed)} restante
-                </MinimalText>
+                <View style={styles.timerMeta}>
+                  <MinimalText variant="caption" align="center" color={colors.textSecondary}>
+                    {formatTime(totalDuration - totalElapsed)} restante
+                  </MinimalText>
 
-                <MinimalText variant="caption" align="center" color={colors.textSecondary}>
-                  Companion {profile.levelLabel.toLowerCase()} - {profile.xpTotal} XP
-                </MinimalText>
+                  <View style={styles.xpBadge}>
+                    <MinimalText variant="caption" align="center" color={colors.accent} style={{ fontWeight: '700' }}>
+                      +{profile.xpTotal} XP
+                    </MinimalText>
+                  </View>
+                </View>
 
                 {ambientMuted && (
-                  <MinimalText variant="caption" align="center" color={colors.error}>
-                    Sem som ambiente (mute ativo)
+                  <MinimalText variant="caption" align="center" color={colors.textSecondary} style={{ opacity: 0.6 }}>
+                    Som ambiente pausado
                   </MinimalText>
                 )}
               </View>
             ) : (
               <View style={styles.timerContainer}>
-                <MinimalText variant="subheading" align="center" color={colors.textSecondary}>
-                  {PHASE_LABELS[currentPhase]}
-                </MinimalText>
+                <View style={styles.phaseGlass}>
+                  <MinimalText variant="subheading" align="center" color={colors.primary} style={{ fontWeight: '700' }}>
+                    {PHASE_LABELS[currentPhase].toUpperCase()}
+                  </MinimalText>
+                </View>
 
                 <MinimalText variant="caption" align="center" color={colors.textSecondary}>
-                  {profile.xpTotal} XP - melhor streak {profile.bestStreak}
+                   Melhor streak: {profile.bestStreak} dias
                 </MinimalText>
               </View>
             )}
@@ -315,33 +321,66 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.xl,
   },
   companionContainer: {
-    marginBottom: spacing.lg,
+    marginBottom: spacing.xl,
   },
   timerContainer: {
     marginTop: spacing.xl,
     alignItems: 'center',
-    gap: spacing.xs,
+    gap: spacing.sm,
+  },
+  timerMeta: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginTop: spacing.xs,
+  },
+  xpBadge: {
+    backgroundColor: 'rgba(166, 124, 0, 0.1)',
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 2,
+    borderRadius: 99,
+  },
+  phaseGlass: {
+    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: borderRadius.lg,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.8)',
   },
   finishedContainer: {
     alignItems: 'center',
+    backgroundColor: colors.surface,
+    padding: spacing.xl,
+    borderRadius: borderRadius.xxl,
+    width: '100%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.1,
+    shadowRadius: 20,
+    elevation: 10,
   },
   finishedText: {
-    marginTop: spacing.md,
+    marginTop: spacing.xs,
+    opacity: 0.8,
   },
   finishedLevel: {
-    marginTop: spacing.md,
+    marginTop: spacing.lg,
+    fontWeight: '700',
   },
   finishButton: {
-    marginTop: spacing.xl,
+    marginTop: spacing.xxl,
+    width: '100%',
   },
   timelineContainer: {
     paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.md,
+    paddingBottom: spacing.lg,
   },
   phaseLabels: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: spacing.xs,
+    marginTop: spacing.sm,
+    paddingHorizontal: spacing.xs,
   },
   controls: {
     paddingHorizontal: spacing.xl,
@@ -349,5 +388,10 @@ const styles = StyleSheet.create({
   },
   controlButton: {
     width: '100%',
+    shadowColor: colors.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4,
   },
 });

@@ -1,24 +1,25 @@
 export const colors = {
-  background: '#F8F7F4',
+  background: '#FCFAF7', // Warmer off-white
   surface: '#FFFFFF',
-  primary: '#1B3A5C',
-  primaryLight: '#2D5F8A',
-  accent: '#C9A84C',
+  primary: '#0F2B41',    // Deeper Midnight Navy
+  primaryLight: '#235073',
+  accent: '#A67C00',     // Deep Matte Gold
   accentLight: '#E8D5A0',
 
-  textPrimary: '#1A1A2E',
-  textSecondary: '#6B7280',
+  textPrimary: '#0A121A',
+  textSecondary: '#5E6772',
   textInverse: '#FFFFFF',
 
   // Phase colors
-  rampUp: '#5B8DB8',
-  core: '#1B3A5C',
-  cooldown: '#C9A84C',
+  rampUp: '#5B8DB8',     // Sea Blue
+  core: '#0F2B41',       // Deep Focus
+  cooldown: '#A67C00',   // Reflection Gold
 
-  success: '#4CAF50',
-  error: '#E53935',
-  border: '#E5E7EB',
+  success: '#388E3C',
+  error: '#D32F2F',
+  border: '#EEEAE5',     // Soft Warm Border
   disabled: '#D1D5DB',
+  glass: 'rgba(255, 255, 255, 0.7)',
 } as const;
 
 export type ColorKey = keyof typeof colors;

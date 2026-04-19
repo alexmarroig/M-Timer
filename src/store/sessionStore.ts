@@ -17,22 +17,22 @@ interface SessionStore {
 const BUILT_IN_TEMPLATES: SessionTemplate[] = [
   {
     id: 'preset-morning',
-    name: 'Manha Padrao',
+    name: 'Pratica Matinal',
     phases: { rampUp: 120, core: 1200, cooldown: 180 },
     isDefault: true,
     createdAt: new Date().toISOString(),
   },
   {
     id: 'preset-afternoon',
-    name: 'Tarde Padrao',
-    phases: { rampUp: 60, core: 900, cooldown: 120 },
+    name: 'Pratica Vespertina',
+    phases: { rampUp: 120, core: 1200, cooldown: 180 },
     isDefault: false,
     createdAt: new Date().toISOString(),
   },
   {
-    id: 'preset-travel',
-    name: 'Viagem',
-    phases: { rampUp: 60, core: 600, cooldown: 120 },
+    id: 'preset-deep',
+    name: 'Meditacao Profunda',
+    phases: { rampUp: 180, core: 1800, cooldown: 300 },
     isDefault: false,
     createdAt: new Date().toISOString(),
   },

@@ -13,6 +13,7 @@ import { AboutScreen } from '../../modules/settings/screens/AboutScreen';
 import { TermsScreen } from '../../modules/settings/screens/TermsScreen';
 import { PrivacyScreen } from '../../modules/settings/screens/PrivacyScreen';
 import { WelcomeScreen } from '../../modules/onboarding/screens/WelcomeScreen';
+import { MantraInfoScreen } from '../../modules/onboarding/screens/MantraInfoScreen';
 import { ExperienceScreen } from '../../modules/onboarding/screens/ExperienceScreen';
 import { ScheduleScreen } from '../../modules/onboarding/screens/ScheduleScreen';
 
@@ -83,6 +84,7 @@ function OnboardingFlow() {
   return (
     <OnboardingStack.Navigator screenOptions={{ headerShown: false }}>
       <OnboardingStack.Screen name="Welcome" component={WelcomeScreen} />
+      <OnboardingStack.Screen name="MantraInfo" component={MantraInfoScreen} />
       <OnboardingStack.Screen name="Experience" component={ExperienceScreen} />
       <OnboardingStack.Screen name="Schedule" component={ScheduleScreen} />
     </OnboardingStack.Navigator>
