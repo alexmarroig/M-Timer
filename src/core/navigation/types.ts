@@ -9,6 +9,8 @@ export type SessionStackParamList = {
 export type SettingsStackParamList = {
   SettingsMain: undefined;
   About: undefined;
+  Terms: undefined;
+  Privacy: undefined;
 };
 
 export type OnboardingStackParamList = {

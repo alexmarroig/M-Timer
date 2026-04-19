@@ -1,6 +1,6 @@
 import { TimerState, SessionPhase } from './session';
 
-export type CompanionMood = 'sleepy' | 'content' | 'happy' | 'ecstatic';
+export type CompanionMood = 'sleepy' | 'content' | 'happy' | 'ecstatic' | 'sad' | 'neglected';
 
 export type SessionExpression = 'rampUp' | 'core' | 'cooldown' | 'finished' | 'paused' | 'idle';
 
@@ -24,6 +24,8 @@ export const XP_REWARDS = {
   STREAK_BONUS_3: 5,
   STREAK_BONUS_7: 10,
   DOUBLE_SESSION_BONUS: 15,
+  RECOVERY_BONUS: 20,
+  DECAY_PENALTY: -5,
 } as const;
 
 export interface EyeStyle {
@@ -127,6 +129,20 @@ export function getFaceExpression(
         mouth: { character: '~', fontSize: 16 },
         cheekOpacity: 0.2,
       };
+    case 'sad':
+      return {
+        leftEye: { type: 'half' },
+        rightEye: { type: 'half' },
+        mouth: { character: '︵', fontSize: 16 },
+        cheekOpacity: 0.1,
+      };
+    case 'neglected':
+      return {
+        leftEye: { type: 'closed' },
+        rightEye: { type: 'closed' },
+        mouth: { character: '—', fontSize: 14 },
+        cheekOpacity: 0.05,
+      };
     case 'content':
       return {
         leftEye: { type: 'dot' },
@@ -147,6 +163,13 @@ export function getFaceExpression(
         rightEye: { type: 'star' },
         mouth: { character: 'ω', fontSize: 20 },
         cheekOpacity: 0.6,
+      };
+    default:
+      return {
+        leftEye: { type: 'dot' },
+        rightEye: { type: 'dot' },
+        mouth: { character: '◡', fontSize: 16 },
+        cheekOpacity: 0.35,
       };
   }
 }

@@ -4,6 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { AppNavigator } from './src/core/navigation/AppNavigator';
 import { useRememberAudioStatus } from './src/hooks/useRememberAudioStatus';
+import { useCompanionDecay } from './src/hooks/useCompanionDecay';
 
 // Global error handler for debugging production crashes
 if (!__DEV__) {
@@ -20,6 +21,7 @@ if (!__DEV__) {
 
 export default function App() {
   useRememberAudioStatus();
+  useCompanionDecay();
 
   return (
     <SafeAreaProvider>

@@ -3,13 +3,10 @@ import { View, Animated, StyleSheet, TouchableWithoutFeedback } from 'react-nati
 import { CompanionFace } from './CompanionFace';
 import { useCompanionAnimations } from './useCompanionAnimations';
 import { useCompanionStore } from '../../store/companionStore';
-import { useHistoryStore } from '../../store/historyStore';
 import { MinimalText } from '../../components/ui/MinimalText';
 import { colors, spacing } from '../../core/theme';
 import {
-  CompanionMood,
   SessionExpression,
-  getMoodFromStreak,
   getFaceExpression,
   getLevelFromXp,
   getXpProgress,
@@ -33,8 +30,8 @@ export function CompanionCharacter({
   onPress,
 }: Props) {
   const xp = useCompanionStore((s) => s.xp);
-  const stats = useHistoryStore((s) => s.getStats());
-  const mood = getMoodFromStreak(stats.currentStreak);
+  const mood = useCompanionStore((s) => s.mood);
+
   const expression = getFaceExpression(mood, sessionExpression);
   const level = getLevelFromXp(xp);
   const progress = getXpProgress(xp);
@@ -53,14 +50,27 @@ export function CompanionCharacter({
     onPress?.();
   }, [triggerBounce, onPress]);
 
+  // Visuals based on mood/level
+  const isSad = mood === 'sad' || mood === 'neglected';
+
   // Glow intensity based on mood/level
   const glowSize = size * 0.15 + level.level * 5;
-  const bodyColor = level.level >= 2 ? '#FFF9ED' : '#FFF5E1';
-  const glowColor = level.level >= 4 ? '#C9A84C' : '#FFE4B5';
+
+  // Color logic
+  let bodyColor = level.level >= 2 ? '#FFF9ED' : '#FFF5E1';
+  let glowColor = level.level >= 4 ? '#C9A84C' : '#FFE4B5';
+
+  if (mood === 'sad') {
+    bodyColor = '#F0F0F0';
+    glowColor = '#D0D0D0';
+  } else if (mood === 'neglected') {
+    bodyColor = '#E0E0E0';
+    glowColor = '#B0B0B0';
+  }
 
   // Level 3+ Particles
   const particles = useMemo(() => {
-    if (level.level < 3) return null;
+    if (level.level < 3 || isSad) return null;
     return [0, 1, 2].map((i) => {
       const angle = (i * 120 * Math.PI) / 180;
       const radius = size * 0.65;
@@ -78,7 +88,7 @@ export function CompanionCharacter({
         />
       );
     });
-  }, [level.level, size]);
+  }, [level.level, size, isSad]);
 
   return (
     <TouchableWithoutFeedback onPress={handlePress}>
@@ -128,12 +138,12 @@ export function CompanionCharacter({
             ]}
           >
             {/* Level 2 inner glow effect using shadow */}
-            {level.level >= 2 && (
+            {level.level >= 2 && !isSad && (
                <View style={[styles.innerGlow, { width: size, height: size, borderRadius: size/2 }]} />
             )}
 
             {/* Level 4+ golden rim */}
-            {level.level >= 4 && (
+            {level.level >= 4 && !isSad && (
               <View
                 style={[
                   styles.goldenRim,
@@ -148,7 +158,7 @@ export function CompanionCharacter({
             )}
 
             {/* Level 5 halo */}
-            {level.level >= 5 && (
+            {level.level >= 5 && !isSad && (
               <View
                 style={[
                   styles.halo,
@@ -174,7 +184,7 @@ export function CompanionCharacter({
         {/* Level info */}
         {showLevel && (
           <View style={styles.levelInfo}>
-            <MinimalText variant="caption" align="center" color={colors.accent} style={{ fontWeight: '700' }}>
+            <MinimalText variant="caption" align="center" color={isSad ? colors.textSecondary : colors.accent} style={{ fontWeight: '700' }}>
               {level.name.toUpperCase()}
             </MinimalText>
             <MinimalText variant="caption" align="center" color={colors.textSecondary} style={{ fontSize: 10 }}>
@@ -182,7 +192,7 @@ export function CompanionCharacter({
             </MinimalText>
             {/* XP progress bar */}
             <View style={styles.xpBarContainer}>
-              <View style={[styles.xpBarFill, { width: `${Math.min(100, progress * 100)}%` }]} />
+              <View style={[styles.xpBarFill, { width: `${Math.min(100, progress * 100)}%`, backgroundColor: isSad ? colors.textSecondary : colors.accent }]} />
             </View>
             <MinimalText variant="caption" align="center" color={colors.textSecondary} style={{ fontSize: 11, opacity: 0.7 }}>
               {xp} XP
@@ -273,7 +283,6 @@ const styles = StyleSheet.create({
   },
   xpBarFill: {
     height: '100%',
-    backgroundColor: colors.accent,
     borderRadius: 3,
   },
 });

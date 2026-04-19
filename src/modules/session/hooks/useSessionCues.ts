@@ -4,8 +4,8 @@ import { AudioPlayer, setAudioModeAsync, useAudioPlayer } from 'expo-audio';
 import { useUserStore } from '../../../store/userStore';
 import { SessionPhase, TimerState } from '../../../types/session';
 
-const transitionSource = require('../../../../assets/audio/soft-bell.wav');
-const completionSource = require('../../../../assets/audio/session-bowl.wav');
+const bellSource = require('../../../../assets/audio/soft-bell.wav');
+const bowlSource = require('../../../../assets/audio/session-bowl.wav');
 
 async function replay(player: AudioPlayer) {
   try {
@@ -19,8 +19,10 @@ async function replay(player: AudioPlayer) {
 
 export function useSessionCues(currentPhase: SessionPhase, state: TimerState) {
   const transitionSound = useUserStore((s) => s.transitionSound);
-  const transitionPlayer = useAudioPlayer(transitionSource);
-  const completionPlayer = useAudioPlayer(completionSource);
+
+  const bellPlayer = useAudioPlayer(bellSource);
+  const bowlPlayer = useAudioPlayer(bowlSource);
+
   const previous = useRef({ currentPhase, state });
 
   useEffect(() => {
@@ -30,9 +32,9 @@ export function useSessionCues(currentPhase: SessionPhase, state: TimerState) {
       interruptionMode: 'mixWithOthers',
     }).catch(() => {});
 
-    transitionPlayer.volume = 0.72;
-    completionPlayer.volume = 0.82;
-  }, [completionPlayer, transitionPlayer]);
+    bellPlayer.volume = 0.72;
+    bowlPlayer.volume = 0.82;
+  }, [bowlPlayer, bellPlayer]);
 
   useEffect(() => {
     const previousSnapshot = previous.current;
@@ -63,10 +65,16 @@ export function useSessionCues(currentPhase: SessionPhase, state: TimerState) {
     }
 
     if (finishedNow) {
-      replay(completionPlayer).catch(() => {});
+      replay(bowlPlayer).catch(() => {});
       return;
     }
 
-    replay(transitionPlayer).catch(() => {});
-  }, [completionPlayer, currentPhase, state, transitionPlayer, transitionSound]);
+    // Logic for different transition sounds
+    if (transitionSound === 'soft-bell' || transitionSound === 'bell') {
+       replay(bellPlayer).catch(() => {});
+    } else if (transitionSound === 'bowl') {
+       replay(bowlPlayer).catch(() => {});
+    }
+
+  }, [bowlPlayer, currentPhase, state, bellPlayer, transitionSound]);
 }

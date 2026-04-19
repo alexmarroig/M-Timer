@@ -39,10 +39,10 @@ export interface GamificationProfile {
 
 const LEVEL_DEFINITIONS = [
   { minXp: 0, label: 'Beginner', tier: 'beginner' },
-  { minXp: 50, label: 'Stabilizing', tier: 'stabilizing' },
-  { minXp: 125, label: 'Deepening', tier: 'deepening' },
-  { minXp: 250, label: 'Consistent', tier: 'consistent' },
-  { minXp: 400, label: 'Integrated', tier: 'integrated' },
+  { minXp: 100, label: 'Stabilizing', tier: 'stabilizing' },
+  { minXp: 300, label: 'Deepening', tier: 'deepening' },
+  { minXp: 600, label: 'Consistent', tier: 'consistent' },
+  { minXp: 1000, label: 'Integrated', tier: 'integrated' },
 ] as const satisfies ReadonlyArray<{
   minXp: number;
   label: LevelLabel;
@@ -76,54 +76,17 @@ function getLevelIndexForXp(xpTotal: number): number {
   return 0;
 }
 
-function getXpTotalFromSessions(sessions: SessionInstance[]): number {
-  const completedSessions = sessions
-    .filter((session) => session.completed)
-    .sort(
-      (left, right) =>
-        new Date(left.completedAt).getTime() - new Date(right.completedAt).getTime()
-    );
-
-  let xpTotal = 0;
-  let previousDateKey: string | null = null;
-  let currentStreak = 0;
-  let sessionsToday = 0;
-
-  for (const session of completedSessions) {
-    const dateKey = toDateKey(new Date(session.completedAt));
-
-    if (dateKey !== previousDateKey) {
-      sessionsToday = 0;
-
-      if (!previousDateKey) {
-        currentStreak = 1;
-      } else if (areConsecutiveDateKeys(dateKey, previousDateKey)) {
-        currentStreak += 1;
-      } else {
-        currentStreak = 1;
-      }
-    }
-
-    xpTotal += calculateSessionXp({
-      currentStreak,
-      sessionsTodayBeforeCompletion: sessionsToday,
-    });
-
-    sessionsToday += 1;
-    previousDateKey = dateKey;
-  }
-
-  return xpTotal;
-}
-
 export function deriveGamificationProfile({
-  sessions,
   stats,
+  xpOverride,
 }: {
   sessions: SessionInstance[];
   stats: Stats;
+  xpOverride?: number;
 }): GamificationProfile {
-  const xpTotal = getXpTotalFromSessions(sessions);
+  // If no override provided, we can't calculate XP from sessions easily anymore
+  // because of decay logic, so we expect the caller (hook) to provide the store XP.
+  const xpTotal = xpOverride ?? 0;
   const levelIndex = getLevelIndexForXp(xpTotal);
   const currentLevelDefinition = LEVEL_DEFINITIONS[levelIndex];
   const nextLevelDefinition = LEVEL_DEFINITIONS[levelIndex + 1] ?? null;

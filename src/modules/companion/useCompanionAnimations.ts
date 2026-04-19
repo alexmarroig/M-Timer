@@ -172,6 +172,16 @@ export function useCompanionAnimations(
             startBreathe(0.98, 1.02, 5000);
             startGlow(0.1, 0.25, 4000);
             break;
+          case 'sad':
+            startFloat(2, 6000);
+            startBreathe(0.99, 1.01, 7000);
+            startGlow(0.05, 0.15, 5000);
+            break;
+          case 'neglected':
+            startFloat(1, 8000);
+            startBreathe(1, 1, 8000);
+            startGlow(0.02, 0.1, 6000);
+            break;
           case 'content':
             startFloat(5, 3500);
             startBreathe(0.97, 1.04, 4000);

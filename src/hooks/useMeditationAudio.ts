@@ -29,6 +29,8 @@ const AMBIENT_SOURCES: Record<AmbientTrack, AudioSource> = {
   rain: require('../../assets/audio/rain.mp3'),
   wind: require('../../assets/audio/wind.mp3'),
   ambient: require('../../assets/audio/ambient.mp3'),
+  forest: require('../../assets/audio/ambient.mp3'), // Fallback for new tracks
+  waves: require('../../assets/audio/ambient.mp3'),   // Fallback for new tracks
 };
 
 export function useMeditationAudio({

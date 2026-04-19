@@ -10,6 +10,8 @@ import { PlayerScreen } from '../../modules/session/screens/PlayerScreen';
 import { HistoryScreen } from '../../modules/history/screens/HistoryScreen';
 import { SettingsScreen } from '../../modules/settings/screens/SettingsScreen';
 import { AboutScreen } from '../../modules/settings/screens/AboutScreen';
+import { TermsScreen } from '../../modules/settings/screens/TermsScreen';
+import { PrivacyScreen } from '../../modules/settings/screens/PrivacyScreen';
 import { WelcomeScreen } from '../../modules/onboarding/screens/WelcomeScreen';
 import { ExperienceScreen } from '../../modules/onboarding/screens/ExperienceScreen';
 import { ScheduleScreen } from '../../modules/onboarding/screens/ScheduleScreen';
@@ -48,19 +50,30 @@ function SessionStackScreen() {
 }
 
 function SettingsStackScreen() {
+  const commonHeaderOptions = {
+    headerShown: true,
+    headerStyle: { backgroundColor: colors.background },
+    headerTintColor: colors.primary,
+    headerShadowVisible: false,
+  };
+
   return (
     <SettingsStack.Navigator screenOptions={{ headerShown: false }}>
       <SettingsStack.Screen name="SettingsMain" component={SettingsScreen} />
       <SettingsStack.Screen
         name="About"
         component={AboutScreen}
-        options={{
-          headerShown: true,
-          title: 'Sobre',
-          headerStyle: { backgroundColor: colors.background },
-          headerTintColor: colors.primary,
-          headerShadowVisible: false,
-        }}
+        options={{ ...commonHeaderOptions, title: 'Sobre' }}
+      />
+      <SettingsStack.Screen
+        name="Terms"
+        component={TermsScreen}
+        options={{ ...commonHeaderOptions, title: 'Termos de Uso' }}
+      />
+      <SettingsStack.Screen
+        name="Privacy"
+        component={PrivacyScreen}
+        options={{ ...commonHeaderOptions, title: 'Privacidade' }}
       />
     </SettingsStack.Navigator>
   );
