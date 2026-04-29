@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, getFocusedRouteNameFromRoute } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text, StyleSheet } from 'react-native';
@@ -96,11 +96,7 @@ function MainTabs() {
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarStyle: {
-          backgroundColor: colors.surface,
-          borderTopColor: colors.border,
-          paddingTop: 4,
-        },
+        tabBarStyle: styles.tabBar,
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
         tabBarLabelStyle: {
@@ -112,10 +108,14 @@ function MainTabs() {
       <Tab.Screen
         name="SessionTab"
         component={SessionStackScreen}
-        options={{
+        options={({ route }) => ({
           tabBarLabel: 'Sessao',
           tabBarIcon: ({ focused }) => <TabIcon label="🧘" focused={focused} />,
-        }}
+          tabBarStyle:
+            getFocusedRouteNameFromRoute(route) === 'Player'
+              ? styles.tabBarHidden
+              : styles.tabBar,
+        })}
       />
       <Tab.Screen
         name="HistoryTab"
@@ -153,6 +153,14 @@ export function AppNavigator() {
 }
 
 const styles = StyleSheet.create({
+  tabBar: {
+    backgroundColor: colors.surface,
+    borderTopColor: colors.border,
+    paddingTop: 4,
+  },
+  tabBarHidden: {
+    display: 'none',
+  },
   tabIcon: {
     fontSize: 18,
     color: colors.textSecondary,

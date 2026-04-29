@@ -15,10 +15,9 @@ import { useCompanion } from '../../../hooks/useCompanion';
 import { useMeditationAudio } from '../../../hooks/useMeditationAudio';
 import { useSessionCues } from '../hooks/useSessionCues';
 
-import { colors, spacing } from '../../../core/theme';
+import { colors, spacing, borderRadius } from '../../../core/theme';
 import { formatTime } from '../../../core/utils/time';
 import { PHASE_LABELS } from '../../../types/session';
-import { getSessionExpression } from '../../../types/companion';
 
 import { useHistoryStore } from '../../../store/historyStore';
 import { useCompanionStore } from '../../../store/companionStore';
@@ -213,12 +212,7 @@ export function PlayerScreen({ route, navigation }: Props) {
           </View>
         ) : (
           <>
-            <CompanionCharacter
-              sessionExpression={getSessionExpression(state, currentPhase)}
-              size={state === 'core' ? 80 : 100}
-            />
-
-            <View style={{ marginTop: spacing.md }}>
+            <View style={styles.phaseIndicatorWrap}>
               <PhaseIndicator currentPhase={currentPhase} state={state} />
             </View>
 
@@ -319,20 +313,27 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: spacing.xl,
+    paddingVertical: spacing.md,
   },
   companionContainer: {
-    marginBottom: spacing.xl,
+    marginVertical: spacing.md,
   },
   timerContainer: {
-    marginTop: spacing.xl,
+    marginTop: spacing.md,
     alignItems: 'center',
     gap: spacing.sm,
   },
   timerMeta: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
+    flexWrap: 'wrap',
     gap: spacing.sm,
     marginTop: spacing.xs,
+  },
+  phaseIndicatorWrap: {
+    minHeight: 96,
+    justifyContent: 'center',
   },
   xpBadge: {
     backgroundColor: 'rgba(166, 124, 0, 0.1)',
@@ -352,7 +353,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: colors.surface,
     padding: spacing.xl,
-    borderRadius: borderRadius.xxl,
+    borderRadius: borderRadius.xl,
     width: '100%',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 10 },

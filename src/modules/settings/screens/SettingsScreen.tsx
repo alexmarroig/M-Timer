@@ -277,7 +277,7 @@ export function SettingsScreen({ navigation }: Props) {
 
         <View style={styles.footer}>
           <MinimalText variant="caption" color={colors.textSecondary} align="center">
-            M-Timer v1.0.0
+            M-Timer v1.0.1
           </MinimalText>
           <MinimalText variant="caption" color={colors.textSecondary} align="center">
             Este app não ensina a técnica de MT.
