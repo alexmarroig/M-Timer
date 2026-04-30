@@ -22,7 +22,7 @@ export function HistoryScreen() {
   const renderHeader = () => (
     <View>
       <MinimalText variant="heading" style={styles.title}>
-        Historico
+        Histórico
       </MinimalText>
 
       <View style={styles.section}>
@@ -89,7 +89,7 @@ export function HistoryScreen() {
 
       {sessions.length > 0 && (
         <MinimalText variant="subheading" style={styles.sectionTitle}>
-          Sessoes recentes
+          Sessões recentes
         </MinimalText>
       )}
     </View>

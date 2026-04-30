@@ -1,6 +1,7 @@
 import React, { useEffect, useCallback, useRef } from 'react';
 import { Alert, View, StyleSheet, StatusBar, Animated } from 'react-native';
 import * as Haptics from 'expo-haptics';
+import { useKeepAwake } from 'expo-keep-awake';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { useTimerEngine } from '../hooks/useTimerEngine';
@@ -29,11 +30,16 @@ import type { SessionStackParamList } from '../../../core/navigation/types';
 type Props = NativeStackScreenProps<SessionStackParamList, 'Player'>;
 
 export function PlayerScreen({ route, navigation }: Props) {
+  // Mantém a tela ativa durante toda a sessão de meditação
+  useKeepAwake();
+
   const canExitRef = useRef(false);
   const rewardSentRef = useRef(false);
   const xpFloatY = useRef(new Animated.Value(0)).current;
   const xpFloatOpacity = useRef(new Animated.Value(0)).current;
   const xpGainRef = useRef(0);
+  const celebrateScale = useRef(new Animated.Value(1)).current;
+  const milestoneMessageRef = useRef('');
 
   const { template } = route.params;
 
@@ -103,8 +109,33 @@ export function PlayerScreen({ route, navigation }: Props) {
         Animated.timing(xpFloatOpacity, { toValue: 0, duration: 400, useNativeDriver: true }),
       ]).start();
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+
+      // Celebração especial para milestones de sequência
+      const streak = freshStats.currentStreak;
+      if (streak === 7) {
+        milestoneMessageRef.current = '🔥 7 dias seguidos! Incrível!';
+      } else if (streak === 30) {
+        milestoneMessageRef.current = '🌟 30 dias! Você é consistente!';
+      } else if (streak === 100) {
+        milestoneMessageRef.current = '💎 100 dias! Mestre da meditação!';
+      } else if (streak > 0 && streak % 10 === 0) {
+        milestoneMessageRef.current = `🎯 ${streak} dias de constância!`;
+      } else {
+        milestoneMessageRef.current = '';
+      }
+
+      if (milestoneMessageRef.current) {
+        // Haptic burst duplo para milestones
+        setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {}), 600);
+        setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {}), 900);
+        // Animação de pulso no ícone de conclusão
+        Animated.sequence([
+          Animated.spring(celebrateScale, { toValue: 1.25, useNativeDriver: true, speed: 20, bounciness: 10 }),
+          Animated.spring(celebrateScale, { toValue: 1, useNativeDriver: true, speed: 10, bounciness: 4 }),
+        ]).start();
+      }
     }
-  }, [addSession, addSessionXp, isFinished, sessionStartTimestamp, template, xpFloatY, xpFloatOpacity]);
+  }, [addSession, addSessionXp, celebrateScale, isFinished, sessionStartTimestamp, template, xpFloatY, xpFloatOpacity]);
 
   const exitSession = useCallback(() => {
     canExitRef.current = true;
@@ -173,8 +204,11 @@ export function PlayerScreen({ route, navigation }: Props) {
 
       <View style={styles.content}>
         {isFinished ? (
+          <>
           <View style={styles.finishedContainer}>
-            <CompanionCharacter sessionExpression="finished" size={100} />
+            <Animated.View style={{ transform: [{ scale: celebrateScale }] }}>
+              <CompanionCharacter sessionExpression="finished" size={100} />
+            </Animated.View>
 
             <MinimalText
               variant="heading"
@@ -182,8 +216,19 @@ export function PlayerScreen({ route, navigation }: Props) {
               color={colors.primary}
               style={{ marginTop: spacing.lg }}
             >
-              Sessão completa
+              Sessão completa 🎉
             </MinimalText>
+
+            {milestoneMessageRef.current ? (
+              <MinimalText
+                variant="subheading"
+                align="center"
+                color={colors.accent}
+                style={{ marginTop: spacing.sm }}
+              >
+                {milestoneMessageRef.current}
+              </MinimalText>
+            ) : null}
 
             <MinimalText
               variant="body"
@@ -240,6 +285,7 @@ export function PlayerScreen({ route, navigation }: Props) {
               +{xpGainRef.current} XP ✨
             </MinimalText>
           </Animated.View>
+          </>
         ) : (
           <>
             <CompanionCharacter

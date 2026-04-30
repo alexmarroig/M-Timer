@@ -30,9 +30,18 @@ const AMBIENT_LABELS: Record<AmbientTrack, string> = {
   forest: 'Floresta 🌿',
   waves: 'Ondas do Mar 🌊',
   binaural_alpha: 'Binaural Alpha 🎧',
+  binaural_theta: 'Binaural Theta 🧠',
+  campfire: 'Fogueira 🔥',
+  singing_bowls: 'Tigelas Cantantes 🔔',
+  white_noise: 'Ruído Branco ⚪',
+  crickets: 'Grilos Noturnos 🌙',
 };
 
-const AMBIENT_OPTIONS: AmbientTrack[] = ['ambient', 'rain', 'wind', 'forest', 'waves', 'binaural_alpha'];
+const AMBIENT_OPTIONS: AmbientTrack[] = [
+  'ambient', 'rain', 'wind', 'forest', 'waves',
+  'binaural_alpha', 'binaural_theta',
+  'campfire', 'singing_bowls', 'white_noise', 'crickets',
+];
 const EXPERIENCE_OPTIONS: ExperienceLevel[] = ['beginner', 'regular', 'experienced'];
 const MORNING_REMINDER_ID = 'reminder-morning';
 const AFTERNOON_REMINDER_ID = 'reminder-afternoon';
@@ -278,7 +287,7 @@ export function SettingsScreen({ navigation }: Props) {
 
         <View style={styles.footer}>
           <MinimalText variant="caption" color={colors.textSecondary} align="center">
-            M-Timer v1.0.0
+            M-Timer v1.0.2
           </MinimalText>
           <MinimalText variant="caption" color={colors.textSecondary} align="center">
             Este app não ensina a técnica de MT.

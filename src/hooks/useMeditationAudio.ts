@@ -26,12 +26,17 @@ export function getAmbientTargetVolume({
 
 
 const AMBIENT_SOURCES: Record<AmbientTrack, AudioSource> = {
-  ambient: require('../../assets/audio/ambient.mp3'),       // Drone meditativo 110 Hz
-  rain: require('../../assets/audio/rain.mp3'),             // Chuva suave
-  wind: require('../../assets/audio/pink_noise.mp3'),       // Ruído rosa (1/f)
-  forest: require('../../assets/audio/forest.mp3'),         // Floresta com pássaros
-  waves: require('../../assets/audio/waves.mp3'),           // Ondas do mar 8s
+  ambient: require('../../assets/audio/ambient.mp3'),              // Drone meditativo 110 Hz
+  rain: require('../../assets/audio/rain.mp3'),                    // Chuva suave
+  wind: require('../../assets/audio/pink_noise.mp3'),              // Ruído rosa (1/f)
+  forest: require('../../assets/audio/forest.mp3'),                // Floresta com pássaros
+  waves: require('../../assets/audio/waves.mp3'),                  // Ondas do mar 8s
   binaural_alpha: require('../../assets/audio/binaural_alpha.mp3'), // Binaural alpha 10 Hz — foco
+  binaural_theta: require('../../assets/audio/binaural_theta.mp3'), // Binaural theta 6 Hz — relaxamento
+  campfire: require('../../assets/audio/campfire.mp3'),            // Fogueira crepitante
+  singing_bowls: require('../../assets/audio/singing_bowls.mp3'),  // Tigelas cantantes
+  white_noise: require('../../assets/audio/white_noise.mp3'),      // Ruído branco
+  crickets: require('../../assets/audio/crickets.mp3'),            // Grilos noturnos
 };
 
 export function useMeditationAudio({

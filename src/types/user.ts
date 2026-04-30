@@ -1,5 +1,5 @@
 export type TransitionSound = 'bell' | 'bowl' | 'soft-bell' | 'vibration' | 'none';
-export type AmbientTrack = 'rain' | 'wind' | 'ambient' | 'forest' | 'waves' | 'binaural_alpha';
+export type AmbientTrack = 'rain' | 'wind' | 'ambient' | 'forest' | 'waves' | 'binaural_alpha' | 'binaural_theta' | 'campfire' | 'singing_bowls' | 'white_noise' | 'crickets';
 export type ExperienceLevel = 'beginner' | 'regular' | 'experienced';
 
 export interface ReminderConfig {

@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { View, ScrollView, StyleSheet, Animated } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { ScreenContainer } from '../../../components/layout/ScreenContainer';
@@ -51,6 +51,16 @@ const HOME_COPY: Record<
 };
 
 export function HomeScreen({ navigation }: Props) {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(20)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 500, useNativeDriver: true }),
+    ]).start();
+  }, [fadeAnim, slideAnim]);
+
   const displayName = useAuthStore((state) => state.displayName);
   const templates = useSessionStore((state) => state.templates);
   const getDefault = useSessionStore((state) => state.getDefault);
@@ -83,14 +93,16 @@ export function HomeScreen({ navigation }: Props) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.greetingSection}>
-          <MinimalText variant="heading">M-Timer</MinimalText>
+        <Animated.View
+          style={[styles.greetingSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}
+        >
+          <MinimalText variant="heading">M-Timer 🧘</MinimalText>
           <MinimalText variant="body" color={colors.textSecondary}>
             {displayName
               ? `${getGreeting()}, ${displayName} — ${homeCopy.subtitle}`
               : `${getGreeting()} — ${homeCopy.subtitle}`}
           </MinimalText>
-        </View>
+        </Animated.View>
 
         <View style={styles.companionSection}>
           <CompanionCharacter size={110} showLevel />

@@ -35,7 +35,7 @@ export function LoginScreen() {
     const success = login(email, password);
     if (!success) {
       Alert.alert(
-        'Login invalido',
+        'Login inválido',
         'Use as credenciais demo exibidas na tela para acessar o app.'
       );
     }
@@ -53,7 +53,7 @@ export function LoginScreen() {
     } catch (error) {
       Alert.alert(
         'Google Login',
-        error instanceof Error ? error.message : 'Nao foi possivel entrar com Google.'
+        error instanceof Error ? error.message : 'Não foi possível entrar com Google.'
       );
     } finally {
       setIsGoogleLoading(false);
@@ -68,9 +68,9 @@ export function LoginScreen() {
     }
 
     Alert.alert(
-      result.ok ? 'Recuperacao de senha' : 'Nao foi possivel recuperar',
+      result.ok ? 'Recuperação de senha' : 'Não foi possível recuperar',
       result.recoveryCode
-        ? `${result.message}\nCodigo demo: ${result.recoveryCode}`
+        ? `${result.message}\nCódigo demo: ${result.recoveryCode}`
         : result.message
     );
   };
@@ -84,7 +84,7 @@ export function LoginScreen() {
       setNewPassword('');
     }
 
-    Alert.alert(result.ok ? 'Senha atualizada' : 'Senha nao atualizada', result.message);
+    Alert.alert(result.ok ? 'Senha atualizada' : 'Senha não atualizada', result.message);
   };
 
   const fillDemoAccess = () => {
@@ -110,7 +110,7 @@ export function LoginScreen() {
               M-Timer
             </MinimalText>
             <MinimalText variant="body" color={colors.textSecondary} align="center">
-              Meditacao guiada com login demo, convidado e Google.
+              Meditação guiada com login demo, convidado e Google.
             </MinimalText>
           </View>
 

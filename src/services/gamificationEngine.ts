@@ -10,11 +10,11 @@ export type EvolutionTier =
   | 'integrated';
 
 export type LevelLabel =
-  | 'Beginner'
-  | 'Stabilizing'
-  | 'Deepening'
-  | 'Consistent'
-  | 'Integrated';
+  | 'Iniciante'
+  | 'Estabilizando'
+  | 'Aprofundando'
+  | 'Consistente'
+  | 'Integrado';
 
 export interface SessionXpInput {
   currentStreak: number;
@@ -38,11 +38,11 @@ export interface GamificationProfile {
 }
 
 const LEVEL_DEFINITIONS = [
-  { minXp: 0, label: 'Beginner', tier: 'beginner' },
-  { minXp: 100, label: 'Stabilizing', tier: 'stabilizing' },
-  { minXp: 300, label: 'Deepening', tier: 'deepening' },
-  { minXp: 600, label: 'Consistent', tier: 'consistent' },
-  { minXp: 1000, label: 'Integrated', tier: 'integrated' },
+  { minXp: 0, label: 'Iniciante', tier: 'beginner' },
+  { minXp: 100, label: 'Estabilizando', tier: 'stabilizing' },
+  { minXp: 300, label: 'Aprofundando', tier: 'deepening' },
+  { minXp: 600, label: 'Consistente', tier: 'consistent' },
+  { minXp: 1000, label: 'Integrado', tier: 'integrated' },
 ] as const satisfies ReadonlyArray<{
   minXp: number;
   label: LevelLabel;

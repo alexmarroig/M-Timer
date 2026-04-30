@@ -11,8 +11,8 @@ type Props = NativeStackScreenProps<OnboardingStackParamList, 'Experience'>;
 
 const OPTIONS: Array<{ id: ExperienceLevel; label: string; desc: string }> = [
   { id: 'beginner', label: 'Iniciante', desc: 'Aprendi recentemente' },
-  { id: 'regular', label: 'Regular', desc: 'Pratico ha alguns meses' },
-  { id: 'experienced', label: 'Experiente', desc: 'Pratico ha mais de 1 ano' },
+  { id: 'regular', label: 'Regular', desc: 'Pratico há alguns meses' },
+  { id: 'experienced', label: 'Experiente', desc: 'Pratico há mais de 1 ano' },
 ];
 
 export function ExperienceScreen({ navigation }: Props) {
@@ -20,8 +20,8 @@ export function ExperienceScreen({ navigation }: Props) {
 
   return (
     <OnboardingPage
-      title="Sua experiencia"
-      description="Ha quanto tempo voce pratica Meditacao Transcendental?"
+      title="Sua experiência"
+      description="Há quanto tempo você pratica Meditação Transcendental?"
       buttonTitle="Continuar"
       onNext={() => navigation.navigate('Schedule', { experience: selected || 'regular' })}
     >

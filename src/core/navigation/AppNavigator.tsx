@@ -94,13 +94,22 @@ function MainTabs() {
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
-          paddingTop: 4,
+          borderTopWidth: 1,
+          paddingTop: 6,
+          paddingBottom: 4,
+          height: 60,
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.06,
+          shadowRadius: 8,
         },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: 10,
           fontWeight: '600',
+          marginTop: 2,
         },
       }}
     >
@@ -109,7 +118,9 @@ function MainTabs() {
         component={SessionStackScreen}
         options={{
           tabBarLabel: 'Sessão',
-          tabBarIcon: ({ focused, color }) => <Ionicons name={focused ? 'leaf' : 'leaf-outline'} size={22} color={color} />,
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons name={focused ? 'flower' : 'flower-outline'} size={24} color={color} />
+          ),
         }}
       />
       <Tab.Screen
@@ -117,15 +128,19 @@ function MainTabs() {
         component={HistoryScreen}
         options={{
           tabBarLabel: 'Histórico',
-          tabBarIcon: ({ focused, color }) => <Ionicons name={focused ? 'calendar' : 'calendar-outline'} size={22} color={color} />,
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons name={focused ? 'bar-chart' : 'bar-chart-outline'} size={24} color={color} />
+          ),
         }}
       />
       <Tab.Screen
         name="SettingsTab"
         component={SettingsStackScreen}
         options={{
-          tabBarLabel: 'Config',
-          tabBarIcon: ({ focused, color }) => <Ionicons name={focused ? 'settings' : 'settings-outline'} size={22} color={color} />,
+          tabBarLabel: 'Configurações',
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons name={focused ? 'options' : 'options-outline'} size={24} color={color} />
+          ),
         }}
       />
     </Tab.Navigator>
