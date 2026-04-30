@@ -1,5 +1,6 @@
 import React, { useEffect, useCallback, useRef } from 'react';
-import { Alert, View, StyleSheet, StatusBar } from 'react-native';
+import { Alert, View, StyleSheet, StatusBar, Animated } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { useTimerEngine } from '../hooks/useTimerEngine';
@@ -15,9 +16,10 @@ import { useCompanion } from '../../../hooks/useCompanion';
 import { useMeditationAudio } from '../../../hooks/useMeditationAudio';
 import { useSessionCues } from '../hooks/useSessionCues';
 
-import { colors, spacing, borderRadius } from '../../../core/theme';
+import { colors, spacing } from '../../../core/theme';
 import { formatTime } from '../../../core/utils/time';
 import { PHASE_LABELS } from '../../../types/session';
+import { getSessionExpression } from '../../../types/companion';
 
 import { useHistoryStore } from '../../../store/historyStore';
 import { useCompanionStore } from '../../../store/companionStore';
@@ -29,6 +31,9 @@ type Props = NativeStackScreenProps<SessionStackParamList, 'Player'>;
 export function PlayerScreen({ route, navigation }: Props) {
   const canExitRef = useRef(false);
   const rewardSentRef = useRef(false);
+  const xpFloatY = useRef(new Animated.Value(0)).current;
+  const xpFloatOpacity = useRef(new Animated.Value(0)).current;
+  const xpGainRef = useRef(0);
 
   const { template } = route.params;
 
@@ -86,8 +91,20 @@ export function PlayerScreen({ route, navigation }: Props) {
 
       const freshStats = useHistoryStore.getState().getStats();
       addSessionXp(freshStats.currentStreak, freshStats.sessionsToday);
+
+      // XP float animation
+      const earnedXp = 10 + Math.round(template.phases.core / 60) + Math.min(20, freshStats.currentStreak * 2);
+      xpGainRef.current = earnedXp;
+      xpFloatY.setValue(0);
+      xpFloatOpacity.setValue(0);
+      Animated.sequence([
+        Animated.timing(xpFloatOpacity, { toValue: 1, duration: 250, useNativeDriver: true }),
+        Animated.timing(xpFloatY, { toValue: -80, duration: 1400, useNativeDriver: true }),
+        Animated.timing(xpFloatOpacity, { toValue: 0, duration: 400, useNativeDriver: true }),
+      ]).start();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
     }
-  }, [addSession, addSessionXp, isFinished, sessionStartTimestamp, template]);
+  }, [addSession, addSessionXp, isFinished, sessionStartTimestamp, template, xpFloatY, xpFloatOpacity]);
 
   const exitSession = useCallback(() => {
     canExitRef.current = true;
@@ -97,8 +114,8 @@ export function PlayerScreen({ route, navigation }: Props) {
 
   const confirmExit = useCallback((onExit: () => void) => {
     Alert.alert(
-      'Abandonar sessao?',
-      'Se voce sair agora, esta pratica nao sera salva como concluida.',
+      'Abandonar sessão?',
+      'Se você sair agora, esta prática não será salva como concluída.',
       [
         { text: 'Continuar', style: 'cancel' },
         { text: 'Sair', style: 'destructive', onPress: onExit },
@@ -165,7 +182,7 @@ export function PlayerScreen({ route, navigation }: Props) {
               color={colors.primary}
               style={{ marginTop: spacing.lg }}
             >
-              Sessao completa
+              Sessão completa
             </MinimalText>
 
             <MinimalText
@@ -174,7 +191,7 @@ export function PlayerScreen({ route, navigation }: Props) {
               color={colors.textSecondary}
               style={styles.finishedText}
             >
-              {formatTime(totalDuration)} de pratica
+              {formatTime(totalDuration)} de prática
             </MinimalText>
 
             <View style={styles.companionContainer}>
@@ -193,7 +210,7 @@ export function PlayerScreen({ route, navigation }: Props) {
               color={colors.primary}
               style={styles.finishedLevel}
             >
-              Nivel {profile.currentLevel} - {profile.levelLabel}
+              Nível {profile.currentLevel} - {profile.levelLabel}
             </MinimalText>
 
             <MinimalText variant="caption" align="center" color={colors.textSecondary}>
@@ -210,9 +227,27 @@ export function PlayerScreen({ route, navigation }: Props) {
               style={styles.finishButton}
             />
           </View>
+
+          {/* Floating XP indicator */}
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.xpFloat,
+              { opacity: xpFloatOpacity, transform: [{ translateY: xpFloatY }] },
+            ]}
+          >
+            <MinimalText variant="subheading" color={colors.accent} align="center">
+              +{xpGainRef.current} XP ✨
+            </MinimalText>
+          </Animated.View>
         ) : (
           <>
-            <View style={styles.phaseIndicatorWrap}>
+            <CompanionCharacter
+              sessionExpression={getSessionExpression(state, currentPhase)}
+              size={state === 'core' ? 80 : 100}
+            />
+
+            <View style={{ marginTop: spacing.md }}>
               <PhaseIndicator currentPhase={currentPhase} state={state} />
             </View>
 
@@ -232,34 +267,28 @@ export function PlayerScreen({ route, navigation }: Props) {
                   {formatTime(phaseRemaining)}
                 </MinimalText>
 
-                <View style={styles.timerMeta}>
-                  <MinimalText variant="caption" align="center" color={colors.textSecondary}>
-                    {formatTime(totalDuration - totalElapsed)} restante
-                  </MinimalText>
+                <MinimalText variant="caption" align="center" color={colors.textSecondary}>
+                  {formatTime(totalDuration - totalElapsed)} restante
+                </MinimalText>
 
-                  <View style={styles.xpBadge}>
-                    <MinimalText variant="caption" align="center" color={colors.accent} style={{ fontWeight: '700' }}>
-                      +{profile.xpTotal} XP
-                    </MinimalText>
-                  </View>
-                </View>
+                <MinimalText variant="caption" align="center" color={colors.textSecondary}>
+                  Companion {profile.levelLabel.toLowerCase()} - {profile.xpTotal} XP
+                </MinimalText>
 
                 {ambientMuted && (
-                  <MinimalText variant="caption" align="center" color={colors.textSecondary} style={{ opacity: 0.6 }}>
-                    Som ambiente pausado
+                  <MinimalText variant="caption" align="center" color={colors.error}>
+                    Sem som ambiente (mute ativo)
                   </MinimalText>
                 )}
               </View>
             ) : (
               <View style={styles.timerContainer}>
-                <View style={styles.phaseGlass}>
-                  <MinimalText variant="subheading" align="center" color={colors.primary} style={{ fontWeight: '700' }}>
-                    {PHASE_LABELS[currentPhase].toUpperCase()}
-                  </MinimalText>
-                </View>
+                <MinimalText variant="subheading" align="center" color={colors.textSecondary}>
+                  {PHASE_LABELS[currentPhase]}
+                </MinimalText>
 
                 <MinimalText variant="caption" align="center" color={colors.textSecondary}>
-                   Melhor streak: {profile.bestStreak} dias
+                  {profile.xpTotal} XP - melhor sequência {profile.bestStreak}
                 </MinimalText>
               </View>
             )}
@@ -272,8 +301,8 @@ export function PlayerScreen({ route, navigation }: Props) {
 
         <View style={styles.phaseLabels}>
           <MinimalText variant="caption" color={colors.rampUp}>Entrada</MinimalText>
-          <MinimalText variant="caption" color={colors.core}>Meditacao</MinimalText>
-          <MinimalText variant="caption" color={colors.cooldown}>Saida</MinimalText>
+          <MinimalText variant="caption" color={colors.core}>Meditação</MinimalText>
+          <MinimalText variant="caption" color={colors.cooldown}>Saída</MinimalText>
         </View>
       </View>
 
@@ -313,75 +342,35 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: spacing.xl,
-    paddingVertical: spacing.md,
   },
   companionContainer: {
-    marginVertical: spacing.md,
+    marginBottom: spacing.lg,
   },
   timerContainer: {
-    marginTop: spacing.md,
+    marginTop: spacing.xl,
     alignItems: 'center',
-    gap: spacing.sm,
-  },
-  timerMeta: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexWrap: 'wrap',
-    gap: spacing.sm,
-    marginTop: spacing.xs,
-  },
-  phaseIndicatorWrap: {
-    minHeight: 96,
-    justifyContent: 'center',
-  },
-  xpBadge: {
-    backgroundColor: 'rgba(166, 124, 0, 0.1)',
-    paddingHorizontal: spacing.sm,
-    paddingVertical: 2,
-    borderRadius: 99,
-  },
-  phaseGlass: {
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.sm,
-    borderRadius: borderRadius.lg,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.8)',
+    gap: spacing.xs,
   },
   finishedContainer: {
     alignItems: 'center',
-    backgroundColor: colors.surface,
-    padding: spacing.xl,
-    borderRadius: borderRadius.xl,
-    width: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.1,
-    shadowRadius: 20,
-    elevation: 10,
   },
   finishedText: {
-    marginTop: spacing.xs,
-    opacity: 0.8,
+    marginTop: spacing.md,
   },
   finishedLevel: {
-    marginTop: spacing.lg,
-    fontWeight: '700',
+    marginTop: spacing.md,
   },
   finishButton: {
-    marginTop: spacing.xxl,
-    width: '100%',
+    marginTop: spacing.xl,
   },
   timelineContainer: {
     paddingHorizontal: spacing.xl,
-    paddingBottom: spacing.lg,
+    paddingBottom: spacing.md,
   },
   phaseLabels: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginTop: spacing.sm,
-    paddingHorizontal: spacing.xs,
+    marginTop: spacing.xs,
   },
   controls: {
     paddingHorizontal: spacing.xl,
@@ -389,10 +378,19 @@ const styles = StyleSheet.create({
   },
   controlButton: {
     width: '100%',
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
+  },
+  xpFloat: {
+    position: 'absolute',
+    bottom: 180,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
     shadowRadius: 8,
-    elevation: 4,
+    elevation: 6,
   },
 });

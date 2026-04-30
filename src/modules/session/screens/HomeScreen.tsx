@@ -24,21 +24,29 @@ import type { SessionStackParamList } from '../../../core/navigation/types';
 
 type Props = NativeStackScreenProps<SessionStackParamList, 'Home'>;
 
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Bom dia';
+  if (hour < 18) return 'Boa tarde';
+  return 'Boa noite';
+}
+
 const HOME_COPY: Record<
   ExperienceLevel,
   { subtitle: string; presetTitle: string }
 > = {
   beginner: {
-    subtitle: 'estabeleca sua clareza com sessoes leves.',
-    presetTitle: 'Comece sua jornada',
+    subtitle: 'vamos consolidar sua prática com sessões leves e consistentes.',
+    presetTitle: 'Presets para começar',
   },
   regular: {
-    subtitle: 'mantenha a profundidade do seu mantra hoje.',
-    presetTitle: 'Seus Presets',
+    subtitle: 'vamos manter sua prática diária de meditação.',
+    presetTitle: 'Presets',
   },
   experienced: {
-    subtitle: 'cultive a presenca pura e o silencio interior.',
-    presetTitle: 'Aprofunde sua pratica',
+    subtitle: 'vamos manter profundidade e constância na prática.',
+    presetTitle: 'Presets para aprofundar',
   },
 };
 
@@ -79,8 +87,8 @@ export function HomeScreen({ navigation }: Props) {
           <MinimalText variant="heading">M-Timer</MinimalText>
           <MinimalText variant="body" color={colors.textSecondary}>
             {displayName
-              ? `${displayName}, ${homeCopy.subtitle}`
-              : `Sua pratica diaria de meditacao: ${homeCopy.subtitle}`}
+              ? `${getGreeting()}, ${displayName} — ${homeCopy.subtitle}`
+              : `${getGreeting()} — ${homeCopy.subtitle}`}
           </MinimalText>
         </View>
 
@@ -103,11 +111,11 @@ export function HomeScreen({ navigation }: Props) {
 
               <View style={styles.companionCopy}>
                 <MinimalText variant="subheading">
-                  Companion em evolucao
+                  Companion em evolução
                 </MinimalText>
 
                 <MinimalText variant="caption" color={colors.textSecondary}>
-                  Nivel {profile.currentLevel} - {profile.levelLabel}
+                  Nível {profile.currentLevel} - {profile.levelLabel}
                 </MinimalText>
 
                 <MinimalText variant="body" style={styles.metricText}>
@@ -140,8 +148,8 @@ export function HomeScreen({ navigation }: Props) {
                   style={styles.statusText}
                 >
                   {stats.currentStreak > 0
-                    ? `${stats.currentStreak} dias de constancia e ${stats.sessionsToday} sessoes hoje.`
-                    : 'Complete sua primeira sessao para despertar mais brilho.'}
+                    ? `${stats.currentStreak} dias de constância e ${stats.sessionsToday} sessões hoje.`
+                    : 'Complete sua primeira sessão para despertar mais brilho.'}
                 </MinimalText>
               </View>
             </View>
@@ -149,7 +157,7 @@ export function HomeScreen({ navigation }: Props) {
         </View>
 
         <ButtonPrimary
-          title="Iniciar Sessao"
+          title="Iniciar Sessão"
           onPress={handleStartDefault}
           size="large"
           style={styles.mainButton}
@@ -205,7 +213,7 @@ const styles = StyleSheet.create({
     paddingBottom: spacing.xxl,
   },
   greetingSection: {
-    marginTop: spacing.xl,
+    marginTop: spacing.lg,
     marginBottom: spacing.md,
   },
   companionSection: {
@@ -214,43 +222,27 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
   },
   mainButton: {
-    marginBottom: spacing.xl,
-    shadowColor: colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
-    elevation: 4,
+    marginBottom: spacing.lg,
   },
   section: {
-    marginBottom: spacing.xl,
+    marginBottom: spacing.lg,
   },
   sectionTitle: {
-    marginBottom: spacing.md,
-    fontWeight: '700',
-    color: colors.primary,
+    marginBottom: spacing.sm,
   },
   presetsRow: {
     paddingRight: spacing.lg,
   },
   companionCard: {
-    borderRadius: borderRadius.xl,
-    padding: spacing.lg,
-    backgroundColor: colors.surface,
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.02)',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 3,
+    borderRadius: borderRadius.lg,
   },
   companionRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.lg,
+    gap: spacing.md,
   },
   companionVisual: {
-    width: 100,
+    width: 132,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -258,15 +250,14 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   metricText: {
-    marginTop: spacing.xs,
-    fontWeight: '600',
+    marginTop: spacing.sm,
   },
   progressTrack: {
-    height: 6,
+    height: 8,
     borderRadius: 999,
     backgroundColor: colors.border,
     overflow: 'hidden',
-    marginTop: spacing.md,
+    marginTop: spacing.sm,
     marginBottom: spacing.xs,
   },
   progressFill: {
@@ -275,7 +266,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.accent,
   },
   statusText: {
-    marginTop: spacing.sm,
-    lineHeight: 16,
+    marginTop: spacing.xs,
   },
 });

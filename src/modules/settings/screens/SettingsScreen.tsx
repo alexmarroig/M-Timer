@@ -24,14 +24,15 @@ const SOUND_LABELS: Record<TransitionSound, string> = {
 const SOUND_OPTIONS: TransitionSound[] = ['bell', 'bowl', 'soft-bell', 'vibration', 'none'];
 
 const AMBIENT_LABELS: Record<AmbientTrack, string> = {
-  ambient: 'Pad Ambiente',
-  rain: 'Chuva Suave',
-  wind: 'Vento Leve',
-  forest: 'Floresta',
-  waves: 'Ondas do Mar',
+  ambient: 'Drone Meditativo 🎵',
+  rain: 'Chuva Suave 🌧️',
+  wind: 'Ruído Rosa 〰️',
+  forest: 'Floresta 🌿',
+  waves: 'Ondas do Mar 🌊',
+  binaural_alpha: 'Binaural Alpha 🎧',
 };
 
-const AMBIENT_OPTIONS: AmbientTrack[] = ['ambient', 'rain', 'wind', 'forest', 'waves'];
+const AMBIENT_OPTIONS: AmbientTrack[] = ['ambient', 'rain', 'wind', 'forest', 'waves', 'binaural_alpha'];
 const EXPERIENCE_OPTIONS: ExperienceLevel[] = ['beginner', 'regular', 'experienced'];
 const MORNING_REMINDER_ID = 'reminder-morning';
 const AFTERNOON_REMINDER_ID = 'reminder-afternoon';
@@ -277,7 +278,7 @@ export function SettingsScreen({ navigation }: Props) {
 
         <View style={styles.footer}>
           <MinimalText variant="caption" color={colors.textSecondary} align="center">
-            M-Timer v1.0.1
+            M-Timer v1.0.0
           </MinimalText>
           <MinimalText variant="caption" color={colors.textSecondary} align="center">
             Este app não ensina a técnica de MT.

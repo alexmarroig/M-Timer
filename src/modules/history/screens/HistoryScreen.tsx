@@ -33,9 +33,9 @@ export function HistoryScreen() {
         <Card style={styles.progressCard}>
           <View style={styles.progressHeader}>
             <View>
-              <MinimalText variant="subheading">Evolucao do companion</MinimalText>
+              <MinimalText variant="subheading">Evolução do companion</MinimalText>
               <MinimalText variant="caption" color={colors.textSecondary}>
-                Nivel {profile.currentLevel} - {profile.levelLabel}
+                Nível {profile.currentLevel} - {profile.levelLabel}
               </MinimalText>
             </View>
             <MinimalText variant="body" color={colors.primary}>
@@ -56,14 +56,14 @@ export function HistoryScreen() {
 
             <View style={styles.progressCopy}>
               <MinimalText variant="body">
-                {profile.totalSessions} sessoes concluidas e {profile.totalMinutes} minutos acumulados.
+                {profile.totalSessions} sessões concluídas e {profile.totalMinutes} minutos acumulados.
               </MinimalText>
               <MinimalText
                 variant="caption"
                 color={colors.textSecondary}
                 style={styles.progressText}
               >
-                Melhor streak: {profile.bestStreak} dias - multiplicador atual {profile.streakMultiplier.toFixed(2)}x
+                Melhor sequência: {profile.bestStreak} dias - multiplicador atual {profile.streakMultiplier.toFixed(2)}x
               </MinimalText>
               <View style={styles.progressTrack}>
                 <View
@@ -76,7 +76,7 @@ export function HistoryScreen() {
               <MinimalText variant="caption" color={colors.textSecondary}>
                 {profile.nextLevelLabel
                   ? `${profile.xpToNextLevel} XP para ${profile.nextLevelLabel}`
-                  : 'Evolucao integrada, sem regressao visual brusca.'}
+                  : 'Evolução integrada, sem regressão visual brusca.'}
               </MinimalText>
             </View>
           </View>
@@ -98,10 +98,10 @@ export function HistoryScreen() {
   const renderEmpty = () => (
     <View style={styles.empty}>
       <MinimalText variant="body" color={colors.textSecondary} align="center">
-        Nenhuma sessao registrada ainda.
+        Nenhuma sessão registrada ainda.
       </MinimalText>
       <MinimalText variant="caption" color={colors.textSecondary} align="center">
-        Complete sua primeira sessao para ver seu progresso.
+        Complete sua primeira sessão para ver seu progresso.
       </MinimalText>
     </View>
   );

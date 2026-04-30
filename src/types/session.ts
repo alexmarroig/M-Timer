@@ -31,8 +31,8 @@ export interface SessionInstance {
 
 export const PHASE_LABELS: Record<SessionPhase, string> = {
   rampUp: 'Entrada',
-  core: 'Meditacao',
-  cooldown: 'Saida',
+  core: 'Meditação',
+  cooldown: 'Saída',
 };
 
 export const PHASE_ORDER: SessionPhase[] = ['rampUp', 'core', 'cooldown'];

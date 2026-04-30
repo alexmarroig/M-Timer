@@ -26,11 +26,12 @@ export function getAmbientTargetVolume({
 
 
 const AMBIENT_SOURCES: Record<AmbientTrack, AudioSource> = {
-  rain: require('../../assets/audio/rain.mp3'),
-  wind: require('../../assets/audio/wind.mp3'),
-  ambient: require('../../assets/audio/ambient.mp3'),
-  forest: require('../../assets/audio/ambient.mp3'), // Fallback for new tracks
-  waves: require('../../assets/audio/ambient.mp3'),   // Fallback for new tracks
+  ambient: require('../../assets/audio/ambient.mp3'),       // Drone meditativo 110 Hz
+  rain: require('../../assets/audio/rain.mp3'),             // Chuva suave
+  wind: require('../../assets/audio/pink_noise.mp3'),       // Ruído rosa (1/f)
+  forest: require('../../assets/audio/forest.mp3'),         // Floresta com pássaros
+  waves: require('../../assets/audio/waves.mp3'),           // Ondas do mar 8s
+  binaural_alpha: require('../../assets/audio/binaural_alpha.mp3'), // Binaural alpha 10 Hz — foco
 };
 
 export function useMeditationAudio({
@@ -94,7 +95,7 @@ export function useMeditationAudio({
       await engine.playLoop(ambientTrack, source);
       await engine.fadeTo(0, 2200);
     })();
-  }, [ambientEnabled, ambientTrack, currentPhase, state]);
+  }, [ambientEnabled, ambientMuted, ambientTrack, ambientVolume, currentPhase, state]);
 
   useEffect(
     () => () => {
