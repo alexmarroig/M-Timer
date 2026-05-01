@@ -8,6 +8,7 @@ import { useTimerEngine } from '../hooks/useTimerEngine';
 import { TimelineProgress } from '../components/TimelineProgress';
 import { PhaseIndicator } from '../components/PhaseIndicator';
 import { CompanionCharacter } from '../../companion/CompanionCharacter';
+import { SessionBackground } from '../components/SessionBackground';
 
 import { ButtonPrimary } from '../../../components/ui/ButtonPrimary';
 import { MinimalText } from '../../../components/ui/MinimalText';
@@ -185,9 +186,15 @@ export function PlayerScreen({ route, navigation }: Props) {
     return unsubscribe;
   }, [confirmExit, isFinished, navigation, reset, state]);
 
+  // Background state: use 'finished' when done, otherwise use timer state
+  const bgState = isFinished ? 'finished' : state;
+
   return (
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" />
+
+      {/* Animated background — renders behind everything */}
+      <SessionBackground state={bgState} />
 
       <View style={styles.header}>
         <ButtonPrimary
@@ -370,7 +377,7 @@ export function PlayerScreen({ route, navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
+    backgroundColor: 'transparent',
   },
   header: {
     flexDirection: 'row',
