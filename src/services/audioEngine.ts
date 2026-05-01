@@ -1,6 +1,7 @@
 import type { AudioSource } from 'expo-audio';
+import type { AmbientTrack as UserAmbientTrack } from '../types/user';
 
-export type AmbientTrack = 'rain' | 'wind' | 'ambient';
+export type AmbientTrack = UserAmbientTrack;
 
 export interface AmbientSound {
   setIsLoopingAsync(isLooping: boolean): Promise<void>;

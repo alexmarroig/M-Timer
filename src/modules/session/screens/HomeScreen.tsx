@@ -1,5 +1,5 @@
-import React, { useCallback } from 'react';
-import { View, ScrollView, StyleSheet } from 'react-native';
+import React, { useCallback, useEffect, useRef } from 'react';
+import { View, ScrollView, StyleSheet, Animated } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { ScreenContainer } from '../../../components/layout/ScreenContainer';
@@ -24,25 +24,43 @@ import type { SessionStackParamList } from '../../../core/navigation/types';
 
 type Props = NativeStackScreenProps<SessionStackParamList, 'Home'>;
 
+
+function getGreeting(): string {
+  const hour = new Date().getHours();
+  if (hour < 12) return 'Bom dia';
+  if (hour < 18) return 'Boa tarde';
+  return 'Boa noite';
+}
+
 const HOME_COPY: Record<
   ExperienceLevel,
   { subtitle: string; presetTitle: string }
 > = {
   beginner: {
-    subtitle: 'vamos consolidar sua pratica com sessoes leves e consistentes.',
-    presetTitle: 'Presets para comecar',
+    subtitle: 'vamos consolidar sua prática com sessões leves e consistentes.',
+    presetTitle: 'Presets para começar',
   },
   regular: {
-    subtitle: 'vamos manter sua pratica diaria de meditacao.',
+    subtitle: 'vamos manter sua prática diária de meditação.',
     presetTitle: 'Presets',
   },
   experienced: {
-    subtitle: 'vamos manter profundidade e constancia na pratica.',
+    subtitle: 'vamos manter profundidade e constância na prática.',
     presetTitle: 'Presets para aprofundar',
   },
 };
 
 export function HomeScreen({ navigation }: Props) {
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+  const slideAnim = useRef(new Animated.Value(20)).current;
+
+  useEffect(() => {
+    Animated.parallel([
+      Animated.timing(fadeAnim, { toValue: 1, duration: 600, useNativeDriver: true }),
+      Animated.timing(slideAnim, { toValue: 0, duration: 500, useNativeDriver: true }),
+    ]).start();
+  }, [fadeAnim, slideAnim]);
+
   const displayName = useAuthStore((state) => state.displayName);
   const templates = useSessionStore((state) => state.templates);
   const getDefault = useSessionStore((state) => state.getDefault);
@@ -75,14 +93,16 @@ export function HomeScreen({ navigation }: Props) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        <View style={styles.greetingSection}>
-          <MinimalText variant="heading">M-Timer</MinimalText>
+        <Animated.View
+          style={[styles.greetingSection, { opacity: fadeAnim, transform: [{ translateY: slideAnim }] }]}
+        >
+          <MinimalText variant="heading">M-Timer 🧘</MinimalText>
           <MinimalText variant="body" color={colors.textSecondary}>
             {displayName
-              ? `${displayName}, ${homeCopy.subtitle}`
-              : `Sua pratica diaria de meditacao: ${homeCopy.subtitle}`}
+              ? `${getGreeting()}, ${displayName} — ${homeCopy.subtitle}`
+              : `${getGreeting()} — ${homeCopy.subtitle}`}
           </MinimalText>
-        </View>
+        </Animated.View>
 
         <View style={styles.companionSection}>
           <CompanionCharacter size={110} showLevel />
@@ -103,11 +123,11 @@ export function HomeScreen({ navigation }: Props) {
 
               <View style={styles.companionCopy}>
                 <MinimalText variant="subheading">
-                  Companion em evolucao
+                  Companion em evolução
                 </MinimalText>
 
                 <MinimalText variant="caption" color={colors.textSecondary}>
-                  Nivel {profile.currentLevel} - {profile.levelLabel}
+                  Nível {profile.currentLevel} - {profile.levelLabel}
                 </MinimalText>
 
                 <MinimalText variant="body" style={styles.metricText}>
@@ -140,8 +160,8 @@ export function HomeScreen({ navigation }: Props) {
                   style={styles.statusText}
                 >
                   {stats.currentStreak > 0
-                    ? `${stats.currentStreak} dias de constancia e ${stats.sessionsToday} sessoes hoje.`
-                    : 'Complete sua primeira sessao para despertar mais brilho.'}
+                    ? `${stats.currentStreak} dias de constância e ${stats.sessionsToday} sessões hoje.`
+                    : 'Complete sua primeira sessão para despertar mais brilho.'}
                 </MinimalText>
               </View>
             </View>
@@ -149,7 +169,7 @@ export function HomeScreen({ navigation }: Props) {
         </View>
 
         <ButtonPrimary
-          title="Iniciar Sessao"
+          title="Iniciar Sessão"
           onPress={handleStartDefault}
           size="large"
           style={styles.mainButton}

@@ -13,10 +13,10 @@ import type { ExperienceLevel } from '../../../types/user';
 type Props = NativeStackScreenProps<OnboardingStackParamList, 'Schedule'>;
 
 const SCHEDULE_OPTIONS = [
-  { id: 'morning_only', label: 'So de manha', morning: true, afternoon: false },
-  { id: 'afternoon_only', label: 'So a tarde', morning: false, afternoon: true },
-  { id: 'both', label: 'Manha e tarde', morning: true, afternoon: true },
-  { id: 'flexible', label: 'Horario flexivel', morning: false, afternoon: false },
+  { id: 'morning_only', label: 'Só de manhã', morning: true, afternoon: false },
+  { id: 'afternoon_only', label: 'Só à tarde', morning: false, afternoon: true },
+  { id: 'both', label: 'Manhã e tarde', morning: true, afternoon: true },
+  { id: 'flexible', label: 'Horário flexível', morning: false, afternoon: false },
 ] as const;
 
 const EXPERIENCE_PRESET_PHASES: Record<
@@ -83,8 +83,8 @@ export function ScheduleScreen({ route }: Props) {
         void notificationService.scheduleReminder(
           MORNING_REMINDER_ID,
           morningConfig,
-          'Hora da meditacao da manha',
-          'Reserve alguns minutos para sua pratica.'
+          'Hora da meditação da manhã',
+          'Reserve alguns minutos para sua prática.'
         );
       } else {
         void notificationService.cancelReminder(MORNING_REMINDER_ID);
@@ -94,7 +94,7 @@ export function ScheduleScreen({ route }: Props) {
         void notificationService.scheduleReminder(
           AFTERNOON_REMINDER_ID,
           afternoonConfig,
-          'Hora da meditacao da tarde',
+          'Hora da meditação da tarde',
           'Que tal uma pausa para meditar agora?'
         );
       } else {
@@ -113,8 +113,8 @@ export function ScheduleScreen({ route }: Props) {
   return (
     <OnboardingPage
       title="Sua rotina"
-      description="Quando voce costuma meditar? Configuraremos lembretes para voce."
-      buttonTitle="Comecar a meditar"
+      description="Quando você costuma meditar? Configuraremos lembretes para você."
+      buttonTitle="Começar a meditar"
       onNext={handleFinish}
       secondaryButtonTitle="Pular"
       onSecondary={handleSkip}

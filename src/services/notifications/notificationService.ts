@@ -2,6 +2,7 @@ import * as Notifications from 'expo-notifications';
 import * as Device from 'expo-device';
 import { Platform } from 'react-native';
 import { ReminderConfig } from '../../types/user';
+import { normalizeReminderConfig, shouldScheduleReminder } from './notificationLogic';
 
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
@@ -50,10 +51,12 @@ export const notificationService = {
     // Cancel existing reminder with this id
     await this.cancelReminder(id);
 
-    if (!config.enabled) return;
+    if (!shouldScheduleReminder(config)) return;
 
     const hasPermission = await this.requestPermissions();
     if (!hasPermission) return;
+
+    const normalizedConfig = normalizeReminderConfig(config);
 
     await Notifications.scheduleNotificationAsync({
       identifier: id,
@@ -65,8 +68,8 @@ export const notificationService = {
       },
       trigger: {
         type: Notifications.SchedulableTriggerInputTypes.DAILY,
-        hour: config.hour,
-        minute: config.minute,
+        hour: normalizedConfig.hour,
+        minute: normalizedConfig.minute,
       },
     });
   },

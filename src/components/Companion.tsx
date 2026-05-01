@@ -98,7 +98,7 @@ function CompanionComponent({
   }, [phase, state.baseOpacity, visibility]);
 
   const size = useMemo(() => {
-    const baseSize = placement === 'player' ? 220 : 120;
+    const baseSize = placement === 'player' ? 190 : 120;
     return Math.round(baseSize * (1 + state.sizeBoost));
   }, [placement, state.sizeBoost]);
 

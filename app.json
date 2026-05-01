@@ -3,7 +3,7 @@
     "name": "M-Timer",
     "slug": "m-timer",
     "owner": "alexmarroig",
-    "version": "1.0.0",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
@@ -16,7 +16,10 @@
       "supportsTablet": true,
       "bundleIdentifier": "com.mtimer.app",
       "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "UIBackgroundModes": [
+          "audio"
+        ]
       }
     },
     "android": {
@@ -40,10 +43,18 @@
     "plugins": [
       "expo-notifications",
       "expo-audio",
-      "expo-asset"
+      "expo-asset",
+      "@react-native-google-signin/google-signin"
     ],
-    "platforms": ["android", "ios", "web"],
+    "platforms": [
+      "android",
+      "ios",
+      "web"
+    ],
     "extra": {
+      "googleSignIn": {
+        "webClientId": "83150950956-q3j3ohru97ricujblvr2gvtdckutjhti.apps.googleusercontent.com"
+      },
       "eas": {
         "projectId": "ff551d77-3de9-42d9-ab43-f63236dca5d4"
       }

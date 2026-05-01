@@ -5,6 +5,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ScreenContainer } from '../../../components/layout/ScreenContainer';
 import { MinimalText } from '../../../components/ui/MinimalText';
 import { SettingRow } from '../components/SettingRow';
+import { ThemeSelector } from '../../companion/ThemeSelector';
 import { useAuthStore } from '../../../store/authStore';
 import { useUserStore } from '../../../store/userStore';
 import { colors, spacing } from '../../../core/theme';
@@ -24,14 +25,24 @@ const SOUND_LABELS: Record<TransitionSound, string> = {
 const SOUND_OPTIONS: TransitionSound[] = ['bell', 'bowl', 'soft-bell', 'vibration', 'none'];
 
 const AMBIENT_LABELS: Record<AmbientTrack, string> = {
-  ambient: 'Pad Ambiente',
-  rain: 'Chuva Suave',
-  wind: 'Vento Leve',
-  forest: 'Floresta',
-  waves: 'Ondas do Mar',
+  ambient: 'Drone Meditativo 🎵',
+  rain: 'Chuva Suave 🌧️',
+  wind: 'Ruído Rosa 〰️',
+  forest: 'Floresta 🌿',
+  waves: 'Ondas do Mar 🌊',
+  binaural_alpha: 'Binaural Alpha 🎧',
+  binaural_theta: 'Binaural Theta 🧠',
+  campfire: 'Fogueira 🔥',
+  singing_bowls: 'Tigelas Cantantes 🔔',
+  white_noise: 'Ruído Branco ⚪',
+  crickets: 'Grilos Noturnos 🌙',
 };
 
-const AMBIENT_OPTIONS: AmbientTrack[] = ['ambient', 'rain', 'wind', 'forest', 'waves'];
+const AMBIENT_OPTIONS: AmbientTrack[] = [
+  'ambient', 'rain', 'wind', 'forest', 'waves',
+  'binaural_alpha', 'binaural_theta',
+  'campfire', 'singing_bowls', 'white_noise', 'crickets',
+];
 const EXPERIENCE_OPTIONS: ExperienceLevel[] = ['beginner', 'regular', 'experienced'];
 const MORNING_REMINDER_ID = 'reminder-morning';
 const AFTERNOON_REMINDER_ID = 'reminder-afternoon';
@@ -208,6 +219,18 @@ export function SettingsScreen({ navigation }: Props) {
         </View>
 
         <MinimalText variant="subheading" style={styles.sectionTitle}>
+          Companion — Tema Visual
+        </MinimalText>
+
+        <MinimalText variant="caption" color={colors.textSecondary} style={styles.sectionDesc}>
+          Desbloqueie novos temas com sequência de dias ou XP acumulado.
+        </MinimalText>
+
+        <View style={styles.themeSelectorContainer}>
+          <ThemeSelector />
+        </View>
+
+        <MinimalText variant="subheading" style={styles.sectionTitle}>
           Lembretes
         </MinimalText>
 
@@ -277,7 +300,7 @@ export function SettingsScreen({ navigation }: Props) {
 
         <View style={styles.footer}>
           <MinimalText variant="caption" color={colors.textSecondary} align="center">
-            M-Timer v1.0.0
+            M-Timer v1.0.2
           </MinimalText>
           <MinimalText variant="caption" color={colors.textSecondary} align="center">
             Este app não ensina a técnica de MT.
@@ -322,5 +345,13 @@ const styles = StyleSheet.create({
     marginTop: spacing.xxl,
     gap: spacing.xs,
     paddingBottom: spacing.xl,
+  },
+  sectionDesc: {
+    marginBottom: spacing.sm,
+    opacity: 0.8,
+  },
+  themeSelectorContainer: {
+    marginHorizontal: -spacing.lg,
+    marginBottom: spacing.sm,
   },
 });

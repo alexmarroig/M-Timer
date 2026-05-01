@@ -1,6 +1,9 @@
+import type { ThemeId } from './companionTheme';
+
 export type TransitionSound = 'bell' | 'bowl' | 'soft-bell' | 'vibration' | 'none';
-export type AmbientTrack = 'rain' | 'wind' | 'ambient' | 'forest' | 'waves';
+export type AmbientTrack = 'rain' | 'wind' | 'ambient' | 'forest' | 'waves' | 'binaural_alpha' | 'binaural_theta' | 'campfire' | 'singing_bowls' | 'white_noise' | 'crickets';
 export type ExperienceLevel = 'beginner' | 'regular' | 'experienced';
+export type { ThemeId } from './companionTheme';
 
 export interface ReminderConfig {
   enabled: boolean;
@@ -20,6 +23,7 @@ export interface UserPreferences {
   morningReminder: ReminderConfig;
   afternoonReminder: ReminderConfig;
   hasCompletedOnboarding: boolean;
+  activeTheme: ThemeId;
 }
 
 export const EXPERIENCE_LABELS: Record<ExperienceLevel, string> = {
@@ -40,4 +44,5 @@ export const DEFAULT_PREFERENCES: UserPreferences = {
   morningReminder: { enabled: false, hour: 7, minute: 0 },
   afternoonReminder: { enabled: false, hour: 17, minute: 0 },
   hasCompletedOnboarding: false,
+  activeTheme: 'natureza',
 };

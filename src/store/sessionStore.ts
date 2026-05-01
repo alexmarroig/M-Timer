@@ -17,22 +17,57 @@ interface SessionStore {
 const BUILT_IN_TEMPLATES: SessionTemplate[] = [
   {
     id: 'preset-morning',
-    name: 'Manha Padrao',
+    name: '🌅 Manhã Padrão',
     phases: { rampUp: 120, core: 1200, cooldown: 180 },
     isDefault: true,
     createdAt: new Date().toISOString(),
   },
   {
     id: 'preset-afternoon',
-    name: 'Tarde Padrao',
+    name: '☀️ Tarde Padrão',
     phases: { rampUp: 60, core: 900, cooldown: 120 },
     isDefault: false,
     createdAt: new Date().toISOString(),
   },
   {
     id: 'preset-travel',
-    name: 'Viagem',
+    name: '✈️ Viagem',
     phases: { rampUp: 60, core: 600, cooldown: 120 },
+    isDefault: false,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'preset-express',
+    name: '⚡ Express 5min',
+    phases: { rampUp: 30, core: 240, cooldown: 30 },
+    isDefault: false,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'preset-quick-breath',
+    name: '🌬️ Respiro Rápido',
+    phases: { rampUp: 30, core: 150, cooldown: 30 },
+    isDefault: false,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'preset-deep-focus',
+    name: '🧘 Foco Profundo 30min',
+    phases: { rampUp: 120, core: 1560, cooldown: 120 },
+    isDefault: false,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'preset-sleep',
+    name: '🌙 Sono Tranquilo 45min',
+    phases: { rampUp: 180, core: 2220, cooldown: 300 },
+    isDefault: false,
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'preset-lunch',
+    name: '☕ Pausa do Almoço',
+    phases: { rampUp: 60, core: 600, cooldown: 60 },
     isDefault: false,
     createdAt: new Date().toISOString(),
   },
@@ -85,6 +120,16 @@ export const useSessionStore = create<SessionStore>()(
     {
       name: STORAGE_KEYS.SESSION_TEMPLATES,
       storage: createJSONStorage(() => AsyncStorage),
+      merge: (persisted, current) => {
+        const persistedState = persisted as Partial<SessionStore>;
+        const existingIds = new Set((persistedState.templates ?? []).map((t) => t.id));
+        const missingBuiltIns = BUILT_IN_TEMPLATES.filter((t) => !existingIds.has(t.id));
+        return {
+          ...current,
+          ...persistedState,
+          templates: [...(persistedState.templates ?? []), ...missingBuiltIns],
+        };
+      },
     }
   )
 );

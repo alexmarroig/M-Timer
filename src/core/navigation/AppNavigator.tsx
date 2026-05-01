@@ -2,7 +2,8 @@ import React from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { Text, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 
 import { LoginScreen } from '../../modules/auth/screens/LoginScreen';
 import { HomeScreen } from '../../modules/session/screens/HomeScreen';
@@ -31,10 +32,6 @@ const SessionStack = createNativeStackNavigator<SessionStackParamList>();
 const SettingsStack = createNativeStackNavigator<SettingsStackParamList>();
 const OnboardingStack = createNativeStackNavigator<OnboardingStackParamList>();
 const Tab = createBottomTabNavigator<TabParamList>();
-
-function TabIcon({ label, focused }: { label: string; focused: boolean }) {
-  return <Text style={[styles.tabIcon, focused && styles.tabIconFocused]}>{label}</Text>;
-}
 
 function SessionStackScreen() {
   return (
@@ -97,13 +94,22 @@ function MainTabs() {
         tabBarStyle: {
           backgroundColor: colors.surface,
           borderTopColor: colors.border,
-          paddingTop: 4,
+          borderTopWidth: 1,
+          paddingTop: 6,
+          paddingBottom: 4,
+          height: 60,
+          elevation: 8,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -2 },
+          shadowOpacity: 0.06,
+          shadowRadius: 8,
         },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textSecondary,
         tabBarLabelStyle: {
-          fontSize: 11,
+          fontSize: 10,
           fontWeight: '600',
+          marginTop: 2,
         },
       }}
     >
@@ -111,24 +117,30 @@ function MainTabs() {
         name="SessionTab"
         component={SessionStackScreen}
         options={{
-          tabBarLabel: 'Sessao',
-          tabBarIcon: ({ focused }) => <TabIcon label="🧘" focused={focused} />,
+          tabBarLabel: 'Sessão',
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons name={focused ? 'flower' : 'flower-outline'} size={24} color={color} />
+          ),
         }}
       />
       <Tab.Screen
         name="HistoryTab"
         component={HistoryScreen}
         options={{
-          tabBarLabel: 'Historico',
-          tabBarIcon: ({ focused }) => <TabIcon label="📅" focused={focused} />,
+          tabBarLabel: 'Histórico',
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons name={focused ? 'bar-chart' : 'bar-chart-outline'} size={24} color={color} />
+          ),
         }}
       />
       <Tab.Screen
         name="SettingsTab"
         component={SettingsStackScreen}
         options={{
-          tabBarLabel: 'Config',
-          tabBarIcon: ({ focused }) => <TabIcon label="⚙️" focused={focused} />,
+          tabBarLabel: 'Configurações',
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons name={focused ? 'options' : 'options-outline'} size={24} color={color} />
+          ),
         }}
       />
     </Tab.Navigator>
@@ -151,11 +163,5 @@ export function AppNavigator() {
 }
 
 const styles = StyleSheet.create({
-  tabIcon: {
-    fontSize: 18,
-    color: colors.textSecondary,
-  },
-  tabIconFocused: {
-    color: colors.primary,
-  },
+
 });

@@ -1,6 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
 
+require('./mockAsyncStorage.cjs');
+
 const { useUserStore } = require('../.tmp-test/store/userStore.js');
 
 // Zustand store in Node will keep state across tests in same process, so we assert and reset.

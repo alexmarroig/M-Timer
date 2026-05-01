@@ -8,6 +8,7 @@ import {
   ReminderConfig,
   AmbientTrack,
   ExperienceLevel,
+  ThemeId,
 } from '../types/user';
 import { STORAGE_KEYS } from '../services/storage/keys';
 
@@ -24,6 +25,7 @@ interface UserStore extends UserPreferences {
   setAfternoonReminder: (config: ReminderConfig) => void;
   setDefaultTemplateId: (id: string) => void;
   completeOnboarding: () => void;
+  setActiveTheme: (theme: ThemeId) => void;
 }
 
 export const useUserStore = create<UserStore>()(
@@ -43,10 +45,17 @@ export const useUserStore = create<UserStore>()(
       setAfternoonReminder: (config) => set({ afternoonReminder: config }),
       setDefaultTemplateId: (id) => set({ defaultTemplateId: id }),
       completeOnboarding: () => set({ hasCompletedOnboarding: true }),
+      setActiveTheme: (theme) => set({ activeTheme: theme }),
     }),
     {
       name: STORAGE_KEYS.USER_PREFERENCES,
       storage: createJSONStorage(() => AsyncStorage),
+      merge: (persisted, current) => ({
+        ...current,
+        ...(persisted as Partial<UserStore>),
+        // Ensure new fields have defaults for existing users
+        activeTheme: (persisted as Partial<UserStore>).activeTheme ?? 'natureza',
+      }),
     }
   )
 );

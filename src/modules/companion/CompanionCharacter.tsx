@@ -3,6 +3,7 @@ import { View, Animated, StyleSheet, TouchableWithoutFeedback } from 'react-nati
 import { CompanionFace } from './CompanionFace';
 import { useCompanionAnimations } from './useCompanionAnimations';
 import { useCompanionStore } from '../../store/companionStore';
+import { useUserStore } from '../../store/userStore';
 import { MinimalText } from '../../components/ui/MinimalText';
 import { colors, spacing } from '../../core/theme';
 import {
@@ -11,6 +12,7 @@ import {
   getLevelFromXp,
   getXpProgress,
 } from '../../types/companion';
+import { COMPANION_THEMES } from '../../types/companionTheme';
 
 interface Props {
   /** Override mood for session screen. If not provided, calculates from streak */
@@ -31,10 +33,15 @@ export function CompanionCharacter({
 }: Props) {
   const xp = useCompanionStore((s) => s.xp);
   const mood = useCompanionStore((s) => s.mood);
+  const activeThemeId = useUserStore((s) => s.activeTheme);
 
   const expression = getFaceExpression(mood, sessionExpression);
   const level = getLevelFromXp(xp);
   const progress = getXpProgress(xp);
+
+  // Resolve theme colors — fallback to 'natureza' if theme not found
+  const theme = COMPANION_THEMES[activeThemeId] ?? COMPANION_THEMES.natureza;
+  const themeColors = theme.colors;
 
   const {
     floatY,
@@ -50,22 +57,29 @@ export function CompanionCharacter({
     onPress?.();
   }, [triggerBounce, onPress]);
 
-  // Visuals based on mood/level
   const isSad = mood === 'sad' || mood === 'neglected';
 
-  // Glow intensity based on mood/level
   const glowSize = size * 0.15 + level.level * 5;
 
-  // Color logic
-  let bodyColor = level.level >= 2 ? '#FFF9ED' : '#FFF5E1';
-  let glowColor = level.level >= 4 ? '#C9A84C' : '#FFE4B5';
+  // Color logic: sad/neglected override theme
+  let bodyColor = level.level >= 2 ? themeColors.bodyLevel2 : themeColors.body;
+  let glowColor = level.level >= 4 ? themeColors.glowLevel4 : themeColors.glow;
+  let rimColor = themeColors.rim;
+  let haloColor = themeColors.halo;
+  let particleColor = themeColors.particle;
 
   if (mood === 'sad') {
     bodyColor = '#F0F0F0';
     glowColor = '#D0D0D0';
+    rimColor = '#B0B0B0';
+    haloColor = '#B0B0B0';
+    particleColor = '#E0E0E0';
   } else if (mood === 'neglected') {
     bodyColor = '#E0E0E0';
     glowColor = '#B0B0B0';
+    rimColor = '#909090';
+    haloColor = '#909090';
+    particleColor = '#C0C0C0';
   }
 
   // Level 3+ Particles
@@ -83,12 +97,17 @@ export function CompanionCharacter({
               top: size / 2 + Math.sin(angle) * radius - 3,
               left: size / 2 + Math.cos(angle) * radius - 3,
               opacity: 0.6 + i * 0.1,
+              backgroundColor: particleColor,
+              shadowColor: particleColor,
             },
           ]}
         />
       );
     });
-  }, [level.level, size, isSad]);
+  }, [level.level, size, isSad, particleColor]);
+
+  // Level name from active theme
+  const levelName = theme.levelNames[level.level - 1] ?? level.name;
 
   return (
     <TouchableWithoutFeedback onPress={handlePress}>
@@ -137,12 +156,12 @@ export function CompanionCharacter({
               },
             ]}
           >
-            {/* Level 2 inner glow effect using shadow */}
+            {/* Level 2 inner glow */}
             {level.level >= 2 && !isSad && (
-               <View style={[styles.innerGlow, { width: size, height: size, borderRadius: size/2 }]} />
+              <View style={[styles.innerGlow, { width: size, height: size, borderRadius: size / 2 }]} />
             )}
 
-            {/* Level 4+ golden rim */}
+            {/* Level 4+ themed rim */}
             {level.level >= 4 && !isSad && (
               <View
                 style={[
@@ -151,6 +170,7 @@ export function CompanionCharacter({
                     width: size + 6,
                     height: size + 6,
                     borderRadius: (size + 6) / 2,
+                    borderColor: rimColor,
                     opacity: 0.8,
                   },
                 ]}
@@ -167,32 +187,43 @@ export function CompanionCharacter({
                     height: size * 0.12,
                     borderRadius: size * 0.06,
                     top: -size * 0.15,
+                    borderColor: haloColor,
+                    backgroundColor: `${haloColor}1A`,
                   },
                 ]}
               >
-                <View style={styles.haloInner} />
+                <View style={[styles.haloInner, { backgroundColor: haloColor }]} />
               </View>
             )}
 
             <CompanionFace expression={expression} size={size} />
           </View>
 
-          {/* Level 3+ Particles container */}
-          {particles && <View style={[styles.particlesOverlay, { width: size, height: size }]}>{particles}</View>}
+          {/* Level 3+ Particles */}
+          {particles && (
+            <View style={[styles.particlesOverlay, { width: size, height: size }]}>{particles}</View>
+          )}
         </Animated.View>
 
         {/* Level info */}
         {showLevel && (
           <View style={styles.levelInfo}>
             <MinimalText variant="caption" align="center" color={isSad ? colors.textSecondary : colors.accent} style={{ fontWeight: '700' }}>
-              {level.name.toUpperCase()}
+              {levelName.toUpperCase()}
             </MinimalText>
             <MinimalText variant="caption" align="center" color={colors.textSecondary} style={{ fontSize: 10 }}>
               NÍVEL {level.level}
             </MinimalText>
-            {/* XP progress bar */}
             <View style={styles.xpBarContainer}>
-              <View style={[styles.xpBarFill, { width: `${Math.min(100, progress * 100)}%`, backgroundColor: isSad ? colors.textSecondary : colors.accent }]} />
+              <View
+                style={[
+                  styles.xpBarFill,
+                  {
+                    width: `${Math.min(100, progress * 100)}%`,
+                    backgroundColor: isSad ? colors.textSecondary : colors.accent,
+                  },
+                ]}
+              />
             </View>
             <MinimalText variant="caption" align="center" color={colors.textSecondary} style={{ fontSize: 11, opacity: 0.7 }}>
               {xp} XP
@@ -232,23 +263,19 @@ const styles = StyleSheet.create({
   goldenRim: {
     position: 'absolute',
     borderWidth: 2.5,
-    borderColor: '#C9A84C',
     top: -3,
     left: -3,
   },
   halo: {
     position: 'absolute',
     borderWidth: 2,
-    borderColor: '#C9A84C',
     alignSelf: 'center',
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(201, 168, 76, 0.1)',
   },
   haloInner: {
     width: '80%',
     height: '40%',
-    backgroundColor: '#C9A84C',
     borderRadius: 99,
     opacity: 0.3,
   },
@@ -261,8 +288,6 @@ const styles = StyleSheet.create({
     width: 6,
     height: 6,
     borderRadius: 3,
-    backgroundColor: '#FFF',
-    shadowColor: '#FFF',
     shadowRadius: 4,
     shadowOpacity: 0.8,
     elevation: 4,

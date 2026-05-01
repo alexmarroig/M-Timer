@@ -1,13 +1,15 @@
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 import {
-  TouchableOpacity,
+  Animated,
+  TouchableWithoutFeedback,
   Text,
   StyleSheet,
   StyleProp,
   ViewStyle,
   ActivityIndicator,
 } from 'react-native';
-import { colors, typography, spacing, borderRadius } from '../../core/theme';
+import * as Haptics from 'expo-haptics';
+import { colors, spacing, borderRadius } from '../../core/theme';
 
 interface Props {
   title: string;
@@ -28,6 +30,33 @@ export function ButtonPrimary({
   loading = false,
   style,
 }: Props) {
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = useCallback(() => {
+    Animated.spring(scaleAnim, {
+      toValue: 0.96,
+      useNativeDriver: true,
+      speed: 30,
+      bounciness: 2,
+    }).start();
+  }, [scaleAnim]);
+
+  const handlePressOut = useCallback(() => {
+    Animated.spring(scaleAnim, {
+      toValue: 1,
+      useNativeDriver: true,
+      speed: 18,
+      bounciness: 10,
+    }).start();
+  }, [scaleAnim]);
+
+  const handlePress = useCallback(() => {
+    if (variant === 'primary' && !disabled) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
+    }
+    onPress();
+  }, [onPress, variant, disabled]);
+
   const buttonStyles = [
     styles.base,
     styles[variant],
@@ -44,18 +73,20 @@ export function ButtonPrimary({
   ];
 
   return (
-    <TouchableOpacity
-      style={buttonStyles}
-      onPress={onPress}
+    <TouchableWithoutFeedback
+      onPress={handlePress}
+      onPressIn={handlePressIn}
+      onPressOut={handlePressOut}
       disabled={disabled || loading}
-      activeOpacity={0.7}
     >
-      {loading ? (
-        <ActivityIndicator color={variant === 'primary' ? colors.textInverse : colors.primary} />
-      ) : (
-        <Text style={textStyles}>{title}</Text>
-      )}
-    </TouchableOpacity>
+      <Animated.View style={[buttonStyles, { transform: [{ scale: scaleAnim }] }]}>
+        {loading ? (
+          <ActivityIndicator color={variant === 'primary' ? colors.textInverse : colors.primary} />
+        ) : (
+          <Text style={textStyles}>{title}</Text>
+        )}
+      </Animated.View>
+    </TouchableWithoutFeedback>
   );
 }
 

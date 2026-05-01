@@ -1,5 +1,7 @@
 import React, { useEffect, useCallback, useRef } from 'react';
-import { Alert, View, StyleSheet, StatusBar } from 'react-native';
+import { Alert, View, StyleSheet, StatusBar, Animated } from 'react-native';
+import * as Haptics from 'expo-haptics';
+import { useKeepAwake } from 'expo-keep-awake';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import { useTimerEngine } from '../hooks/useTimerEngine';
@@ -28,8 +30,16 @@ import type { SessionStackParamList } from '../../../core/navigation/types';
 type Props = NativeStackScreenProps<SessionStackParamList, 'Player'>;
 
 export function PlayerScreen({ route, navigation }: Props) {
+  // Mantém a tela ativa durante toda a sessão de meditação
+  useKeepAwake();
+
   const canExitRef = useRef(false);
   const rewardSentRef = useRef(false);
+  const xpFloatY = useRef(new Animated.Value(0)).current;
+  const xpFloatOpacity = useRef(new Animated.Value(0)).current;
+  const xpGainRef = useRef(0);
+  const celebrateScale = useRef(new Animated.Value(1)).current;
+  const milestoneMessageRef = useRef('');
 
   const { template } = route.params;
 
@@ -87,8 +97,45 @@ export function PlayerScreen({ route, navigation }: Props) {
 
       const freshStats = useHistoryStore.getState().getStats();
       addSessionXp(freshStats.currentStreak, freshStats.sessionsToday);
+
+      // XP float animation
+      const earnedXp = 10 + Math.round(template.phases.core / 60) + Math.min(20, freshStats.currentStreak * 2);
+      xpGainRef.current = earnedXp;
+      xpFloatY.setValue(0);
+      xpFloatOpacity.setValue(0);
+      Animated.sequence([
+        Animated.timing(xpFloatOpacity, { toValue: 1, duration: 250, useNativeDriver: true }),
+        Animated.timing(xpFloatY, { toValue: -80, duration: 1400, useNativeDriver: true }),
+        Animated.timing(xpFloatOpacity, { toValue: 0, duration: 400, useNativeDriver: true }),
+      ]).start();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
+
+      // Celebração especial para milestones de sequência
+      const streak = freshStats.currentStreak;
+      if (streak === 7) {
+        milestoneMessageRef.current = '🔥 7 dias seguidos! Incrível!';
+      } else if (streak === 30) {
+        milestoneMessageRef.current = '🌟 30 dias! Você é consistente!';
+      } else if (streak === 100) {
+        milestoneMessageRef.current = '💎 100 dias! Mestre da meditação!';
+      } else if (streak > 0 && streak % 10 === 0) {
+        milestoneMessageRef.current = `🎯 ${streak} dias de constância!`;
+      } else {
+        milestoneMessageRef.current = '';
+      }
+
+      if (milestoneMessageRef.current) {
+        // Haptic burst duplo para milestones
+        setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {}), 600);
+        setTimeout(() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy).catch(() => {}), 900);
+        // Animação de pulso no ícone de conclusão
+        Animated.sequence([
+          Animated.spring(celebrateScale, { toValue: 1.25, useNativeDriver: true, speed: 20, bounciness: 10 }),
+          Animated.spring(celebrateScale, { toValue: 1, useNativeDriver: true, speed: 10, bounciness: 4 }),
+        ]).start();
+      }
     }
-  }, [addSession, addSessionXp, isFinished, sessionStartTimestamp, template]);
+  }, [addSession, addSessionXp, celebrateScale, isFinished, sessionStartTimestamp, template, xpFloatY, xpFloatOpacity]);
 
   const exitSession = useCallback(() => {
     canExitRef.current = true;
@@ -98,8 +145,8 @@ export function PlayerScreen({ route, navigation }: Props) {
 
   const confirmExit = useCallback((onExit: () => void) => {
     Alert.alert(
-      'Abandonar sessao?',
-      'Se voce sair agora, esta pratica nao sera salva como concluida.',
+      'Abandonar sessão?',
+      'Se você sair agora, esta prática não será salva como concluída.',
       [
         { text: 'Continuar', style: 'cancel' },
         { text: 'Sair', style: 'destructive', onPress: onExit },
@@ -157,8 +204,11 @@ export function PlayerScreen({ route, navigation }: Props) {
 
       <View style={styles.content}>
         {isFinished ? (
+          <>
           <View style={styles.finishedContainer}>
-            <CompanionCharacter sessionExpression="finished" size={100} />
+            <Animated.View style={{ transform: [{ scale: celebrateScale }] }}>
+              <CompanionCharacter sessionExpression="finished" size={100} />
+            </Animated.View>
 
             <MinimalText
               variant="heading"
@@ -166,8 +216,19 @@ export function PlayerScreen({ route, navigation }: Props) {
               color={colors.primary}
               style={{ marginTop: spacing.lg }}
             >
-              Sessao completa
+              Sessão completa 🎉
             </MinimalText>
+
+            {milestoneMessageRef.current ? (
+              <MinimalText
+                variant="subheading"
+                align="center"
+                color={colors.accent}
+                style={{ marginTop: spacing.sm }}
+              >
+                {milestoneMessageRef.current}
+              </MinimalText>
+            ) : null}
 
             <MinimalText
               variant="body"
@@ -175,7 +236,7 @@ export function PlayerScreen({ route, navigation }: Props) {
               color={colors.textSecondary}
               style={styles.finishedText}
             >
-              {formatTime(totalDuration)} de pratica
+              {formatTime(totalDuration)} de prática
             </MinimalText>
 
             <View style={styles.companionContainer}>
@@ -194,7 +255,7 @@ export function PlayerScreen({ route, navigation }: Props) {
               color={colors.primary}
               style={styles.finishedLevel}
             >
-              Nivel {profile.currentLevel} - {profile.levelLabel}
+              Nível {profile.currentLevel} - {profile.levelLabel}
             </MinimalText>
 
             <MinimalText variant="caption" align="center" color={colors.textSecondary}>
@@ -211,6 +272,20 @@ export function PlayerScreen({ route, navigation }: Props) {
               style={styles.finishButton}
             />
           </View>
+
+          {/* Floating XP indicator */}
+          <Animated.View
+            pointerEvents="none"
+            style={[
+              styles.xpFloat,
+              { opacity: xpFloatOpacity, transform: [{ translateY: xpFloatY }] },
+            ]}
+          >
+            <MinimalText variant="subheading" color={colors.accent} align="center">
+              +{xpGainRef.current} XP ✨
+            </MinimalText>
+          </Animated.View>
+          </>
         ) : (
           <>
             <CompanionCharacter
@@ -259,7 +334,7 @@ export function PlayerScreen({ route, navigation }: Props) {
                 </MinimalText>
 
                 <MinimalText variant="caption" align="center" color={colors.textSecondary}>
-                  {profile.xpTotal} XP - melhor streak {profile.bestStreak}
+                  {profile.xpTotal} XP - melhor sequência {profile.bestStreak}
                 </MinimalText>
               </View>
             )}
@@ -272,8 +347,8 @@ export function PlayerScreen({ route, navigation }: Props) {
 
         <View style={styles.phaseLabels}>
           <MinimalText variant="caption" color={colors.rampUp}>Entrada</MinimalText>
-          <MinimalText variant="caption" color={colors.core}>Meditacao</MinimalText>
-          <MinimalText variant="caption" color={colors.cooldown}>Saida</MinimalText>
+          <MinimalText variant="caption" color={colors.core}>Meditação</MinimalText>
+          <MinimalText variant="caption" color={colors.cooldown}>Saída</MinimalText>
         </View>
       </View>
 
@@ -349,5 +424,19 @@ const styles = StyleSheet.create({
   },
   controlButton: {
     width: '100%',
+  },
+  xpFloat: {
+    position: 'absolute',
+    bottom: 180,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 8,
+    elevation: 6,
   },
 });
