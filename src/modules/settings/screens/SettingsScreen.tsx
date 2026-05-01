@@ -5,6 +5,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { ScreenContainer } from '../../../components/layout/ScreenContainer';
 import { MinimalText } from '../../../components/ui/MinimalText';
 import { SettingRow } from '../components/SettingRow';
+import { ThemeSelector } from '../../companion/ThemeSelector';
 import { useAuthStore } from '../../../store/authStore';
 import { useUserStore } from '../../../store/userStore';
 import { colors, spacing } from '../../../core/theme';
@@ -218,6 +219,18 @@ export function SettingsScreen({ navigation }: Props) {
         </View>
 
         <MinimalText variant="subheading" style={styles.sectionTitle}>
+          Companion — Tema Visual
+        </MinimalText>
+
+        <MinimalText variant="caption" color={colors.textSecondary} style={styles.sectionDesc}>
+          Desbloqueie novos temas com sequência de dias ou XP acumulado.
+        </MinimalText>
+
+        <View style={styles.themeSelectorContainer}>
+          <ThemeSelector />
+        </View>
+
+        <MinimalText variant="subheading" style={styles.sectionTitle}>
           Lembretes
         </MinimalText>
 
@@ -332,5 +345,13 @@ const styles = StyleSheet.create({
     marginTop: spacing.xxl,
     gap: spacing.xs,
     paddingBottom: spacing.xl,
+  },
+  sectionDesc: {
+    marginBottom: spacing.sm,
+    opacity: 0.8,
+  },
+  themeSelectorContainer: {
+    marginHorizontal: -spacing.lg,
+    marginBottom: spacing.sm,
   },
 });

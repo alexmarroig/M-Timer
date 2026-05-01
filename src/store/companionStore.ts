@@ -3,10 +3,11 @@ import { createJSONStorage, persist } from 'zustand/middleware';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { STORAGE_KEYS } from '../services/storage/keys';
-import { notificationService } from '../services/notifications/notificationService';
+import { scheduleSmartNotifications } from '../services/notifications/engagementEngine';
 import type { Stats } from '../types/stats';
 import {
   XP_REWARDS,
+  COMPANION_LEVELS,
   getLevelFromXp,
   getXpProgress,
   type CompanionLevel,
@@ -25,12 +26,6 @@ interface CompanionStore {
   applyDecay: () => void;
 }
 
-const INTERVENTION_IDS = {
-  H48: 'intervention-48h',
-  H72: 'intervention-72h',
-  D5: 'intervention-5d',
-};
-
 export const useCompanionStore = create<CompanionStore>()(
   persist(
     (set, get) => ({
@@ -40,10 +35,9 @@ export const useCompanionStore = create<CompanionStore>()(
       lastMeditationAt: null,
 
       addSessionXp: (currentStreak, sessionsToday) => {
-        const { lastMeditationAt } = get();
+        const { lastMeditationAt, xp } = get();
         let earned = XP_REWARDS.SESSION_COMPLETE;
 
-        // Recovery Bonus
         if (lastMeditationAt) {
           const hoursSince = (Date.now() - new Date(lastMeditationAt).getTime()) / (1000 * 60 * 60);
           if (hoursSince >= 72) {
@@ -61,37 +55,28 @@ export const useCompanionStore = create<CompanionStore>()(
           earned += XP_REWARDS.DOUBLE_SESSION_BONUS;
         }
 
-        set((state) => ({
-          xp: Math.max(0, state.xp + earned),
-          totalSessionsCompleted: state.totalSessionsCompleted + 1,
+        const newXp = Math.max(0, xp + earned);
+        const newLevel = getLevelFromXp(newXp);
+        const nextLevelDef = COMPANION_LEVELS.find((l) => l.level === newLevel.level + 1) ?? null;
+
+        set({
+          xp: newXp,
+          totalSessionsCompleted: get().totalSessionsCompleted + 1,
           lastMeditationAt: new Date().toISOString(),
-          mood: 'happy', // Instant mood reset on meditation
-        }));
+          mood: 'happy',
+        });
 
-        // Reset interventions
-        void notificationService.cancelReminder(INTERVENTION_IDS.H48);
-        void notificationService.cancelReminder(INTERVENTION_IDS.H72);
-        void notificationService.cancelReminder(INTERVENTION_IDS.D5);
-
-        // Schedule new ones
-        void notificationService.scheduleIntervention(
-          INTERVENTION_IDS.H48,
-          'Estou começando a sentir sono...',
-          'Vamos meditar um pouco?',
-          48 * 3600
-        );
-        void notificationService.scheduleIntervention(
-          INTERVENTION_IDS.H72,
-          'Me sinto um pouco triste hoje.',
-          'Sinto falta da nossa prática.',
-          72 * 3600
-        );
-        void notificationService.scheduleIntervention(
-          INTERVENTION_IDS.D5,
-          'Onde você está?',
-          'Minha luz está enfraquecendo...',
-          5 * 24 * 3600
-        );
+        // Schedule smart re-engagement notifications
+        // Right after a session the user is active → notifications fire when they become at_risk
+        void scheduleSmartNotifications({
+          hoursSinceLastSession: 0,
+          daysSince: 0,
+          currentStreak,
+          bestStreak: currentStreak,
+          totalMinutes: Math.round(newXp * 2),
+          xpToNextLevel: nextLevelDef ? nextLevelDef.minXp - newXp : 0,
+          nextLevelLabel: nextLevelDef ? nextLevelDef.name : null,
+        });
       },
 
       syncMoodFromStats: (stats) => {
@@ -127,13 +112,12 @@ export const useCompanionStore = create<CompanionStore>()(
         const hoursSince = (Date.now() - new Date(lastMeditationAt).getTime()) / (1000 * 60 * 60);
 
         if (hoursSince >= 72) {
-          // Decay -5 XP for every 24h past the 72h threshold
           const daysOver = Math.floor((hoursSince - 72) / 24) + 1;
           const penalty = daysOver * Math.abs(XP_REWARDS.DECAY_PENALTY);
 
           set({
             xp: Math.max(0, xp - penalty),
-            mood: hoursSince >= 120 ? 'neglected' : 'sad'
+            mood: hoursSince >= 120 ? 'neglected' : 'sad',
           });
         }
       },
