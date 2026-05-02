@@ -12,7 +12,6 @@ import { SessionBackground } from '../components/SessionBackground';
 
 import { ButtonPrimary } from '../../../components/ui/ButtonPrimary';
 import { MinimalText } from '../../../components/ui/MinimalText';
-import { Companion } from '../../../components/Companion';
 
 import { useCompanion } from '../../../hooks/useCompanion';
 import { useMeditationAudio } from '../../../hooks/useMeditationAudio';
@@ -246,16 +245,6 @@ export function PlayerScreen({ route, navigation }: Props) {
               {formatTime(totalDuration)} de prática
             </MinimalText>
 
-            <View style={styles.companionContainer}>
-              <Companion
-                placement="player"
-                phase={companionState.phase}
-                evolutionTier={profile.evolutionTier}
-                calmness={companionState.calmness}
-                state={companionState}
-              />
-            </View>
-
             <MinimalText
               variant="subheading"
               align="center"
@@ -302,16 +291,6 @@ export function PlayerScreen({ route, navigation }: Props) {
 
             <View style={{ marginTop: spacing.md }}>
               <PhaseIndicator currentPhase={currentPhase} state={state} />
-            </View>
-
-            <View style={styles.companionContainer}>
-              <Companion
-                placement="player"
-                phase={companionState.phase}
-                evolutionTier={profile.evolutionTier}
-                calmness={companionState.calmness}
-                state={companionState}
-              />
             </View>
 
             {showTimer ? (

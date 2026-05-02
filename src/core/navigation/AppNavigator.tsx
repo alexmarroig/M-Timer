@@ -3,6 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 
 import { LoginScreen } from '../../modules/auth/screens/LoginScreen';
@@ -89,6 +90,9 @@ function OnboardingFlow() {
 }
 
 function MainTabs() {
+  const insets = useSafeAreaInsets();
+  const bottomPad = Math.max(insets.bottom, 8);
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -98,8 +102,8 @@ function MainTabs() {
           borderTopColor: colors.border,
           borderTopWidth: 1,
           paddingTop: 6,
-          paddingBottom: 4,
-          height: 60,
+          paddingBottom: bottomPad,
+          height: 56 + bottomPad,
           elevation: 8,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: -2 },
