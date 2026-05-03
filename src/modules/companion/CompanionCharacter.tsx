@@ -46,6 +46,7 @@ export function CompanionCharacter({
   const {
     floatY,
     scale,
+    scaleX,
     glowOpacity,
     rotation,
     bounceY,
@@ -118,6 +119,7 @@ export function CompanionCharacter({
             {
               transform: [
                 { translateY: Animated.add(floatY, bounceY) },
+                { scaleX },
                 { scale },
                 { rotate: rotation },
               ],
