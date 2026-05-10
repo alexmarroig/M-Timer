@@ -1,0 +1,34 @@
+{
+  "title": "Reflexões sobre a clínica e o cotidiano.",
+  "description": "Um espaço de conteúdo vivo para seguir a conversa além do consultório. Acompanhe reflexões diárias sobre ansiedade, vínculos e o percurso terapêutico.",
+  "posts": [
+    {
+      "title": "Ansiedade não é só excesso de pensamento.",
+      "tag": "Psicoterapia",
+      "label": "reflexão",
+      "image": "/images/instagram/ansiedade.jpg",
+      "url": "https://instagram.com/psi.cavfreitas"
+    },
+    {
+      "title": "Vínculos também contam histórias.",
+      "tag": "Relacionamentos",
+      "label": "clínica",
+      "image": "/images/instagram/vinculos.jpg",
+      "url": "https://instagram.com/psi.cavfreitas"
+    },
+    {
+      "title": "A escuta clínica não apressa o sujeito.",
+      "tag": "Ética Profissional",
+      "label": "percurso",
+      "image": "/images/instagram/escuta.jpg",
+      "url": "https://instagram.com/psi.cavfreitas"
+    },
+    {
+      "title": "Autoconhecimento exige presença, não performance.",
+      "tag": "Saúde Mental",
+      "label": "cotidiano",
+      "image": "/images/instagram/autoconhecimento.jpg",
+      "url": "https://instagram.com/psi.cavfreitas"
+    }
+  ]
+}
