@@ -13,6 +13,7 @@ import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint
 
 import expo.modules.ApplicationLifecycleDispatcher
 import expo.modules.ExpoReactHostFactory
+import android.util.Log
 
 class MainApplication : Application(), ReactApplication {
 
@@ -29,12 +30,14 @@ class MainApplication : Application(), ReactApplication {
 
   override fun onCreate() {
     super.onCreate()
+    Log.d("MTimer", "Application onCreate - Native start")
     DefaultNewArchitectureEntryPoint.releaseLevel = try {
       ReleaseLevel.valueOf(BuildConfig.REACT_NATIVE_RELEASE_LEVEL.uppercase())
     } catch (e: IllegalArgumentException) {
       ReleaseLevel.STABLE
     }
     loadReactNative(this)
+    Log.d("MTimer", "React Native loaded")
     ApplicationLifecycleDispatcher.onApplicationCreate(this)
   }
 
