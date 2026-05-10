@@ -64,7 +64,7 @@ test('deriveGamificationProfile returns the beginner baseline with no sessions',
   });
 
   assert.equal(profile.currentLevel, 1);
-  assert.equal(profile.levelLabel, 'Beginner');
+  assert.equal(profile.levelLabel, 'Iniciante');
   assert.equal(profile.xpTotal, 0);
   assert.equal(profile.xpToNextLevel, 100);
 });
@@ -85,7 +85,7 @@ test('deriveGamificationProfile crosses into stabilizing when XP passes 100', ()
   });
 
   assert.equal(profile.currentLevel, 2);
-  assert.equal(profile.levelLabel, 'Stabilizing');
+  assert.equal(profile.levelLabel, 'Estabilizando');
   assert.equal(profile.xpTotal, 110);
   assert.equal(profile.xpIntoLevel, 10);
 });
