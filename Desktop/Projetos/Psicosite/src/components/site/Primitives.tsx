@@ -5,20 +5,19 @@ import {
   Mail,
   MapPin,
   Phone,
-  type LucideIcon,
 } from "lucide-react";
 import { track } from "@vercel/analytics";
 
 export function InstagramIcon({ className }: { className?: string }) {
   return (
-    <svg 
-      viewBox="0 0 24 24" 
-      fill="none" 
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
       className={className}
       xmlns="http://www.w3.org/2000/svg"
-      stroke="currentColor" 
-      strokeWidth="2" 
-      strokeLinecap="round" 
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
       strokeLinejoin="round"
     >
       <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
@@ -27,7 +26,7 @@ export function InstagramIcon({ className }: { className?: string }) {
     </svg>
   );
 }
-import { camila, getWhatsAppLink, whatsappMessages } from "./content";
+import { camila, getWhatsAppLink, whatsappMessages, images } from "./content";
 import {
   FadeIn,
   MagneticButton,
@@ -51,29 +50,163 @@ export function Eyebrow({
   );
 }
 
+import * as Dialog from "@radix-ui/react-dialog";
+import { useState } from "react";
+import { X, AlertCircle, Info, Receipt, MessageCircle } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+
+type ContactIcon = React.ComponentType<{ className?: string }>;
+
 export function PrimaryCTA({
   children = "Agendar sessão de psicoterapia",
   message = "default",
+  className = "",
 }: {
   children?: React.ReactNode;
   message?: keyof typeof whatsappMessages | string;
+  className?: string;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Trigger asChild>
+        <button
+          className={cn(
+            "focus-ring group relative inline-flex min-h-[56px] cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-full bg-[var(--forest)] px-7 py-4 text-center text-[13px] tracking-wide text-[var(--ivory)] shadow-soft transition-all duration-300 hover:-translate-y-0.5 hover:bg-[var(--ink)] hover:shadow-press md:min-h-[48px]",
+            className,
+          )}
+        >
+          <span className="relative">{children}</span>
+          <span
+            aria-hidden
+            className="relative inline-block h-px w-5 bg-[var(--brass)] transition-all group-hover:w-8"
+          />
+        </button>
+      </Dialog.Trigger>
+      <LeadQualificationModal open={open} setOpen={setOpen} message={message} />
+    </Dialog.Root>
+  );
+}
+
+export function LeadQualificationModal({
+  open,
+  setOpen,
+  message,
+}: {
+  open: boolean;
+  setOpen: (open: boolean) => void;
+  message: string;
 }) {
   return (
-    <MagneticButton strength={12}>
-      <a
-        href={getWhatsAppLink(message)}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={() => track("click_whatsapp", { message })}
-        className="focus-ring group relative inline-flex min-h-[56px] items-center justify-center gap-3 overflow-hidden rounded-full bg-[var(--forest)] px-7 py-4 text-center text-[13px] tracking-wide text-[var(--ivory)] shadow-soft transition-all duration-300 before:absolute before:inset-0 before:-translate-x-full before:bg-gradient-to-r before:from-transparent before:via-[var(--ivory)]/16 before:to-transparent before:transition-transform before:duration-700 hover:-translate-y-0.5 hover:bg-[var(--ink)] hover:shadow-press hover:before:translate-x-full md:min-h-[48px]"
-      >
-        <span className="relative">{children}</span>
-        <span
-          aria-hidden
-          className="relative inline-block h-px w-5 bg-[var(--brass)] transition-all group-hover:w-8"
-        />
-      </a>
-    </MagneticButton>
+    <Dialog.Portal>
+      <Dialog.Overlay className="fixed inset-0 z-50 bg-[var(--ink)]/58 backdrop-blur-sm transition-all animate-in fade-in" />
+      <Dialog.Content className="fixed inset-x-3 top-3 z-50 max-h-[calc(100dvh-1.5rem)] overflow-hidden rounded-[1.35rem] bg-[var(--ivory)] shadow-elev focus:outline-none animate-in zoom-in-95 fade-in duration-300 sm:left-1/2 sm:right-auto sm:top-1/2 sm:w-[92vw] sm:max-w-lg sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[2rem]">
+        <div className="relative hidden h-40 w-full overflow-hidden sm:block sm:h-48">
+          <img
+            src={images.lifeReading}
+            alt="Ambiente calmo e acolhedor"
+            className="image-wash h-full w-full object-cover brightness-90"
+          />
+          <div className="grain pointer-events-none absolute inset-0 opacity-[0.08]" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[var(--ivory)] via-transparent to-transparent" />
+        </div>
+
+        <div className="max-h-[calc(100dvh-1.5rem)] overflow-y-auto px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom))] pt-5 sm:max-h-none sm:px-10 sm:pb-8 sm:pt-6">
+          <Dialog.Title className="pr-12 font-serif text-[28px] leading-[1.08] text-[var(--ink)] sm:pr-0 sm:text-[36px]">
+            Antes de agendar, é importante saber:
+          </Dialog.Title>
+
+          <div className="mt-6 space-y-5 sm:mt-8 sm:space-y-7">
+            <div className="flex gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--clay)]/10 text-[var(--clay)] sm:h-12 sm:w-12">
+                <Info className="h-5 w-5 sm:h-6 sm:w-6" />
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-[12px] font-bold uppercase tracking-[0.15em] text-[var(--clay)]">
+                  Investimento
+                </h4>
+                <p className="mt-1.5 text-[15.5px] leading-relaxed text-foreground/90 sm:text-[18px]">
+                  Sessões individuais de 50 min com investimento a partir de{" "}
+                  <span className="font-bold text-[var(--ink)]">R$ 200,00</span>
+                  .
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[var(--forest)]/10 text-[var(--forest)] sm:h-12 sm:w-12">
+                <Receipt className="h-5 w-5 sm:h-6 sm:w-6" />
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-[12px] font-bold uppercase tracking-[0.15em] text-[var(--forest)]">
+                  Reembolso
+                </h4>
+                <p className="mt-1.5 text-[15.5px] leading-relaxed text-foreground/90 sm:text-[18px]">
+                  Atendimento{" "}
+                  <span className="font-bold text-[var(--ink)]">
+                    particular
+                  </span>{" "}
+                  com emissão de recibo para você solicitar{" "}
+                  <span className="font-bold text-[var(--ink)]">reembolso</span>{" "}
+                  ao seu convênio.
+                </p>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-amber-500/10 text-amber-600 sm:h-12 sm:w-12">
+                <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6" />
+              </div>
+              <div className="min-w-0">
+                <h4 className="text-[12px] font-bold uppercase tracking-[0.15em] text-amber-700">
+                  Aviso importante
+                </h4>
+                <p className="mt-1.5 text-[14.5px] leading-relaxed text-foreground/75 italic sm:text-[16px]">
+                  Não realizamos pronto-atendimento de urgência. Em caso de
+                  crise aguda, ligue para o{" "}
+                  <span className="font-bold text-amber-800">CVV (188)</span>.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="sticky bottom-0 -mx-5 mt-7 flex flex-col gap-3 border-t border-border/70 bg-[var(--ivory)]/96 px-5 pb-1 pt-4 backdrop-blur sm:static sm:mx-0 sm:mt-10 sm:border-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0">
+            <div className="text-center">
+              <a
+                href={getWhatsAppLink(message)}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => {
+                  track("click_whatsapp_qualified", { message });
+                  setOpen(false);
+                }}
+                className="flex min-h-[56px] w-full items-center justify-center gap-3 rounded-full bg-[#123c2b] px-6 text-[14px] font-bold tracking-wide text-white shadow-soft transition-all hover:bg-[var(--ink)] hover:shadow-elev active:scale-[0.98] sm:min-h-[64px] sm:px-8 sm:text-[15px]"
+              >
+                <MessageCircle className="h-5 w-5" />
+                Ir para o WhatsApp
+              </a>
+            </div>
+
+            <Dialog.Close asChild>
+              <button className="min-h-11 text-[12px] font-medium uppercase tracking-[0.18em] text-muted-foreground transition-colors hover:text-foreground">
+                Fechar e voltar ao site
+              </button>
+            </Dialog.Close>
+          </div>
+        </div>
+
+        <Dialog.Close asChild>
+          <button
+            className="absolute right-4 top-4 z-10 grid h-10 w-10 place-items-center rounded-full border border-[var(--ink)]/10 bg-[var(--ivory)]/92 text-[var(--ink)] shadow-soft backdrop-blur-md transition-colors hover:bg-white sm:right-6 sm:top-6"
+            aria-label="Fechar"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </Dialog.Close>
+      </Dialog.Content>
+    </Dialog.Portal>
   );
 }
 
@@ -131,10 +264,16 @@ export function PageHero({
             <figure className="editorial-frame photo-shell overflow-hidden rounded-[2.5rem] shadow-elev">
               <img
                 src={image}
-                alt={alt || `Imagem de fundo para ${eyebrow} - Psicóloga Camila Freitas`}
+                alt={
+                  alt ||
+                  `Imagem de fundo para ${eyebrow} - Psicóloga Camila Freitas`
+                }
                 className="image-wash aspect-[4/5] w-full object-cover"
-                width={600}
-                height={750}
+                width={800}
+                height={1000}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
               />
             </figure>
           </div>
@@ -146,9 +285,9 @@ export function PageHero({
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
-    <svg 
-      viewBox="0 0 24 24" 
-      fill="currentColor" 
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
       className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -158,6 +297,21 @@ function WhatsAppIcon({ className }: { className?: string }) {
 }
 
 import { useBrandingContext } from "@/hooks/useBrandingContext";
+
+export function QualifiedWhatsAppLink({
+  children,
+}: {
+  children: (openModal: () => void) => React.ReactNode;
+}) {
+  const [open, setOpen] = useState(false);
+
+  return (
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Trigger asChild>{children(() => setOpen(true))}</Dialog.Trigger>
+      <LeadQualificationModal open={open} setOpen={setOpen} message="default" />
+    </Dialog.Root>
+  );
+}
 
 export function FinalContact() {
   const { ctaTitle, ctaSubtitle, whatsappKey } = useBrandingContext();
@@ -179,47 +333,67 @@ export function FinalContact() {
             <StaggerChildren className="divide-y divide-border">
               {(
                 [
-                  [WhatsAppIcon as any, "WhatsApp", camila.phone, camila.whatsapp],
+                  [WhatsAppIcon, "WhatsApp", camila.phone, camila.whatsapp],
                   [Mail, "E-mail", camila.email, `mailto:${camila.email}`],
                   [MapPin, "Consultório", camila.location, "/contato"],
                   [
-                    InstagramIcon as any,
+                    InstagramIcon,
                     "Instagram",
                     camila.instagramHandle,
                     camila.instagram,
                   ],
-                ] satisfies Array<[LucideIcon, string, string, string]>
-              ).map(([Icon, label, value, href]) => (
-                <StaggerItem key={label}>
-                  <a
-                    href={href}
-                    target={href.startsWith("http") ? "_blank" : undefined}
-                    rel="noopener noreferrer"
-                    onClick={() => {
-                      if (label === "WhatsApp") track("click_whatsapp");
-                      if (label === "E-mail") track("click_email_contact");
-                      if (label === "Instagram") track("click_instagram");
-                    }}
-                    className="group flex gap-4 p-5 transition-colors hover:bg-[var(--bone)] sm:p-7 md:grid-cols-[24px_120px_1fr]"
-                  >
+                ] satisfies Array<[ContactIcon, string, string, string]>
+              ).map(([Icon, label, value, href]) => {
+                const isWhatsApp = label === "WhatsApp";
+                const content = (
+                  <div className="group grid gap-3 p-5 transition-colors hover:bg-[var(--bone)] sm:p-7 md:grid-cols-[24px_120px_minmax(0,1fr)] md:gap-4">
                     <Icon className="h-5 w-5 shrink-0 text-[var(--clay)]" />
-                    <span className="w-24 shrink-0 text-[11px] uppercase tracking-[0.2em] text-muted-foreground sm:w-[120px]">
+                    <span className="min-w-0 text-[10px] uppercase tracking-[0.18em] text-muted-foreground sm:text-[11px]">
                       {label}
                     </span>
-                    <span className="break-words font-serif text-[20px] leading-tight text-[var(--ink)] group-hover:text-[var(--forest)] sm:text-[22px]">
+                    <span className="min-w-0 break-words font-serif text-[18px] leading-tight text-[var(--ink)] [overflow-wrap:anywhere] group-hover:text-[var(--forest)] sm:text-[22px]">
                       {value}
                     </span>
-                  </a>
-                </StaggerItem>
-              ))}
+                  </div>
+                );
+
+                return isWhatsApp ? (
+                  <QualifiedWhatsAppLink key={label}>
+                    {(open) => (
+                      <button onClick={open} className="w-full text-left">
+                        {content}
+                      </button>
+                    )}
+                  </QualifiedWhatsAppLink>
+                ) : (
+                  <StaggerItem key={label}>
+                    <a
+                      href={href}
+                      target={href.startsWith("http") ? "_blank" : undefined}
+                      rel="noopener noreferrer"
+                      onClick={() => {
+                        if (label === "E-mail") track("click_email_contact");
+                        if (label === "Instagram") track("click_instagram");
+                      }}
+                      className="block transition-colors hover:bg-[var(--bone)]"
+                    >
+                      {content}
+                    </a>
+                  </StaggerItem>
+                );
+              })}
             </StaggerChildren>
 
             <div className="border-t border-border bg-[var(--bone)]/40 p-5 sm:p-7">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                <PrimaryCTA message={whatsappKey}>Agendar sessão de psicoterapia</PrimaryCTA>
-                <p className="text-center text-[12px] text-muted-foreground sm:text-right">
-                  Mensagens tratadas com sigilo{" "}
-                  <br className="hidden sm:block" /> e cuidado profissional.
+                <PrimaryCTA
+                  message={whatsappKey}
+                  className="w-full px-5 sm:w-auto"
+                >
+                  Agendar sessão
+                </PrimaryCTA>
+                <p className="text-center text-[12px] leading-relaxed text-muted-foreground sm:text-right">
+                  Mensagens tratadas com sigilo e cuidado profissional.
                 </p>
               </div>
             </div>

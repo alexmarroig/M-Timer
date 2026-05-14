@@ -1,11 +1,12 @@
 import { getWhatsAppLink } from "./content";
 import { track } from "@vercel/analytics";
+import { QualifiedWhatsAppLink } from "./Primitives";
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
-    <svg 
-      viewBox="0 0 24 24" 
-      fill="currentColor" 
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
       className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -16,19 +17,25 @@ function WhatsAppIcon({ className }: { className?: string }) {
 
 export function WhatsAppFloat() {
   return (
-    <a
-      href={getWhatsAppLink("default")}
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="Conversar pelo WhatsApp"
-      onClick={() => track("click_whatsapp", { location: "float" })}
-      className="group fixed bottom-6 right-6 z-50 flex items-center justify-center rounded-full border border-[var(--forest)]/20 bg-[var(--ivory)]/80 p-4 text-[var(--forest)] shadow-float backdrop-blur-lg transition-all hover:scale-110 active:scale-95 sm:gap-2 sm:p-4"
-    >
-      <div className="absolute right-full mr-3 hidden origin-right scale-90 rounded-sm bg-[var(--ink)] px-3 py-1.5 text-[11px] uppercase tracking-widest text-[var(--ivory)] opacity-0 transition-all group-hover:scale-100 group-hover:opacity-100 sm:block">
-        Conversar
-      </div>
-      <WhatsAppIcon className="h-6 w-6" />
-      <span className="hidden pr-1 text-[13px] font-medium tracking-tight sm:inline">WhatsApp</span>
-    </a>
+    <QualifiedWhatsAppLink>
+      {(open) => (
+        <button
+          onClick={() => {
+            track("click_whatsapp", { location: "float" });
+            open();
+          }}
+          aria-label="Conversar pelo WhatsApp"
+          className="group fixed bottom-[calc(1rem+env(safe-area-inset-bottom))] right-4 z-50 flex min-h-14 min-w-14 items-center justify-center rounded-full border border-white/18 bg-[#123c2b] p-4 text-white shadow-[0_18px_45px_-18px_rgba(18,60,43,.75)] transition-all hover:scale-105 hover:bg-[var(--ink)] active:scale-95 sm:right-6 sm:gap-2 sm:p-4"
+        >
+          <div className="absolute right-full mr-3 hidden origin-right scale-90 rounded-sm bg-[var(--ink)] px-3 py-1.5 text-[11px] uppercase tracking-widest text-[var(--ivory)] opacity-0 transition-all group-hover:scale-100 group-hover:opacity-100 sm:block">
+            Conversar
+          </div>
+          <WhatsAppIcon className="h-6 w-6 drop-shadow-sm" />
+          <span className="hidden pr-1 text-[13px] font-medium tracking-tight sm:inline">
+            WhatsApp
+          </span>
+        </button>
+      )}
+    </QualifiedWhatsAppLink>
   );
 }

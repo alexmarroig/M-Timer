@@ -106,6 +106,25 @@ function Hero() {
           <p className="mt-6 max-w-md text-[13px] leading-relaxed text-muted-foreground/80 md:mt-5">
             O retorno é feito pessoalmente pela Camila, com informações sobre horários disponíveis e investimento.
           </p>
+
+          <div className="mt-10 flex flex-wrap items-center gap-4 border-t border-border/40 pt-8 sm:gap-6">
+            <img
+              src={images.portrait}
+              alt="Retrato da Psicóloga Camila Freitas (PUC-SP)"
+              className="h-14 w-14 rounded-full border border-border bg-[var(--sand)] object-cover grayscale-[0.3] shadow-soft"
+              loading="lazy"
+              width={56}
+              height={56}
+            />
+            <div>
+              <span className="block text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--clay)]">
+                Formação e Registro
+              </span>
+              <p className="mt-1 font-serif text-[18px] leading-tight text-[var(--ink)] sm:text-[20px]">
+                {camila.education} · {camila.crp}
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="premium-opening-image md:col-span-5">
@@ -113,44 +132,28 @@ function Hero() {
             <div className="absolute -left-8 top-10 hidden h-[72%] w-px bg-gradient-to-b from-transparent via-[var(--clay)]/40 to-transparent md:block" />
             <ParallaxMedia
               offset={30}
-              className="editorial-frame photo-shell relative rounded-[2.5rem] shadow-float"
+              className="editorial-frame photo-shell group relative rounded-[2.5rem] shadow-float transition-transform duration-500 hover:scale-[1.01]"
             >
               <img
-                src={images.consultorio}
-                alt="Consultório de Psicologia da Camila Freitas na Vila Nova Conceição, São Paulo"
-                className="image-wash h-[430px] w-full object-cover sm:h-[520px] md:h-[680px]"
-                width={1000}
-                height={1250}
+                src={images.camilaSittingFull}
+                alt="Psicóloga Camila Freitas em seu consultório na Vila Nova Conceição, São Paulo"
+                className="image-wash h-[430px] w-full object-cover transition-all duration-700 group-hover:scale-105 sm:h-[520px] md:h-[680px]"
+                width={1024}
+                height={1280}
                 loading="eager"
                 fetchPriority="high"
+                decoding="async"
               />
-              <figcaption className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-[var(--ink)]/76 via-[var(--ink)]/22 to-transparent px-6 pb-6 pt-20 text-[var(--ivory)]">
+              <div className="grain pointer-events-none absolute inset-0 opacity-[0.15]" />
+              <figcaption className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-[var(--ink)]/80 via-[var(--ink)]/30 to-transparent px-6 pb-6 pt-24 text-[var(--ivory)]">
                 <span className="block font-serif text-[30px] italic">
-                  escuta clínica
+                  escuta ética
                 </span>
-                <span className="mt-2 block max-w-xs text-[12px] leading-relaxed text-[var(--ivory)]/74">
-                  Atendimento online e presencial, com sigilo e cuidado no tempo
-                  possível de cada pessoa.
+                <span className="mt-2 block max-w-xs text-[12px] leading-relaxed text-[var(--ivory)]/80">
+                  Presença clínica e acolhimento na Vila Nova Conceição e online.
                 </span>
               </figcaption>
             </ParallaxMedia>
-
-            <aside className="quiet-card absolute -bottom-8 left-2 z-10 hidden max-w-[310px] items-center gap-4 p-5 md:flex">
-              <img
-                src={images.portrait}
-                alt="Retrato da Psicóloga Camila Freitas (PUC-SP)"
-                className="h-20 w-20 shrink-0 rounded-full border border-[var(--ink)]/10 bg-[var(--sand)] object-cover shadow-soft"
-                loading="lazy"
-                width={80}
-                height={80}
-              />
-              <div>
-                <span className="num-eyebrow">Formação</span>
-                <p className="mt-2 font-serif text-[21px] leading-tight text-[var(--ink)]">
-                  {camila.education} · {camila.crp}
-                </p>
-              </div>
-            </aside>
           </div>
         </div>
       </div>
@@ -220,13 +223,14 @@ function ClinicalHelp() {
     <section className="surface-mist section-pad relative overflow-hidden">
       <div className="container-editorial grid gap-16 md:grid-cols-12 md:items-center">
         <div className="md:col-span-5">
-          <figure className="editorial-frame photo-shell overflow-hidden rounded-[2rem] shadow-float">
+          <figure className="editorial-frame photo-shell group overflow-hidden rounded-[2rem] shadow-float transition-all duration-500 hover:shadow-elev">
             <img
               src={images.life2}
               alt="Ambiente clínico acolhedor para psicoterapia com Camila Freitas"
-              className="image-wash aspect-[4/5] w-full object-cover"
+              className="image-wash aspect-[4/5] w-full object-cover transition-transform duration-700 group-hover:scale-105"
               loading="lazy"
             />
+            <div className="grain pointer-events-none absolute inset-0 opacity-[0.1]" />
           </figure>
         </div>
         <div className="md:col-span-7 md:pl-10">
@@ -274,7 +278,7 @@ function Areas() {
           </div>
         </div>
 
-        <StaggerChildren className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4 md:mt-16 md:gap-5">
+        <StaggerChildren className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 md:mt-16 md:gap-5">
           {serviceAreas.map((area, index) => (
             <StaggerItem key={area.to}>
               <Link
@@ -286,9 +290,10 @@ function Areas() {
                     src={area.image}
                     alt={`Atendimento especializado em ${area.label} com a Psicóloga Camila Freitas`}
                     className="image-wash aspect-[5/4] w-full object-cover transition-transform duration-700 group-hover:scale-[1.045] md:aspect-[4/5]"
-                    loading="lazy"
                     width={400}
                     height={500}
+                    loading="lazy"
+                    decoding="async"
                   />
                   <span className="absolute left-5 top-5 font-serif text-[28px] italic text-[var(--ivory)] mix-blend-difference">
                     0{index + 1}
@@ -508,7 +513,7 @@ function BlogPreview() {
           </Link>
         </FadeIn>
         <StaggerChildren className="mt-12 grid gap-10 md:mt-16 md:grid-cols-12">
-          {articles.map((article, index) => (
+          {articles.slice(0, 3).map((article, index) => (
             <StaggerItem
               key={article.slug}
               className={`${index === 0 ? "md:col-span-6" : "md:col-span-3"} group`}
@@ -523,9 +528,10 @@ function BlogPreview() {
                     src={article.coverImage}
                     alt={`Leitura sobre ${article.title} - Blog de Psicologia Camila Freitas`}
                     className={`${index === 0 ? "aspect-[5/4]" : "aspect-[4/5]"} image-wash w-full object-cover transition-transform duration-700 group-hover:scale-[1.035]`}
-                    loading="lazy"
                     width={index === 0 ? 800 : 400}
                     height={index === 0 ? 640 : 500}
+                    loading="lazy"
+                    decoding="async"
                   />
                 </div>
                 <span className="mt-6 block num-eyebrow">{article.category}</span>
@@ -621,9 +627,10 @@ function SocialSection() {
                     src={tile.image}
                     alt={tile.title}
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
-                    loading="lazy"
                     width={400}
                     height={400}
+                    loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[var(--ink)]/80 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                   <div className="absolute bottom-6 left-6 right-6 translate-y-4 opacity-0 transition-all duration-500 group-hover:translate-y-0 group-hover:opacity-100">
@@ -636,9 +643,9 @@ function SocialSection() {
                   <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--clay)]/60">
                     {tile.tag}
                   </span>
-                  <h4 className="mt-3 font-serif text-[22px] leading-snug text-[var(--ink)] transition-colors group-hover:text-[var(--forest)]">
+                  <h3 className="mt-3 font-serif text-[22px] leading-snug text-[var(--ink)] transition-colors group-hover:text-[var(--forest)]">
                     {tile.title}
-                  </h4>
+                  </h3>
                 </div>
               </a>
             </StaggerItem>

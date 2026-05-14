@@ -13,12 +13,16 @@ import { Route as SobreRouteImport } from './routes/sobre'
 import { Route as RelacionamentosRouteImport } from './routes/relacionamentos'
 import { Route as PsicoterapiaOnlineRouteImport } from './routes/psicoterapia-online'
 import { Route as PrivacidadeRouteImport } from './routes/privacidade'
+import { Route as LutoRouteImport } from './routes/luto'
 import { Route as FaqRouteImport } from './routes/faq'
 import { Route as DepressaoRouteImport } from './routes/depressao'
+import { Route as DependenciaTecnologicaRouteImport } from './routes/dependencia-tecnologica'
+import { Route as DependenciaQuimicaRouteImport } from './routes/dependencia-quimica'
 import { Route as ContatoRouteImport } from './routes/contato'
 import { Route as ComoFuncionaRouteImport } from './routes/como-funciona'
 import { Route as AutoconhecimentoRouteImport } from './routes/autoconhecimento'
 import { Route as AnsiedadeRouteImport } from './routes/ansiedade'
+import { Route as AcessibilidadeRouteImport } from './routes/acessibilidade'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as KeystaticSplatRouteImport } from './routes/keystatic/$'
@@ -45,6 +49,11 @@ const PrivacidadeRoute = PrivacidadeRouteImport.update({
   path: '/privacidade',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LutoRoute = LutoRouteImport.update({
+  id: '/luto',
+  path: '/luto',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FaqRoute = FaqRouteImport.update({
   id: '/faq',
   path: '/faq',
@@ -53,6 +62,16 @@ const FaqRoute = FaqRouteImport.update({
 const DepressaoRoute = DepressaoRouteImport.update({
   id: '/depressao',
   path: '/depressao',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DependenciaTecnologicaRoute = DependenciaTecnologicaRouteImport.update({
+  id: '/dependencia-tecnologica',
+  path: '/dependencia-tecnologica',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DependenciaQuimicaRoute = DependenciaQuimicaRouteImport.update({
+  id: '/dependencia-quimica',
+  path: '/dependencia-quimica',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContatoRoute = ContatoRouteImport.update({
@@ -73,6 +92,11 @@ const AutoconhecimentoRoute = AutoconhecimentoRouteImport.update({
 const AnsiedadeRoute = AnsiedadeRouteImport.update({
   id: '/ansiedade',
   path: '/ansiedade',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcessibilidadeRoute = AcessibilidadeRouteImport.update({
+  id: '/acessibilidade',
+  path: '/acessibilidade',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -103,12 +127,16 @@ const ApiKeystaticSplatRoute = ApiKeystaticSplatRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/acessibilidade': typeof AcessibilidadeRoute
   '/ansiedade': typeof AnsiedadeRoute
   '/autoconhecimento': typeof AutoconhecimentoRoute
   '/como-funciona': typeof ComoFuncionaRoute
   '/contato': typeof ContatoRoute
+  '/dependencia-quimica': typeof DependenciaQuimicaRoute
+  '/dependencia-tecnologica': typeof DependenciaTecnologicaRoute
   '/depressao': typeof DepressaoRoute
   '/faq': typeof FaqRoute
+  '/luto': typeof LutoRoute
   '/privacidade': typeof PrivacidadeRoute
   '/psicoterapia-online': typeof PsicoterapiaOnlineRoute
   '/relacionamentos': typeof RelacionamentosRoute
@@ -120,12 +148,16 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/acessibilidade': typeof AcessibilidadeRoute
   '/ansiedade': typeof AnsiedadeRoute
   '/autoconhecimento': typeof AutoconhecimentoRoute
   '/como-funciona': typeof ComoFuncionaRoute
   '/contato': typeof ContatoRoute
+  '/dependencia-quimica': typeof DependenciaQuimicaRoute
+  '/dependencia-tecnologica': typeof DependenciaTecnologicaRoute
   '/depressao': typeof DepressaoRoute
   '/faq': typeof FaqRoute
+  '/luto': typeof LutoRoute
   '/privacidade': typeof PrivacidadeRoute
   '/psicoterapia-online': typeof PsicoterapiaOnlineRoute
   '/relacionamentos': typeof RelacionamentosRoute
@@ -138,12 +170,16 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/acessibilidade': typeof AcessibilidadeRoute
   '/ansiedade': typeof AnsiedadeRoute
   '/autoconhecimento': typeof AutoconhecimentoRoute
   '/como-funciona': typeof ComoFuncionaRoute
   '/contato': typeof ContatoRoute
+  '/dependencia-quimica': typeof DependenciaQuimicaRoute
+  '/dependencia-tecnologica': typeof DependenciaTecnologicaRoute
   '/depressao': typeof DepressaoRoute
   '/faq': typeof FaqRoute
+  '/luto': typeof LutoRoute
   '/privacidade': typeof PrivacidadeRoute
   '/psicoterapia-online': typeof PsicoterapiaOnlineRoute
   '/relacionamentos': typeof RelacionamentosRoute
@@ -157,12 +193,16 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/acessibilidade'
     | '/ansiedade'
     | '/autoconhecimento'
     | '/como-funciona'
     | '/contato'
+    | '/dependencia-quimica'
+    | '/dependencia-tecnologica'
     | '/depressao'
     | '/faq'
+    | '/luto'
     | '/privacidade'
     | '/psicoterapia-online'
     | '/relacionamentos'
@@ -174,12 +214,16 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/acessibilidade'
     | '/ansiedade'
     | '/autoconhecimento'
     | '/como-funciona'
     | '/contato'
+    | '/dependencia-quimica'
+    | '/dependencia-tecnologica'
     | '/depressao'
     | '/faq'
+    | '/luto'
     | '/privacidade'
     | '/psicoterapia-online'
     | '/relacionamentos'
@@ -191,12 +235,16 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/acessibilidade'
     | '/ansiedade'
     | '/autoconhecimento'
     | '/como-funciona'
     | '/contato'
+    | '/dependencia-quimica'
+    | '/dependencia-tecnologica'
     | '/depressao'
     | '/faq'
+    | '/luto'
     | '/privacidade'
     | '/psicoterapia-online'
     | '/relacionamentos'
@@ -209,12 +257,16 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AcessibilidadeRoute: typeof AcessibilidadeRoute
   AnsiedadeRoute: typeof AnsiedadeRoute
   AutoconhecimentoRoute: typeof AutoconhecimentoRoute
   ComoFuncionaRoute: typeof ComoFuncionaRoute
   ContatoRoute: typeof ContatoRoute
+  DependenciaQuimicaRoute: typeof DependenciaQuimicaRoute
+  DependenciaTecnologicaRoute: typeof DependenciaTecnologicaRoute
   DepressaoRoute: typeof DepressaoRoute
   FaqRoute: typeof FaqRoute
+  LutoRoute: typeof LutoRoute
   PrivacidadeRoute: typeof PrivacidadeRoute
   PsicoterapiaOnlineRoute: typeof PsicoterapiaOnlineRoute
   RelacionamentosRoute: typeof RelacionamentosRoute
@@ -255,6 +307,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacidadeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/luto': {
+      id: '/luto'
+      path: '/luto'
+      fullPath: '/luto'
+      preLoaderRoute: typeof LutoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/faq': {
       id: '/faq'
       path: '/faq'
@@ -267,6 +326,20 @@ declare module '@tanstack/react-router' {
       path: '/depressao'
       fullPath: '/depressao'
       preLoaderRoute: typeof DepressaoRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dependencia-tecnologica': {
+      id: '/dependencia-tecnologica'
+      path: '/dependencia-tecnologica'
+      fullPath: '/dependencia-tecnologica'
+      preLoaderRoute: typeof DependenciaTecnologicaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dependencia-quimica': {
+      id: '/dependencia-quimica'
+      path: '/dependencia-quimica'
+      fullPath: '/dependencia-quimica'
+      preLoaderRoute: typeof DependenciaQuimicaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contato': {
@@ -295,6 +368,13 @@ declare module '@tanstack/react-router' {
       path: '/ansiedade'
       fullPath: '/ansiedade'
       preLoaderRoute: typeof AnsiedadeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/acessibilidade': {
+      id: '/acessibilidade'
+      path: '/acessibilidade'
+      fullPath: '/acessibilidade'
+      preLoaderRoute: typeof AcessibilidadeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -337,12 +417,16 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AcessibilidadeRoute: AcessibilidadeRoute,
   AnsiedadeRoute: AnsiedadeRoute,
   AutoconhecimentoRoute: AutoconhecimentoRoute,
   ComoFuncionaRoute: ComoFuncionaRoute,
   ContatoRoute: ContatoRoute,
+  DependenciaQuimicaRoute: DependenciaQuimicaRoute,
+  DependenciaTecnologicaRoute: DependenciaTecnologicaRoute,
   DepressaoRoute: DepressaoRoute,
   FaqRoute: FaqRoute,
+  LutoRoute: LutoRoute,
   PrivacidadeRoute: PrivacidadeRoute,
   PsicoterapiaOnlineRoute: PsicoterapiaOnlineRoute,
   RelacionamentosRoute: RelacionamentosRoute,

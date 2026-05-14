@@ -1,99 +1,219 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://psicamilafreitas.com.br/</loc>
-    <lastmod>2026-05-10</lastmod>
+    <loc>https://psicavfreitas.com.br/</loc>
+    <lastmod>2026-05-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://psicamilafreitas.com.br/sobre</loc>
-    <lastmod>2026-05-10</lastmod>
+    <loc>https://psicavfreitas.com.br/sobre</loc>
+    <lastmod>2026-05-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://psicamilafreitas.com.br/contato</loc>
-    <lastmod>2026-05-10</lastmod>
+    <loc>https://psicavfreitas.com.br/contato</loc>
+    <lastmod>2026-05-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://psicamilafreitas.com.br/faq</loc>
-    <lastmod>2026-05-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>https://psicamilafreitas.com.br/ansiedade</loc>
-    <lastmod>2026-05-10</lastmod>
+    <loc>https://psicavfreitas.com.br/ansiedade</loc>
+    <lastmod>2026-05-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://psicamilafreitas.com.br/depressao</loc>
-    <lastmod>2026-05-10</lastmod>
+    <loc>https://psicavfreitas.com.br/depressao</loc>
+    <lastmod>2026-05-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://psicamilafreitas.com.br/relacionamentos</loc>
-    <lastmod>2026-05-10</lastmod>
+    <loc>https://psicavfreitas.com.br/relacionamentos</loc>
+    <lastmod>2026-05-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://psicamilafreitas.com.br/autoconhecimento</loc>
-    <lastmod>2026-05-10</lastmod>
+    <loc>https://psicavfreitas.com.br/autoconhecimento</loc>
+    <lastmod>2026-05-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://psicamilafreitas.com.br/psicoterapia-online</loc>
-    <lastmod>2026-05-10</lastmod>
+    <loc>https://psicavfreitas.com.br/psicoterapia-online</loc>
+    <lastmod>2026-05-13</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://psicamilafreitas.com.br/como-funciona</loc>
-    <lastmod>2026-05-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>https://psicamilafreitas.com.br/blog</loc>
-    <lastmod>2026-05-10</lastmod>
+    <loc>https://psicavfreitas.com.br/blog</loc>
+    <lastmod>2026-05-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://psicamilafreitas.com.br/blog/hora-de-procurar-psicoterapia</loc>
-    <lastmod>2026-05-10</lastmod>
+    <loc>https://psicavfreitas.com.br/blog/abordagem-junguiana-autoconhecimento</loc>
+    <lastmod>2026-05-13</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://psicamilafreitas.com.br/blog/expectativas-inicio-terapia</loc>
-    <lastmod>2026-05-10</lastmod>
+    <loc>https://psicavfreitas.com.br/blog/ansiedade-quando-buscar-ajuda</loc>
+    <lastmod>2026-05-13</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://psicamilafreitas.com.br/blog/ansiedade-quando-buscar-ajuda</loc>
-    <lastmod>2026-05-10</lastmod>
+    <loc>https://psicavfreitas.com.br/blog/beneficios-terapia-luto</loc>
+    <lastmod>2026-05-13</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://psicamilafreitas.com.br/blog/terapia-nos-relacionamentos</loc>
-    <lastmod>2026-05-10</lastmod>
+    <loc>https://psicavfreitas.com.br/blog/como-funciona-a-psicoterapia</loc>
+    <lastmod>2026-05-13</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://psicamilafreitas.com.br/blog/terapia-online-funciona</loc>
-    <lastmod>2026-05-10</lastmod>
+    <loc>https://psicavfreitas.com.br/blog/competencias-profissionais-autoconhecimento</loc>
+    <lastmod>2026-05-13</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/compreendendo-a-complementaridade-entre-psiquiatria-e-psicologia-no-tratamento-mental</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/dislexia-sinais-identificacao</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/expectativas-inicio-terapia</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/explorando-inconsciente-jung</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/fundamentos-psicologia-junguiana</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/hora-de-procurar-psicoterapia</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/importancia-psicoterapia-idosos</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/luto-processo-natural</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/magia-da-terapia</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/psicologia-junguiana-online-conceitos</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/psicoterapia-online-idosos</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/redes-sociais-ansiedade</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/relacao-abusiva-sinais</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/relacionamento-saudavel-casal-online</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/superando-luto-terapia-online</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/terapia-casal-novo-comeco</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/terapia-casal-online-eficacia</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/terapia-nos-relacionamentos</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/terapia-online-funciona</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/transformacao-terapia-junguiana</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/transtorno-ansiedade-generalizada-tag</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://psicavfreitas.com.br/blog/tristeza-profunda-como-lidar</loc>
+    <lastmod>2026-05-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
   </url>
 </urlset>

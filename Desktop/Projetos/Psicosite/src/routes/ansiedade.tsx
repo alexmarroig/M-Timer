@@ -24,10 +24,35 @@ export const Route = createFileRoute("/ansiedade")({
           "provider": {
             "@type": "Psychologist",
             "name": "Camila Freitas",
-            "url": "https://psicamilafreitas.com.br"
+            "url": "https://psicavfreitas.com.br"
           },
           "areaServed": "São Paulo, Vila Nova Conceição e Online",
           "description": "Tratamento especializado para sintomas ansiosos, crises de pânico e sobrecarga emocional com abordagem ética e profissional."
+        })
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Como saber se minha ansiedade precisa de terapia?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Sinais como insônia frequente, dificuldade de concentração, preocupação constante com o futuro e sintomas físicos (como aperto no peito ou falta de ar) sem causa médica são indicativos de que a psicoterapia pode ajudar."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "A terapia cura a ansiedade?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "O foco não é a 'cura' mecânica, mas a compreensão das raízes da ansiedade e o desenvolvimento de formas mais saudáveis de lidar com ela, devolvendo a qualidade de vida e autonomia."
+              }
+            }
+          ]
         })
       }
     ],
@@ -39,7 +64,18 @@ export const Route = createFileRoute("/ansiedade")({
         <>Quando o pensamento corre mais do que a vida consegue acompanhar.</>
       }
       intro="A ansiedade pode aparecer no corpo, no sono, na respiração, na produtividade, nas relações e na sensação de estar sempre em dívida consigo."
-      image={images.life1}
+      image={images.lifeTime}
+      pains={{
+        title: "Quando a preocupação deixa de ser apenas um alerta e passa a ocupar todo o espaço.",
+        items: [
+          "Sinto que estou sempre esperando algo ruim acontecer, mesmo sem motivo claro.",
+          "Meu pensamento não desliga, parece que estou em um ritmo que meu corpo não aguenta.",
+          "Tenho dificuldade para dormir ou acordo com o peito apertado e a mente acelerada.",
+          "Evito situações ou lugares por medo de me sentir mal ou perder o controle.",
+          "Sinto que preciso dar conta de tudo perfeitamente, mas a autocobrança me paralisa.",
+          "Sintomas físicos como tremores, falta de ar ou palpitações que surgem sem aviso."
+        ]
+      }}
       lead="Na terapia, a ansiedade não é tratada como um defeito a ser eliminado, mas como um sinal a ser escutado com responsabilidade clínica."
       points={[
         "Compreender gatilhos, exigências internas e formas de antecipação do sofrimento.",
@@ -69,3 +105,4 @@ export const Route = createFileRoute("/ansiedade")({
     />
   ),
 });
+

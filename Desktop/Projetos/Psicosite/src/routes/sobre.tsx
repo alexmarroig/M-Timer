@@ -38,13 +38,13 @@ export const Route = createFileRoute("/sobre")({
           "name": "Camila Freitas",
           "jobTitle": "Psicóloga Clínica",
           "description": "Psicóloga clínica formada pela PUC-SP. Especialista em Psicologia Analítica.",
-          "url": "https://psicamilafreitas.com.br/sobre",
+          "url": "https://psicavfreitas.com.br/sobre",
           "alumniOf": {
             "@type": "CollegeOrUniversity",
             "name": "PUC-SP - Pontifícia Universidade Católica de São Paulo"
           },
           "knowsAbout": ["Psicoterapia", "Psicologia Analítica", "Saúde Mental", "Ansiedade", "Relacionamentos"],
-          "image": "https://psicosite.vercel.app/images/camila-portrait.jpg"
+          "image": "https://psicavfreitas.com.br/images/camila-portrait.jpg"
         })
       }
     ],
@@ -130,3 +130,4 @@ function SobrePage() {
     </Layout>
   );
 }
+

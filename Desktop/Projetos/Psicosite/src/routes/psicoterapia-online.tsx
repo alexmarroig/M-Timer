@@ -27,10 +27,35 @@ export const Route = createFileRoute("/psicoterapia-online")({
           "provider": {
             "@type": "Psychologist",
             "name": "Camila Freitas",
-            "url": "https://psicamilafreitas.com.br"
+            "url": "https://psicavfreitas.com.br"
           },
           "areaServed": "Global (Atendimento para brasileiros em qualquer lugar)",
           "description": "Atendimento psicoterapêutico por videochamada com garantia de sigilo profissional e ética clínica."
+        })
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "A terapia online funciona mesmo?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Sim. Diversos estudos e a prática clínica cotidiana confirmam que o vínculo terapêutico e a eficácia do tratamento online são equivalentes ao presencial, desde que haja um ambiente privado e uma conexão estável."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Qual plataforma é utilizada?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Utilizo plataformas seguras que garantem a criptografia e o sigilo dos dados, geralmente o Google Meet ou Zoom, facilitando o acesso pelo computador ou celular."
+              }
+            }
+          ]
         })
       }
     ],
@@ -40,7 +65,18 @@ export const Route = createFileRoute("/psicoterapia-online")({
       eyebrow="Psicoterapia online"
       title={<>Terapia online com presença, sigilo e continuidade.</>}
       intro="A psicoterapia online permite iniciar ou sustentar um processo clínico de onde você estiver, desde que exista privacidade e regularidade para os encontros."
-      image={images.life4}
+      image={images.lifeOnline}
+      pains={{
+        title: "Quando a rotina é intensa ou a distância impede o encontro presencial.",
+        items: [
+          "Sinto que preciso de ajuda, mas não tenho tempo para deslocamentos no trânsito.",
+          "Moro no exterior e sinto falta de um acompanhamento clínico em português.",
+          "Viajo muito a trabalho e isso impede a continuidade de uma terapia presencial.",
+          "Prefiro o conforto e a privacidade de realizar as sessões da minha própria casa.",
+          "Tenho dificuldades de locomoção que tornam o atendimento presencial um desafio.",
+          "Não encontro profissionais especializados na minha cidade ou região."
+        ]
+      }}
       lead="O atendimento online preserva os mesmos princípios éticos do atendimento presencial: sigilo, responsabilidade técnica e construção de vínculo clínico."
       points={[
         "Sessões individuais para adultos, realizadas por videochamada segura.",
@@ -70,3 +106,4 @@ export const Route = createFileRoute("/psicoterapia-online")({
     />
   ),
 });
+

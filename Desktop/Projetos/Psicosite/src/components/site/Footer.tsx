@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Mail, MapPin, Phone } from "lucide-react";
-import { InstagramIcon } from "./Primitives";
+import { InstagramIcon, PrimaryCTA, QualifiedWhatsAppLink } from "./Primitives";
 import { camila, images } from "./content";
 
 export function Footer() {
@@ -29,9 +29,9 @@ export function Footer() {
           </div>
 
           <div className="md:col-span-2">
-            <h4 className="text-[11px] uppercase tracking-[0.24em] text-[var(--brass)]">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--brass)]">
               Menu
-            </h4>
+            </div>
             <ul className="mt-6 space-y-3 text-[14px] text-[var(--ivory)]/78">
               <li><Link to="/sobre" className="link-underline">Sobre</Link></li>
               <li><Link to="/blog" className="link-underline">Blog</Link></li>
@@ -41,43 +41,45 @@ export function Footer() {
           </div>
 
           <div className="md:col-span-2">
-            <h4 className="text-[11px] uppercase tracking-[0.24em] text-[var(--brass)]">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--brass)]">
               Serviços
-            </h4>
+            </div>
             <ul className="mt-6 space-y-3 text-[14px] text-[var(--ivory)]/78">
               <li><Link to="/ansiedade" className="link-underline">Ansiedade</Link></li>
               <li><Link to="/relacionamentos" className="link-underline">Relacionamentos</Link></li>
               <li><Link to="/psicoterapia-online" className="link-underline">Terapia Online</Link></li>
               <li><Link to="/autoconhecimento" className="link-underline">Autoconhecimento</Link></li>
+              <li><Link to="/dependencia-quimica" className="link-underline">Dependência Química</Link></li>
+              <li><Link to="/dependencia-tecnologica" className="link-underline">Dependência Tecnológica</Link></li>
+              <li><Link to="/luto" className="link-underline">Luto e Perdas</Link></li>
             </ul>
           </div>
 
           <div className="md:col-span-4">
-            <h4 className="text-[11px] uppercase tracking-[0.24em] text-[var(--brass)]">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.24em] text-[var(--brass)]">
               Agendamento e Contato
-            </h4>
+            </div>
             <div className="mt-6">
               <p className="text-[13.5px] leading-relaxed text-[var(--ivory)]/74">
                 Atendimento presencial na Vila Nova Conceição e Psicoterapia Online para brasileiros em todo o mundo.
               </p>
               
               <div className="mt-8 flex flex-col gap-4 text-[13.5px] text-[var(--ivory)]/84">
-                <a href={camila.whatsapp} className="flex items-center gap-3 link-underline">
-                  <Phone className="h-4 w-4 text-[var(--brass)]" /> {camila.phone}
-                </a>
+                <QualifiedWhatsAppLink>
+                  {(open) => (
+                    <button onClick={open} className="flex items-center gap-3 link-underline text-[13.5px] text-[var(--ivory)]/84">
+                      <Phone className="h-4 w-4 text-[var(--brass)]" /> {camila.phone}
+                    </button>
+                  )}
+                </QualifiedWhatsAppLink>
                 <a href={camila.instagram} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 link-underline">
                   <InstagramIcon className="h-4 w-4 text-[var(--brass)]" /> {camila.instagramHandle}
                 </a>
               </div>
 
-              <a 
-                href={camila.whatsapp}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-8 inline-flex h-12 items-center justify-center rounded-full bg-[var(--ivory)] px-8 text-[12px] font-semibold tracking-widest text-[var(--forest)] shadow-soft transition-all hover:scale-105 active:scale-95"
-              >
+              <PrimaryCTA className="mt-8 bg-[var(--ivory)] text-[var(--forest)] hover:bg-[var(--ivory)]/90 hover:scale-105 min-h-[48px] px-8 text-[12px] font-semibold tracking-widest uppercase">
                 Agendar Sessão
-              </a>
+              </PrimaryCTA>
             </div>
           </div>
         </div>

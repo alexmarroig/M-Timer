@@ -1,0 +1,174 @@
+{
+  "redirects": [
+    {
+      "source": "/política-de-privacidade",
+      "destination": "/privacidade",
+      "permanent": true
+    },
+    {
+      "source": "/declaração-de-acessibilidade",
+      "destination": "/privacidade",
+      "permanent": true
+    },
+    {
+      "source": "/depressão",
+      "destination": "/depressao",
+      "permanent": true
+    },
+    {
+      "source": "/post/transtorno-de-ansiedade-generalizada-tag-uma-abordagem-clínica-integral",
+      "destination": "/blog/ansiedade-quando-buscar-ajuda",
+      "permanent": true
+    },
+    {
+      "source": "/post/entendendo-os-fundamentos-da-psicologia-junguiana-online",
+      "destination": "/blog/fundamentos-psicologia-junguiana",
+      "permanent": true
+    },
+    {
+      "source": "/post/psicologia-junguiana-online-entenda-os-conceitos-para-um-autoconhecimento-profundo",
+      "destination": "/blog/psicologia-junguiana-online-conceitos",
+      "permanent": true
+    },
+    {
+      "source": "/post/terapia-de-casal-eficaz-a-efetividade-da-terapia-de-casal-online",
+      "destination": "/blog/terapia-casal-online-eficacia",
+      "permanent": true
+    },
+    {
+      "source": "/post/explorando-os-benefícios-da-terapia-do-luto-online-para-a-superação-de-perdas-emocionais",
+      "destination": "/blog/beneficios-terapia-luto",
+      "permanent": true
+    },
+    {
+      "source": "/post/a-importância-da-psicoterapia-para-idosos-online-na-saúde-mental-de-idosos",
+      "destination": "/blog/importancia-psicoterapia-idosos",
+      "permanent": true
+    },
+    {
+      "source": "/post/psicoterapia-para-idosos-online-como-funciona-a-terapia-emocional-para-idosos",
+      "destination": "/blog/psicoterapia-online-idosos",
+      "permanent": true
+    },
+    {
+      "source": "/post/o-luto-um-processo-natural-e-único-como-lidar-com-a-perda",
+      "destination": "/blog/luto-processo-natural",
+      "permanent": true
+    },
+    {
+      "source": "/post/explorando-o-inconsciente-com-a-psicologia-junguiana-prática",
+      "destination": "/blog/explorando-inconsciente-jung",
+      "permanent": true
+    },
+    {
+      "source": "/post/psicoterapia-online-para-idosos-benefícios-e-cuidados-para-a-saúde-mental-na-terceira-idade",
+      "destination": "/blog/psicoterapia-online-idosos",
+      "permanent": true
+    },
+    {
+      "source": "/post/superando-o-luto-com-a-terapia-online-luto-e-apoio-psicológico",
+      "destination": "/blog/superando-luto-terapia-online",
+      "permanent": true
+    },
+    {
+      "source": "/post/a-magia-da-terapia",
+      "destination": "/blog/magia-da-terapia",
+      "permanent": true
+    },
+    {
+      "source": "/post/tristeza-profunda-entenda-o-que-é-e-como-lidar-com-a-tristeza",
+      "destination": "/blog/tristeza-profunda-como-lidar",
+      "permanent": true
+    },
+    {
+      "source": "/post/redes-sociais-e-ansiedade-desvendando-a-conexão",
+      "destination": "/blog/redes-sociais-ansiedade",
+      "permanent": true
+    },
+    {
+      "source": "/post/relação-abusiva-7-sinais-e-como-sair-desse-ciclo",
+      "destination": "/blog/relacao-abusiva-sinais",
+      "permanent": true
+    },
+    {
+      "source": "/post/um-guia-completo-para-conhecer-e-desenvolver-suas-competências-buscapeloautoconhecimento",
+      "destination": "/blog/competencias-profissionais-autoconhecimento",
+      "permanent": true
+    },
+    {
+      "source": "/post/relacionamento-saudável-com-terapia-online-terapia-de-casal-online-funciona-mesmo",
+      "destination": "/blog/relacionamento-saudavel-casal-online",
+      "permanent": true
+    },
+    {
+      "source": "/post/terapia-de-casal-online-um-novo-começo-para-o-seu-relacionamento",
+      "destination": "/blog/terapia-casal-novo-comeco",
+      "permanent": true
+    },
+    {
+      "source": "/post/dislexia-5-sinais-e-como-identificá-la-tratamentodedislexia",
+      "destination": "/blog/dislexia-sinais-identificacao",
+      "permanent": true
+    },
+    {
+      "source": "/post/como-a-terapia-junguiana-online-pode-transformar-sua-vida-uma-abordagem-junguiana-online",
+      "destination": "/blog/transformacao-terapia-junguiana",
+      "permanent": true
+    },
+    {
+      "source": "/post/explorando-a-abordagem-junguiana-na-terapia-um-caminho-para-o-autoconhecimento",
+      "destination": "/blog/abordagem-junguiana-autoconhecimento",
+      "permanent": true
+    },
+    {
+      "source": "/post/como-funciona-a-psicoterapia",
+      "destination": "/blog/hora-de-procurar-psicoterapia",
+      "permanent": true
+    },
+    {
+      "source": "/blog/categories/bem-estar",
+      "destination": "/blog?category=Bem-Estar",
+      "permanent": true
+    },
+    {
+      "source": "/blog/categories/saúde-mental",
+      "destination": "/blog?category=Saúde+Mental",
+      "permanent": true
+    },
+    {
+      "source": "/blog/categories/dependência",
+      "destination": "/blog?category=Dependência",
+      "permanent": true
+    },
+    {
+      "source": "/blog/categories/dependência-de-redes-sociais",
+      "destination": "/blog?category=Dependência+de+Redes+Sociais",
+      "permanent": true
+    },
+    {
+      "source": "/post/transtorno-de-ansiedade-generalizada-tag-uma-abordagem-clínica-integral",
+      "destination": "/blog/transtorno-ansiedade-generalizada-tag",
+      "permanent": true
+    },
+    {
+      "source": "/post/compreendendo-a-complementaridade-entre-psiquiatria-e-psicologia-no-tratamento-mental",
+      "destination": "/blog/compreendendo-a-complementaridade-entre-psiquiatria-e-psicologia-no-tratamento-mental",
+      "permanent": true
+    },
+    {
+      "source": "/post/dependência-de-redes-sociais",
+      "destination": "/blog/redes-sociais-ansiedade",
+      "permanent": true
+    },
+    {
+      "source": "/post/seu-título-qual-é-a-sua-especialidade",
+      "destination": "/sobre",
+      "permanent": true
+    },
+    {
+      "source": "/post/:slug",
+      "destination": "/blog/:slug",
+      "permanent": true
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowUpRight, Check } from "lucide-react";
 import { Layout } from "./Layout";
-import { FinalContact, PageHero } from "./Primitives";
+import { FinalContact, PageHero, PrimaryCTA } from "./Primitives";
 import { articles, serviceAreas } from "./content";
 
 import { Plus } from "lucide-react";
@@ -16,6 +16,7 @@ export function ServicePage({
   points,
   faqItems,
   cta,
+  pains,
 }: {
   eyebrow: string;
   title: React.ReactNode;
@@ -26,10 +27,43 @@ export function ServicePage({
   points: string[];
   faqItems?: Array<{ q: string; a: string }>;
   cta?: React.ReactNode;
+  pains?: {
+    title: string;
+    items: string[];
+  };
 }) {
   return (
     <Layout>
       <PageHero eyebrow={eyebrow} title={title} intro={intro} image={image} alt={alt} />
+      
+      {pains && (
+        <section className="section-pad bg-[var(--porcelain)]/40">
+          <div className="container-editorial">
+            <div className="mb-12">
+              <span className="num-eyebrow">Reconhecendo o sofrimento</span>
+              <h2 className="mt-4 font-serif text-[34px] leading-tight sm:text-[42px] md:text-[52px]">
+                {pains.title}
+              </h2>
+            </div>
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2">
+              {pains.items.map((pain) => (
+                <div key={pain} className="quiet-card group flex items-start gap-5 p-7 transition-all hover:bg-[var(--ivory)]">
+                   <div className="mt-1 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-[var(--clay)]/10 text-[var(--clay)]">
+                      <Plus className="h-3.5 w-3.5 transition-transform group-hover:rotate-90" />
+                   </div>
+                   <p className="text-[17.5px] font-serif italic leading-[1.6] text-[var(--ink)]/85">
+                     "{pain}"
+                   </p>
+                </div>
+              ))}
+            </div>
+            <div className="mt-14">
+              <PrimaryCTA>Gostaria de falar sobre esses sentimentos</PrimaryCTA>
+            </div>
+          </div>
+        </section>
+      )}
+
       <section className="section-pad">
         <div className="container-editorial grid gap-14 md:grid-cols-12">
           <div className="md:col-span-5">

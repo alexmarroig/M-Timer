@@ -1,4 +1,5 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://psicamilafreitas.com.br/sitemap.xml
+Sitemap: https://psicavfreitas.com.br/sitemap.xml
+

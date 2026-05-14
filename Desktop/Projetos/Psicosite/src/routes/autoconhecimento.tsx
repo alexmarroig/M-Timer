@@ -24,10 +24,35 @@ export const Route = createFileRoute("/autoconhecimento")({
           "provider": {
             "@type": "Psychologist",
             "name": "Camila Freitas",
-            "url": "https://psicamilafreitas.com.br"
+            "url": "https://psicavfreitas.com.br"
           },
           "areaServed": "São Paulo, Vila Nova Conceição e Online",
           "description": "Percurso clínico de autoconhecimento focado na elaboração de escolhas, desejos e padrões emocionais."
+        })
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Quanto tempo dura um processo de autoconhecimento?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "A psicoterapia clínica não tem um prazo fixo. O tempo é ditado pela profundidade das questões trazidas e pelo ritmo de cada pessoa em elaborar suas vivências e transformações."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Qual a diferença entre autoconhecimento e autoajuda?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Diferente da autoajuda, que costuma oferecer conselhos genéricos, a psicoterapia clínica oferece uma escuta técnica, ética e individualizada, focada na singularidade da sua história."
+              }
+            }
+          ]
         })
       }
     ],
@@ -37,8 +62,19 @@ export const Route = createFileRoute("/autoconhecimento")({
       eyebrow="Autoconhecimento"
       title={<>Conhecer-se não como performance, mas como elaboração.</>}
       intro="O autoconhecimento clínico não busca uma versão ideal de si. Ele cria condições para olhar escolhas, desejos, defesas e repetições com mais honestidade."
-      image={images.life2}
-      lead="Na terapia, compreender a si mesma ou a si mesmo envolve dar lugar ao que foi vivido, ao que se repete e ao que ainda pede elaboração."
+      image={images.lifeReading}
+      pains={{
+        title: "Dúvidas que não calam, escolhas que pesam e a busca por um sentido próprio.",
+        items: [
+          "Sinto que estou vivendo no automático, apenas cumprindo o que esperam de mim.",
+          "Não sei o que realmente gosto ou o que quero para o meu futuro.",
+          "Tenho um vazio existencial mesmo quando tudo parece estar bem por fora.",
+          "Sinto que me saboto sempre que estou prestes a conquistar algo importante.",
+          "Dificuldade em lidar com críticas ou uma necessidade excessiva de aprovação.",
+          "Sinto que carrego pesos do passado que não me permitem avançar."
+        ]
+      }}
+      lead="O autoconhecimento não é um destino, mas um percurso de honestidade consigo mesmo, mediado por uma escuta ética e técnica."
       points={[
         "Investigar sentidos por trás de escolhas, impasses e formas de se proteger do sofrimento.",
         "Reconhecer padrões que atravessam a vida afetiva, o trabalho e a imagem de si mesmo.",
@@ -67,3 +103,4 @@ export const Route = createFileRoute("/autoconhecimento")({
     />
   ),
 });
+

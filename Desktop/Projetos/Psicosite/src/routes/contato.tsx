@@ -1,23 +1,36 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Mail, MapPin, Phone, type LucideIcon, Send, Loader2 } from "lucide-react";
-import { Layout } from "@/components/site/Layout";
-import { PageHero, PrimaryCTA, InstagramIcon } from "@/components/site/Primitives";
-import { camila, images, getWhatsAppLink } from "@/components/site/content";
+import { Loader2, Mail, MapPin, Send } from "lucide-react";
 import { useState } from "react";
 import { track } from "@vercel/analytics";
+import { Layout } from "@/components/site/Layout";
+import {
+  InstagramIcon,
+  PageHero,
+  PrimaryCTA,
+  QualifiedWhatsAppLink,
+} from "@/components/site/Primitives";
+import { camila, getWhatsAppLink, images } from "@/components/site/content";
 
 export const Route = createFileRoute("/contato")({
   head: () => ({
     meta: [
-      { title: "Agendar Terapia em São Paulo (Vila Nova Conceição) | Camila Freitas" },
+      {
+        title:
+          "Agendar Terapia em São Paulo (Vila Nova Conceição) | Camila Freitas",
+      },
       {
         name: "description",
-        content: "Inicie seu processo terapêutico com a Psicóloga Camila Freitas (PUC-SP). Agende sua sessão presencial na Vila Nova Conceição ou Online via WhatsApp, e-mail ou formulário.",
+        content:
+          "Inicie seu processo terapêutico com a Psicóloga Camila Freitas (PUC-SP). Agende sua sessão presencial na Vila Nova Conceição ou online via WhatsApp, e-mail ou formulário.",
       },
-      { property: "og:title", content: "Agende sua Consulta com Psicóloga Camila Freitas" },
+      {
+        property: "og:title",
+        content: "Agende sua consulta com a Psicóloga Camila Freitas",
+      },
       {
         property: "og:description",
-        content: "WhatsApp, e-mail e formulário direto para agendamento de psicoterapia presencial e online.",
+        content:
+          "WhatsApp, e-mail e formulário direto para agendamento de psicoterapia presencial e online.",
       },
     ],
   }),
@@ -26,9 +39,9 @@ export const Route = createFileRoute("/contato")({
 
 function WhatsAppIcon({ className }: { className?: string }) {
   return (
-    <svg 
-      viewBox="0 0 24 24" 
-      fill="currentColor" 
+    <svg
+      viewBox="0 0 24 24"
+      fill="currentColor"
       className={className}
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -38,37 +51,41 @@ function WhatsAppIcon({ className }: { className?: string }) {
 }
 
 function ContatoPage() {
-  const [formState, setFormState] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [formState, setFormState] = useState<
+    "idle" | "loading" | "success" | "error"
+  >("idle");
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormState("loading");
     track("form_submission_attempt");
 
     const formData = new FormData(e.currentTarget);
     const data = Object.fromEntries(formData);
+    const text = [
+      "Olá Psicóloga Camila Freitas, vim pelo formulário do site e gostaria de iniciar contato.",
+      "",
+      `Nome: ${data.name || ""}`,
+      `WhatsApp: ${data.whatsapp || ""}`,
+      `E-mail: ${data.email || ""}`,
+      `Modalidade: ${data.modality || ""}`,
+      `Melhor período: ${data.period || ""}`,
+      data.message ? `Mensagem: ${data.message}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
 
-    try {
-      // Endpoint de envio de email preparado para Resend (integrável no futuro)
-      // fetch('/api/contact', { method: 'POST', body: JSON.stringify(data) })
-      console.log("Payload preparado para Resend:", data);
-      
-      // Simulação de delay para fallback
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      track("form_submission_success");
-      setFormState("success");
-    } catch (error) {
-      console.error(error);
-      setFormState("error");
-    }
+    track("form_redirect_whatsapp");
+    window.location.href = getWhatsAppLink(text);
+    setFormState("success");
   };
 
-  const links: Array<[any, string, string, string]> = [
+  const links = [
     [WhatsAppIcon, "WhatsApp", camila.phone, getWhatsAppLink("default")],
     [Mail, "E-mail", camila.email, `mailto:${camila.email}`],
     [InstagramIcon, "Instagram", camila.instagramHandle, camila.instagram],
     [MapPin, "Consultório", camila.location, ""],
-  ];
+  ] as const;
 
   return (
     <Layout>
@@ -81,33 +98,50 @@ function ContatoPage() {
       />
       <section className="surface-porcelain section-pad relative">
         <div className="container-editorial grid gap-16 md:grid-cols-12 md:gap-12">
-          
-          <div className="md:col-span-6 lg:col-span-5 md:order-2">
+          <div className="md:order-2 md:col-span-6 lg:col-span-5">
             <h2 className="font-serif text-[28px] leading-[1.1] sm:text-[34px] md:text-[42px]">
               Canais diretos
             </h2>
             <p className="mt-4 text-[15px] leading-relaxed text-muted-foreground">
-              Para maior agilidade ou dúvidas curtas, o WhatsApp é o canal mais rápido. As mensagens são lidas e respondidas diretamente pela Camila.
+              Para maior agilidade ou dúvidas curtas, o WhatsApp é o canal mais
+              rápido. As mensagens são lidas e respondidas diretamente pela
+              Camila.
             </p>
-            <div className="mt-8 mb-10 flex">
+            <div className="mb-10 mt-8 flex">
               <PrimaryCTA>Conversar no WhatsApp</PrimaryCTA>
             </div>
-            
-            <div className="quiet-card divide-y divide-border">
+
+            <div className="quiet-card divide-y divide-border overflow-hidden">
               {links.map(([Icon, label, value, href]) => {
+                const isWhatsApp = label === "WhatsApp";
                 const content = (
-                  <div className="grid gap-3 p-5 sm:p-6 md:grid-cols-[24px_1fr]">
+                  <div className="grid gap-3 p-5 sm:p-6 md:grid-cols-[24px_minmax(0,1fr)]">
                     <Icon className="h-5 w-5 text-[var(--clay)]" />
-                    <div>
+                    <div className="min-w-0">
                       <span className="block text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
                         {label}
                       </span>
-                      <span className="mt-1 block break-words font-serif text-[20px] leading-tight text-[var(--ink)] sm:text-[22px]">
+                      <span className="mt-1 block break-words font-serif text-[18px] leading-tight text-[var(--ink)] [overflow-wrap:anywhere] sm:text-[22px]">
                         {value}
                       </span>
                     </div>
                   </div>
                 );
+
+                if (isWhatsApp) {
+                  return (
+                    <QualifiedWhatsAppLink key={label}>
+                      {(open) => (
+                        <button
+                          onClick={open}
+                          className="w-full text-left transition-colors hover:bg-[var(--bone)] hover:text-[var(--forest)]"
+                        >
+                          {content}
+                        </button>
+                      )}
+                    </QualifiedWhatsAppLink>
+                  );
+                }
 
                 return href ? (
                   <a
@@ -116,7 +150,6 @@ function ContatoPage() {
                     target={href.startsWith("http") ? "_blank" : undefined}
                     rel="noopener noreferrer"
                     onClick={() => {
-                      if (label === "WhatsApp") track("click_whatsapp");
                       if (label === "E-mail") track("click_email_contact");
                       if (label === "Instagram") track("click_instagram");
                     }}
@@ -131,15 +164,15 @@ function ContatoPage() {
             </div>
           </div>
 
-          <div className="md:col-span-6 lg:col-span-7 md:order-1 lg:pr-12">
+          <div className="md:order-1 md:col-span-6 lg:col-span-7 lg:pr-12">
             <div className="quiet-card bg-[var(--ivory)] p-6 sm:p-8 md:p-10">
               <h2 className="font-serif text-[28px] leading-[1.1] text-[var(--ink)] sm:text-[34px]">
-                Primeiro Contato
+                Primeiro contato
               </h2>
               <p className="mt-4 text-[14.5px] leading-relaxed text-muted-foreground">
-                Por favor, não inclua dados clínicos sensíveis ou histórico detalhado aqui. 
-                Essas informações serão acolhidas e tratadas com o devido cuidado e sigilo 
-                no momento apropriado, durante a nossa primeira conversa.
+                Ao enviar, o WhatsApp será aberto com uma mensagem pronta. Assim
+                o contato chega diretamente para a Camila, com mais segurança e
+                rapidez.
               </p>
 
               {formState === "success" ? (
@@ -147,74 +180,106 @@ function ContatoPage() {
                   <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-[var(--forest)] text-[var(--ivory)]">
                     <Send className="h-6 w-6" />
                   </div>
-                  <h3 className="mt-6 font-serif text-[24px] text-[var(--ink)]">Mensagem enviada com sucesso.</h3>
+                  <h3 className="mt-6 font-serif text-[24px] text-[var(--ink)]">
+                    Abrindo o WhatsApp.
+                  </h3>
                   <p className="mt-3 text-[15px] text-muted-foreground">
-                    Agradeço o seu contato. Retornarei o mais breve possível com as informações solicitadas.
+                    Caso o aplicativo não abra automaticamente, use o botão de
+                    WhatsApp nesta página.
                   </p>
                   <button
                     onClick={() => setFormState("idle")}
                     className="mt-8 text-[13px] uppercase tracking-widest text-[var(--clay)] transition-colors hover:text-[var(--forest)]"
                   >
-                    Enviar nova mensagem
+                    Voltar ao formulário
                   </button>
                 </div>
               ) : (
                 <form onSubmit={handleSubmit} className="mt-10 grid gap-6">
                   <div className="grid gap-6 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <label htmlFor="name" className="text-[13px] font-medium text-[var(--ink)]">Nome completo</label>
-                      <input 
-                        required 
-                        id="name" 
-                        name="name" 
-                        type="text" 
-                        className="w-full rounded-sm border border-border bg-transparent px-4 py-3 text-[15px] outline-none transition-colors focus:border-[var(--forest)]" 
+                      <label
+                        htmlFor="name"
+                        className="text-[13px] font-medium text-[var(--ink)]"
+                      >
+                        Nome completo
+                      </label>
+                      <input
+                        required
+                        id="name"
+                        name="name"
+                        type="text"
+                        className="w-full rounded-sm border border-border bg-transparent px-4 py-3 text-[15px] outline-none transition-colors focus:border-[var(--forest)]"
                       />
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="whatsapp" className="text-[13px] font-medium text-[var(--ink)]">WhatsApp</label>
-                      <input 
-                        required 
-                        id="whatsapp" 
-                        name="whatsapp" 
-                        type="tel" 
-                        className="w-full rounded-sm border border-border bg-transparent px-4 py-3 text-[15px] outline-none transition-colors focus:border-[var(--forest)]" 
+                      <label
+                        htmlFor="whatsapp"
+                        className="text-[13px] font-medium text-[var(--ink)]"
+                      >
+                        WhatsApp
+                      </label>
+                      <input
+                        required
+                        id="whatsapp"
+                        name="whatsapp"
+                        type="tel"
+                        className="w-full rounded-sm border border-border bg-transparent px-4 py-3 text-[15px] outline-none transition-colors focus:border-[var(--forest)]"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2">
-                    <label htmlFor="email" className="text-[13px] font-medium text-[var(--ink)]">E-mail</label>
-                    <input 
-                      required 
-                      id="email" 
-                      name="email" 
-                      type="email" 
-                      className="w-full rounded-sm border border-border bg-transparent px-4 py-3 text-[15px] outline-none transition-colors focus:border-[var(--forest)]" 
+                    <label
+                      htmlFor="email"
+                      className="text-[13px] font-medium text-[var(--ink)]"
+                    >
+                      E-mail
+                    </label>
+                    <input
+                      required
+                      id="email"
+                      name="email"
+                      type="email"
+                      className="w-full rounded-sm border border-border bg-transparent px-4 py-3 text-[15px] outline-none transition-colors focus:border-[var(--forest)]"
                     />
                   </div>
 
                   <div className="grid gap-6 sm:grid-cols-2">
                     <div className="space-y-2">
-                      <label htmlFor="modality" className="text-[13px] font-medium text-[var(--ink)]">Modalidade de interesse</label>
-                      <select 
+                      <label
+                        htmlFor="modality"
+                        className="text-[13px] font-medium text-[var(--ink)]"
+                      >
+                        Modalidade de interesse
+                      </label>
+                      <select
                         required
-                        id="modality" 
-                        name="modality" 
+                        id="modality"
+                        name="modality"
                         className="w-full rounded-sm border border-border bg-transparent px-4 py-3 text-[15px] outline-none transition-colors focus:border-[var(--forest)]"
                       >
                         <option value="">Selecione...</option>
                         <option value="online">Online</option>
-                        <option value="presencial">Presencial (Vila Nova Conceição)</option>
-                        <option value="indefinido">Ainda não sei / Quero entender melhor</option>
+                        <option value="presencial">
+                          Presencial (Vila Nova Conceição)
+                        </option>
+                        <option value="indefinido">
+                          Ainda não sei / Quero entender melhor
+                        </option>
                       </select>
                     </div>
                     <div className="space-y-2">
-                      <label htmlFor="period" className="text-[13px] font-medium text-[var(--ink)]">Melhor período para contato</label>
-                      <select 
+                      <label
+                        htmlFor="period"
+                        className="text-[13px] font-medium text-[var(--ink)]"
+                      >
+                        Melhor período para contato
+                      </label>
+                      <select
                         required
-                        id="period" 
-                        name="period" 
+                        id="period"
+                        name="period"
                         className="w-full rounded-sm border border-border bg-transparent px-4 py-3 text-[15px] outline-none transition-colors focus:border-[var(--forest)]"
                       >
                         <option value="">Selecione...</option>
@@ -226,46 +291,60 @@ function ContatoPage() {
                   </div>
 
                   <div className="space-y-2">
-                    <label htmlFor="message" className="text-[13px] font-medium text-[var(--ink)] flex items-center justify-between">
-                      Mensagem breve <span className="text-[11px] text-muted-foreground uppercase tracking-wider">(Opcional)</span>
+                    <label
+                      htmlFor="message"
+                      className="flex items-center justify-between text-[13px] font-medium text-[var(--ink)]"
+                    >
+                      Mensagem breve{" "}
+                      <span className="text-[11px] uppercase tracking-wider text-muted-foreground">
+                        Opcional
+                      </span>
                     </label>
-                    <textarea 
-                      id="message" 
-                      name="message" 
+                    <textarea
+                      id="message"
+                      name="message"
                       rows={4}
-                      className="w-full resize-none rounded-sm border border-border bg-transparent px-4 py-3 text-[15px] outline-none transition-colors focus:border-[var(--forest)]" 
+                      className="w-full resize-none rounded-sm border border-border bg-transparent px-4 py-3 text-[15px] outline-none transition-colors focus:border-[var(--forest)]"
                     />
                   </div>
 
                   {formState === "error" && (
                     <p className="text-[13px] text-[var(--destructive)]">
-                      Ocorreu um erro ao enviar a mensagem. Por favor, tente pelo WhatsApp.
+                      Ocorreu um erro ao enviar a mensagem. Por favor, tente
+                      pelo WhatsApp.
                     </p>
                   )}
 
-                  <button 
-                    type="submit" 
+                  <button
+                    type="submit"
                     disabled={formState === "loading"}
-                    className="focus-ring group relative inline-flex min-h-[56px] w-full items-center justify-center gap-3 overflow-hidden rounded-[2px] bg-[var(--forest)] px-7 py-4 text-center text-[14px] tracking-wide text-[var(--ivory)] shadow-soft transition-all duration-300 hover:bg-[var(--ink)] hover:shadow-press disabled:opacity-70 disabled:pointer-events-none md:min-h-[52px]"
+                    className="focus-ring group relative inline-flex min-h-[56px] w-full items-center justify-center gap-3 overflow-hidden rounded-[2px] bg-[var(--forest)] px-7 py-4 text-center text-[14px] tracking-wide text-[var(--ivory)] shadow-soft transition-all duration-300 hover:bg-[var(--ink)] hover:shadow-press disabled:pointer-events-none disabled:opacity-70 md:min-h-[52px]"
                   >
                     {formState === "loading" ? (
                       <Loader2 className="h-5 w-5 animate-spin" />
                     ) : (
                       <>
-                        Enviar solicitação de contato
+                        Abrir conversa no WhatsApp
                         <Send className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
                       </>
                     )}
                   </button>
 
-                  <p className="mt-2 text-center text-[11px] leading-relaxed text-muted-foreground/80 max-w-sm mx-auto">
-                    Ao enviar, você concorda com o uso dos seus dados para retorno de contato, conforme a <Link to="/privacidade" className="underline hover:text-[var(--forest)] transition-colors">Política de Privacidade</Link>.
+                  <p className="mx-auto mt-2 max-w-sm text-center text-[11px] leading-relaxed text-muted-foreground/80">
+                    Ao enviar, você concorda com o uso dos seus dados para
+                    retorno de contato, conforme a{" "}
+                    <Link
+                      to="/privacidade"
+                      className="underline transition-colors hover:text-[var(--forest)]"
+                    >
+                      Política de Privacidade
+                    </Link>
+                    .
                   </p>
                 </form>
               )}
             </div>
           </div>
-
         </div>
       </section>
     </Layout>

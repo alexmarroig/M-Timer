@@ -24,10 +24,35 @@ export const Route = createFileRoute("/relacionamentos")({
           "provider": {
             "@type": "Psychologist",
             "name": "Camila Freitas",
-            "url": "https://psicamilafreitas.com.br"
+            "url": "https://psicavfreitas.com.br"
           },
           "areaServed": "São Paulo, Vila Nova Conceição e Online",
           "description": "Atendimento especializado em vínculos afetivos, familiares e profissionais, focado na compreensão de padrões e saúde emocional."
+        })
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "A terapia de casal é a mesma coisa?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Este é um atendimento individual focado na sua experiência nas relações. O objetivo é compreender como você se sente, como reage e quais padrões você carrega em seus diversos vínculos."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Como a terapia ajuda em relacionamentos difíceis?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Através da escuta clínica, você poderá identificar o que é seu e o que é do outro, aprendendo a estabelecer limites mais saudáveis e a se comunicar de forma mais autêntica."
+              }
+            }
+          ]
         })
       }
     ],
@@ -37,8 +62,19 @@ export const Route = createFileRoute("/relacionamentos")({
       eyebrow="Relacionamentos"
       title={<>Relações importantes também precisam de escuta.</>}
       intro="Vínculos afetivos, familiares e profissionais carregam expectativas, medos, repetições e tentativas de cuidado que nem sempre são fáceis de nomear."
-      image={images.life3}
-      lead="A psicoterapia oferece um espaço para compreender como você se posiciona nas relações e o que se repete nos encontros com o outro."
+      image={images.lifePlanning}
+      pains={{
+        title: "Vínculos que pedem cuidado, silêncios que pesam ou repetições que cansam.",
+        items: [
+          "Sinto que estou sempre cedendo para evitar conflitos, mas me sinto invisível.",
+          "Não consigo estabelecer limites e acabo me sobrecarregando nas relações.",
+          "Atraio sempre o mesmo tipo de parceiro e as mesmas situações de sofrimento.",
+          "Tenho medo constante de ser abandonado(a) ou rejeitado(a) se mostrar quem sou.",
+          "Sinto que perdi minha identidade dentro do relacionamento.",
+          "Dificuldade de comunicação: parece que falamos línguas diferentes e nada se resolve."
+        ]
+      }}
+      lead="As relações são o espelho de como nos posicionamos no mundo. Na clínica, olhamos para o que se repete e o que pode ser transformado."
       points={[
         "Refletir sobre padrões recorrentes em relações amorosas, familiares e profissionais.",
         "Elaborar rupturas, lutos afetivos, dependências emocionais e dificuldades de limite.",
@@ -49,7 +85,7 @@ export const Route = createFileRoute("/relacionamentos")({
       faqItems={[
         {
           q: "A terapia de casal é a mesma coisa?",
-          a: "Este é um atendimento individual focado na *sua* experiência nas relações. O objetivo é compreender como você se sente, como reage e quais padrões você carrega em seus diversos vínculos."
+          a: "Este é um atendimento individual focado na sua experiência nas relações. O objetivo é compreender como você se sente, como reage e quais padrões você carrega em seus diversos vínculos."
         },
         {
           q: "Como a terapia ajuda em relacionamentos difíceis?",
@@ -67,3 +103,4 @@ export const Route = createFileRoute("/relacionamentos")({
     />
   ),
 });
+

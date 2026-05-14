@@ -28,7 +28,7 @@ Até o momento, o site não exige variáveis de ambiente críticas para funciona
 
 ### 4. Domínio Customizado
 1.  Após o deploy inicial, vá em **Settings > Domains**.
-2.  Adicione `psicamilafreitas.com.br`.
+2.  Adicione `psicavfreitas.com.br`.
 3.  Siga as instruções de DNS (configuração de registros A e CNAME) no seu provedor de domínio (ex: Registro.br ou GoDaddy).
 
 ---
@@ -54,3 +54,4 @@ Após o site estar no ar, realize estes testes manuais:
 - [ ] **Mobile**: Abra o site no celular e teste o menu e a navegabilidade.
 - [ ] **Social Preview**: Cole o link do site no WhatsApp/Telegram e veja se a imagem de pré-visualização (OG) aparece com o nome da Camila.
 - [ ] **Indexação**: Acesse o Google Search Console e envie o link do sitemap.
+

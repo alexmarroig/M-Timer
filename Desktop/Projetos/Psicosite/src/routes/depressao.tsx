@@ -27,10 +27,35 @@ export const Route = createFileRoute("/depressao")({
           "provider": {
             "@type": "Psychologist",
             "name": "Camila Freitas",
-            "url": "https://psicamilafreitas.com.br"
+            "url": "https://psicavfreitas.com.br"
           },
           "areaServed": "São Paulo, Vila Nova Conceição e Online",
           "description": "Acompanhamento psicológico especializado para depressão, desânimo persistente e sofrimento emocional com ética e cuidado clínico."
+        })
+      },
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "FAQPage",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "Como a terapia ajuda na depressão?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "A psicoterapia oferece um espaço para falar sobre o que parece indizível. Ela ajuda a identificar padrões de pensamento, a processar perdas e a reconstruir um sentido que faça mais sentido para você."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Depressão tem cura?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Mais do que 'cura', buscamos a remissão dos sintomas e a compreensão dos fatores que levam ao estado depressivo, permitindo que a pessoa retome sua capacidade de agir e de sentir prazer na vida."
+              }
+            }
+          ]
         })
       }
     ],
@@ -62,3 +87,4 @@ export const Route = createFileRoute("/depressao")({
     />
   ),
 });
+

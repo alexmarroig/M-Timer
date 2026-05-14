@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowUpRight, Menu, X } from "lucide-react";
 import { track } from "@vercel/analytics";
 import { camila, images } from "./content";
+import { PrimaryCTA } from "./Primitives";
 
 const nav = [
   { to: "/sobre", label: "Sobre" },
@@ -46,9 +47,10 @@ export function Header() {
               src={images.logoVertical}
               alt="Logotipo Psicóloga Camila Freitas - Clínica e Psicoterapia"
               className="h-full w-full scale-[2.15] object-cover object-top opacity-90 transition-transform duration-500 group-hover:scale-[2.25]"
-              width={96}
-              height={96}
-            />
+                width={48}
+                height={48}
+                decoding="async"
+              />
           </span>
           <span className="flex min-w-0 flex-col leading-tight">
             <span className="max-w-[188px] truncate font-serif text-[17px] tracking-wide text-[var(--ink)] sm:max-w-none sm:text-[19px] md:text-[21px]">
@@ -75,15 +77,9 @@ export function Header() {
           ))}
         </nav>
 
-        <a
-          href={camila.whatsapp}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={() => track("click_whatsapp")}
-          className="hidden rounded-full bg-[var(--forest)] px-5 py-3 text-[12.5px] tracking-wide text-[var(--ivory)] shadow-soft transition-all hover:-translate-y-0.5 hover:bg-[var(--ink)] md:inline-flex"
-        >
+        <PrimaryCTA className="hidden md:inline-flex px-5 py-3 min-h-0">
           Agendar
-        </a>
+        </PrimaryCTA>
 
         <button
           onClick={() => setOpen((value) => !value)}
@@ -110,14 +106,9 @@ export function Header() {
               </Link>
             ))}
             <div className="mt-8">
-              <a
-                href={camila.whatsapp}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="focus-ring flex min-h-[58px] items-center justify-center rounded-full bg-[var(--forest)] px-6 text-[15px] font-medium tracking-wide text-[var(--ivory)] shadow-soft"
-              >
+              <PrimaryCTA className="w-full">
                 Agendar sessão de psicoterapia
-              </a>
+              </PrimaryCTA>
               <p className="mt-4 text-center text-[12px] text-muted-foreground/70">
                 Atendimento online e presencial
               </p>

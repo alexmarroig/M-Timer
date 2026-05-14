@@ -10,6 +10,7 @@ import {
 } from "@tanstack/react-router";
 
 import appCss from "../styles.css?url";
+import fontsCss from "../fonts.css?url";
 
 function NotFoundComponent() {
   return (
@@ -43,11 +44,11 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
+          Esta página não carregou
         </h1>
         <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back
-          home.
+          Algo saiu do esperado. Você pode tentar atualizar ou voltar para a
+          página inicial.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
@@ -57,13 +58,13 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Try again
+            Tentar novamente
           </button>
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Go home
+            Voltar ao início
           </a>
         </div>
       </div>
@@ -83,37 +84,54 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
             "Encontre acolhimento com a Psicóloga Camila Freitas (PUC-SP). Atendimento especializado em ansiedade, relacionamentos e autoconhecimento. Terapia Online e Presencial na Vila Nova Conceição, SP. Agende sua sessão.",
         },
         { name: "author", content: "Camila Freitas" },
-        { name: "keywords", content: "psicóloga sao paulo, psicoterapia online, psicóloga vila nova conceição, terapia ansiedade sp, camila freitas psicóloga, psicólogo junguiano sp, atendimento psicoterapêutico especializado" },
-        { property: "og:title", content: "Camila Freitas | Psicóloga Clínica em São Paulo e Online" },
+        {
+          name: "keywords",
+          content:
+            "psicóloga sao paulo, psicoterapia online, psicóloga vila nova conceição, terapia ansiedade sp, camila freitas psicóloga, psicólogo junguiano sp, atendimento psicoterapêutico especializado",
+        },
+        {
+          property: "og:title",
+          content: "Camila Freitas | Psicóloga Clínica em São Paulo e Online",
+        },
         {
           property: "og:image",
-          content: "https://psicosite.vercel.app/images/camila-og.png",
+          content: "https://psicavfreitas.com.br/images/camila-og.png",
         },
         {
           property: "og:description",
-          content: "Atendimento psicológico ético e humano na Vila Nova Conceição e Online. Especialista em ansiedade e relacionamentos.",
+          content:
+            "Atendimento psicológico ético e humano na Vila Nova Conceição e Online. Especialista em ansiedade e relacionamentos.",
         },
         { property: "og:type", content: "website" },
         { name: "twitter:card", content: "summary_large_image" },
         { name: "twitter:site", content: "@psi.cavfreitas" },
-        { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" },
+        {
+          name: "robots",
+          content:
+            "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1",
+        },
       ],
       links: [
         { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
         {
           rel: "canonical",
-          href: `https://psicamilafreitas.com.br${ctx?.location?.pathname === "/" ? "" : ctx?.location?.pathname || ""}`,
+          href: `https://psicavfreitas.com.br${ctx?.location?.pathname === "/" ? "" : ctx?.location?.pathname || ""}`,
         },
+        { rel: "stylesheet", href: fontsCss },
         { rel: "stylesheet", href: appCss },
-        { rel: "preconnect", href: "https://fonts.googleapis.com" },
         {
-          rel: "preconnect",
-          href: "https://fonts.gstatic.com",
+          rel: "preload",
+          href: "/fonts/manrope-latin.woff2",
+          as: "font",
+          type: "font/woff2",
           crossOrigin: "anonymous",
         },
         {
-          rel: "stylesheet",
-          href: "https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Manrope:wght@300;400;500;600&display=swap",
+          rel: "preload",
+          href: "/fonts/cormorant-latin.woff2",
+          as: "font",
+          type: "font/woff2",
+          crossOrigin: "anonymous",
         },
       ],
     }),
@@ -137,51 +155,70 @@ function RootShell({ children }: { children: React.ReactNode }) {
               "@graph": [
                 {
                   "@type": "Person",
-                  "@id": "https://psicamilafreitas.com.br/#person",
-                  "name": "Camila Freitas",
-                  "jobTitle": "Psicóloga Clínica",
-                  "description": "Psicóloga clínica formada pela PUC-SP com foco em atendimento online e presencial na Vila Nova Conceição, São Paulo.",
-                  "url": "https://psicamilafreitas.com.br",
-                  "telephone": "+5511943937007",
-                  "email": "psi.camilafreitas@gmail.com",
-                  "sameAs": [
-                    "https://instagram.com/psi.cavfreitas"
-                  ],
-                  "image": "https://psicosite.vercel.app/images/camila-portrait.jpg"
+                  "@id": "https://psicavfreitas.com.br/#person",
+                  name: "Camila Freitas",
+                  jobTitle: "Psicóloga Clínica",
+                  description:
+                    "Psicóloga clínica formada pela PUC-SP com foco em atendimento online e presencial na Vila Nova Conceição, São Paulo.",
+                  url: "https://psicavfreitas.com.br",
+                  telephone: "+5511943937007",
+                  email: "psi.camilafreitas@gmail.com",
+                  sameAs: ["https://instagram.com/psi.cavfreitas"],
+                  image:
+                    "https://psicavfreitas.com.br/images/camila-portrait.jpg",
                 },
                 {
                   "@type": "MedicalBusiness",
-                  "@id": "https://psicamilafreitas.com.br/#organization",
-                  "name": "Consultório de Psicologia Camila Freitas",
-                  "url": "https://psicamilafreitas.com.br",
-                  "logo": "https://psicosite.vercel.app/images/camila-logo.png",
-                  "image": "https://psicosite.vercel.app/images/consultorio.jpg",
-                  "description": "Atendimento psicológico especializado em ansiedade, relacionamentos e autoconhecimento na Vila Nova Conceição, São Paulo.",
-                  "telephone": "+5511943937007",
-                  "address": {
+                  "@id": "https://psicavfreitas.com.br/#organization",
+                  name: "Consultório de Psicologia Camila Freitas",
+                  url: "https://psicavfreitas.com.br",
+                  logo: "https://psicavfreitas.com.br/images/camila-logo.png",
+                  image: "https://psicavfreitas.com.br/images/consultorio.jpg",
+                  description:
+                    "Atendimento psicológico especializado em ansiedade, relacionamentos e autoconhecimento na Vila Nova Conceição, São Paulo.",
+                  telephone: "+5511943937007",
+                  address: {
                     "@type": "PostalAddress",
-                    "streetAddress": "Vila Nova Conceição",
-                    "addressLocality": "São Paulo",
-                    "addressRegion": "SP",
-                    "postalCode": "04508-030",
-                    "addressCountry": "BR"
+                    streetAddress: "Vila Nova Conceição",
+                    addressLocality: "São Paulo",
+                    addressRegion: "SP",
+                    postalCode: "04508-030",
+                    addressCountry: "BR",
                   },
-                  "geo": {
+                  geo: {
                     "@type": "GeoCoordinates",
-                    "latitude": -23.5888,
-                    "longitude": -46.6667
+                    latitude: -23.5888,
+                    longitude: -46.6667,
                   },
-                  "openingHoursSpecification": [
+                  openingHoursSpecification: [
                     {
                       "@type": "OpeningHoursSpecification",
-                      "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-                      "opens": "08:00",
-                      "closes": "21:00"
-                    }
+                      dayOfWeek: [
+                        "Monday",
+                        "Tuesday",
+                        "Wednesday",
+                        "Thursday",
+                        "Friday",
+                      ],
+                      opens: "08:00",
+                      closes: "21:00",
+                    },
                   ],
-                  "priceRange": "$$$"
-                }
-              ]
+                  priceRange: "$$$",
+                },
+                {
+                  "@type": "PsychologicalService",
+                  "@id": "https://psicavfreitas.com.br/#service",
+                  name: "Psicoterapia Individual e Online",
+                  provider: { "@id": "https://psicavfreitas.com.br/#person" },
+                  areaServed: {
+                    "@type": "City",
+                    name: "São Paulo",
+                  },
+                  description:
+                    "Atendimento psicoterapêutico especializado para adultos, focado em ansiedade, depressão e relacionamentos.",
+                },
+              ],
             }),
           }}
         />
